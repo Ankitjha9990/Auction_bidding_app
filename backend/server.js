@@ -237,6 +237,54 @@ function normalizeStoredCategories() {
   if (changed) saveDb();
 }
 
+function syncTeamCaptainAccount(team, { captainName, captainEmail, captainPassword } = {}) {
+  if (!team) return team;
+
+  const nextName = (captainName ?? team.captainName ?? '').trim();
+  const nextEmail = (captainEmail ?? team.captainEmail ?? '').trim();
+  const nextPassword = captainPassword ?? null;
+
+  if (!nextName && !nextEmail && !nextPassword) {
+    return team;
+  }
+
+  let captainUser = team.captainId ? (db.users || []).find(u => u.id === team.captainId) : null;
+  if (!captainUser && nextEmail) {
+    captainUser = (db.users || []).find(u => u.email && u.email.toLowerCase() === nextEmail.toLowerCase());
+  }
+
+  if (captainUser) {
+    if (nextName) captainUser.name = nextName;
+    if (nextEmail) captainUser.email = nextEmail;
+    if (nextPassword) captainUser.password = nextPassword;
+    captainUser.teamId = team.id;
+    captainUser.auctionId = team.auctionId;
+    captainUser.role = captainUser.role || 'captain';
+    team.captainId = captainUser.id;
+    team.captainName = nextName || captainUser.name || team.captainName || '';
+    team.captainEmail = nextEmail || captainUser.email || team.captainEmail || '';
+    return team;
+  }
+
+  if (nextEmail && nextPassword) {
+    const createdUser = {
+      id: uuidv4(),
+      name: nextName || `${team.name || 'Team'} Captain`,
+      email: nextEmail,
+      password: nextPassword,
+      role: 'captain',
+      teamId: team.id,
+      auctionId: team.auctionId
+    };
+    (db.users || []).push(createdUser);
+    team.captainId = createdUser.id;
+    team.captainName = createdUser.name;
+    team.captainEmail = createdUser.email;
+  }
+
+  return team;
+}
+
 function loadDb() {
   try {
     if (fs.existsSync(dbFilePath)) {
@@ -1284,26 +1332,11 @@ router.post('/auctions/:id/teams', authenticateToken, requireRole(['admin']), up
     createdAt: Date.now()
   }, req.params.id);
 
-  if (req.body.captainEmail && req.body.captainPassword) {
-    const existingUser = db.users.find(u => u.email.toLowerCase() === req.body.captainEmail.toLowerCase());
-    if (!existingUser) {
-      const captainUser = {
-        id: uuidv4(),
-        name: req.body.captainName || req.body.name + ' Captain',
-        email: req.body.captainEmail,
-        password: req.body.captainPassword,
-        role: 'captain',
-        teamId: team.id,
-        auctionId: req.params.id
-      };
-      db.users.push(captainUser);
-      team.captainId = captainUser.id;
-    } else {
-      existingUser.teamId = team.id;
-      existingUser.auctionId = req.params.id;
-      team.captainId = existingUser.id;
-    }
-  }
+  syncTeamCaptainAccount(team, {
+    captainName: req.body.captainName,
+    captainEmail: req.body.captainEmail,
+    captainPassword: req.body.captainPassword
+  });
 
   db.teams.push(team);
   saveDb();
@@ -1326,7 +1359,14 @@ router.patch('/teams/:id', authenticateToken, requireRole(['admin']), upload.sin
     updates.remainingBudget = Math.max(0, (db.teams[idx].remainingBudget || 0) + diff);
   }
 
-  db.teams[idx] = enrichTeam({ ...db.teams[idx], ...updates }, db.teams[idx].auctionId);
+  const team = enrichTeam({ ...db.teams[idx], ...updates }, db.teams[idx].auctionId);
+  syncTeamCaptainAccount(team, {
+    captainName: req.body.captainName,
+    captainEmail: req.body.captainEmail,
+    captainPassword: req.body.captainPassword
+  });
+
+  db.teams[idx] = team;
   saveDb();
   broadcast('TEAM_UPDATED', { team: db.teams[idx] });
   res.json(db.teams[idx]);
