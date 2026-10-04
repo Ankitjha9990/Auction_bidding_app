@@ -69,6 +69,73 @@ function getCategoryLabel(value) {
   return normalizeCategory(String(cat || 'Category A')).category;
 }
 
+function enrichPlayer(p) {
+  if (!p) return null;
+  const name = p.name || p.full_name || p.fullName || p.display_name || p.displayName || 'Player';
+  const basePrice = Number(p.basePrice ?? p.base_price ?? p.auction_base_price ?? 100);
+  const lastYearPrice = p.lastYearPrice !== undefined ? p.lastYearPrice : (p.last_year_price !== undefined ? p.last_year_price : null);
+  const xfactor = p.xfactor || p.xFactor || p.x_factor || '';
+  const experience = p.experience || '';
+  const category = getCategoryLabel(p.category || p.auction_category);
+  const registrationId = p.registrationId || p.registration_id || (p.id ? p.id.slice(-3) : '');
+  const imageUrl = p.imageUrl || p.image_url || null;
+  const scoreOutOf5 = p.scoreOutOf5 ?? p.score_out_of_5 ?? 3.5;
+  const overallRating = p.overallRating ?? p.overall_rating ?? 75;
+  const bio = p.bio || p.highlight_reason || '';
+  const stats = p.stats || {};
+  const status = p.status || p.auction_status || 'WAITING';
+  const playerType = p.playerType || p.player_type || p.player_type_name || 'NEW';
+
+  return {
+    ...p,
+    id: p.id || p.masterPlayerId || p.player_id,
+    masterPlayerId: p.masterPlayerId || p.player_id || p.id,
+    name,
+    fullName: name,
+    full_name: name,
+    displayName: p.displayName || p.display_name || name,
+    display_name: p.displayName || p.display_name || name,
+    basePrice,
+    base_price: basePrice,
+    lastYearPrice,
+    last_year_price: lastYearPrice,
+    xfactor,
+    xFactor: xfactor,
+    x_factor: xfactor,
+    experience,
+    category,
+    registrationId,
+    registration_id: registrationId,
+    imageUrl,
+    image_url: imageUrl,
+    scoreOutOf5,
+    score_out_of_5: scoreOutOf5,
+    overallRating,
+    overall_rating: overallRating,
+    bio,
+    stats,
+    status,
+    playerType,
+    player_type: playerType
+  };
+}
+
+function normalizeAuctionTimers() {
+  let changed = false;
+  (db.auctions || []).forEach(auction => {
+    // Default time of 2 minutes (120 seconds) for each and every auction for 1 player, even for already live test auction
+    if (!auction.playerTimer || auction.playerTimer === 20 || auction.playerTimer === 90) {
+      auction.playerTimer = 120;
+      changed = true;
+    }
+    if (auction.roundStatus === 'PAUSED' && auction.pausedRemaining && auction.pausedRemaining <= 90000) {
+      auction.pausedRemaining = 120000;
+      changed = true;
+    }
+  });
+  if (changed) saveDb();
+}
+
 function normalizeStoredCategories() {
   let changed = false;
   const normalizeField = (record, field) => {
@@ -95,6 +162,7 @@ function loadDb() {
       const data = fs.readFileSync(dbFilePath, 'utf-8');
       db = JSON.parse(data);
       normalizeStoredCategories();
+      normalizeAuctionTimers();
       console.log(`Loaded ${db.players?.length || 0} players and ${db.auctions?.length || 0} auctions from ${dbFilePath}`);
     } else if (fs.existsSync(defaultPlayersPath)) {
       const defaultPlayers = JSON.parse(fs.readFileSync(defaultPlayersPath, 'utf-8'));
@@ -110,7 +178,7 @@ function loadDb() {
         status: 'DRAFT',
         startingBudget: 100000,
         minimumBid: 1000,
-        playerTimer: 90,
+        playerTimer: 120,
         numTeams: 8,
         maxSquadSize: 11,
         minSquadSize: 7,
@@ -176,8 +244,9 @@ if (initialActiveAuction) {
 }
 
 if (initialActiveAuction?.currentPlayerId) {
-  const currentPlayer = db.players.find(p => p.id === initialActiveAuction.currentPlayerId);
-  if (currentPlayer) {
+  const rawCurrentPlayer = db.players.find(p => p.id === initialActiveAuction.currentPlayerId);
+  if (rawCurrentPlayer) {
+    const currentPlayer = enrichPlayer(rawCurrentPlayer);
     auctionEngine.currentPlayer = currentPlayer;
     auctionEngine.currentBid = Number(initialActiveAuction.currentBid ?? currentPlayer.basePrice ?? 0);
     auctionEngine.highestBidder = initialActiveAuction.highestBidder || null;
@@ -185,7 +254,10 @@ if (initialActiveAuction?.currentPlayerId) {
       db.teams.find(t => t.id === auctionEngine.highestBidder)?.name || null;
     auctionEngine.status = initialActiveAuction.roundStatus || 'LIVE';
     auctionEngine.endsAt = Number(initialActiveAuction.endsAt) || null;
-    auctionEngine.pausedRemaining = Number(initialActiveAuction.pausedRemaining) || null;
+    auctionEngine.pausedRemaining = Number(initialActiveAuction.pausedRemaining) || (auctionEngine.status === 'PAUSED' ? 120000 : null);
+    if (!initialActiveAuction.playerTimer || initialActiveAuction.playerTimer === 20 || initialActiveAuction.playerTimer === 90) {
+      initialActiveAuction.playerTimer = 120;
+    }
     auctionEngine.sequence = Math.max(
       0,
       ...db.events
@@ -470,7 +542,7 @@ function getSnapshot(customAuctionId) {
     status: isEngineActive ? auctionEngine.status : (auction?.status || 'DRAFT'),
     serverTime: new Date(now).toISOString(),
     serverTimeMs: now,
-    currentPlayer: isEngineActive ? auctionEngine.currentPlayer : null,
+    currentPlayer: isEngineActive && auctionEngine.currentPlayer ? enrichPlayer(auctionEngine.currentPlayer) : null,
     currentBid: isEngineActive ? auctionEngine.currentBid : 0,
     highestBidder: isEngineActive ? auctionEngine.highestBidder : null,
     highestBidderName: isEngineActive ? auctionEngine.highestBidderName : null,
@@ -619,7 +691,7 @@ router.post('/auctions', authenticateToken, requireRole(['admin']), (req, res) =
     status: initialStatus,
     startingBudget: Number(req.body.startingBudget) || 100000,
     minimumBid: Number(req.body.minimumBid) || 1000,
-    playerTimer: Number(req.body.playerTimer) || 90,
+    playerTimer: Number(req.body.playerTimer) || 120,
     numTeams: Number(req.body.numTeams) || 8,
     createdAt: now,
     createdServerTimestamp: new Date(now).toISOString()
@@ -838,11 +910,11 @@ router.post('/auctions/:id/next-player', authenticateToken, requireRole(['admin'
   if (!player) return res.status(404).json({ error: 'Player not found' });
 
   const auction = db.auctions.find(a => a.id === req.params.id);
-  const timerSec = auction?.playerTimer || 90;
+  const timerSec = auction?.playerTimer || 120;
   const timerMs = timerSec * 1000;
 
   clearTimer();
-  auctionEngine.currentPlayer = player;
+  auctionEngine.currentPlayer = enrichPlayer(player);
   auctionEngine.currentBid = player.basePrice || player.base_price || 0;
   auctionEngine.highestBidder = null;
   auctionEngine.highestBidderName = null;
@@ -1663,6 +1735,45 @@ router.post('/players/import-excel-commit', authenticateToken, requireRole(['adm
 router.get('/auctions/:id/players', (req, res) => {
   const players = getEnrichedAuctionPlayers(req.params.id);
   res.json(players);
+});
+
+router.post('/auctions/:id/players', authenticateToken, requireRole(['admin']), (req, res) => {
+  const auctionId = req.params.id;
+  const auction = db.auctions.find(a => a.id === auctionId);
+  if (!auction) return res.status(404).json({ error: 'Auction not found' });
+
+  const playerId = uuidv4();
+  const player = {
+    id: playerId,
+    name: req.body.name,
+    full_name: req.body.name,
+    category: getCategoryLabel(req.body.category),
+    base_price: Number(req.body.basePrice || req.body.base_price || 100),
+    basePrice: Number(req.body.basePrice || req.body.base_price || 100),
+    is_active: true,
+    created_at: Date.now()
+  };
+  db.players.push(player);
+
+  if (!db.auction_players) db.auction_players = [];
+  const ap = {
+    id: uuidv4(),
+    auction_id: auctionId,
+    player_id: playerId,
+    auction_category: player.category,
+    auction_base_price: player.base_price,
+    auction_status: 'WAITING',
+    sold_price: null,
+    sold_team_id: null,
+    auction_order: db.auction_players.filter(x => x.auction_id === auctionId).length + 1,
+    is_current_player: false,
+    current_bid: 0,
+    created_at: Date.now(),
+    updated_at: Date.now()
+  };
+  db.auction_players.push(ap);
+  saveDb();
+  res.json({ ...player, ...ap, id: playerId });
 });
 
 router.post('/auctions/:id/add-players', authenticateToken, requireRole(['admin']), (req, res) => {

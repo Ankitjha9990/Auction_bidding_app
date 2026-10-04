@@ -293,7 +293,7 @@ function LiveControl({ auctionId }) {
                       REG. ID {currentPlayer.registrationId || currentPlayer.id?.slice(-3) || '—'}
                     </div>
                     <div style={{ fontFamily: "'Barlow Condensed', sans-serif", fontWeight: 900, fontSize: 20, color: 'var(--text-dark)', textTransform: 'uppercase', lineHeight: 1.1, margin: '2px 0 6px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                      {currentPlayer.name}
+                      {currentPlayer.name || currentPlayer.fullName || currentPlayer.full_name || currentPlayer.displayName || currentPlayer.display_name || 'Player'}
                     </div>
                     <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
                       <span style={{ background: 'var(--maroon-dark)', color: '#FFFFFF', fontFamily: "'Barlow Condensed', sans-serif", fontWeight: 800, fontSize: 10, padding: '2px 6px', borderRadius: 3, letterSpacing: 1 }}>

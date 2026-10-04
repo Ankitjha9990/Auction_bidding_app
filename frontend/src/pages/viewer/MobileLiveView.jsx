@@ -5,36 +5,6 @@ import { api } from '../../utils/api';
 import MobileLiveCard from '../../components/MobileLiveCard';
 import { ArrowLeft, RefreshCw } from 'lucide-react';
 
-const MOCK_FALLBACK = {
-  auction: { id: 'mock-1', title: 'VALOR CUP 2026', maxSquadSize: 11 },
-  status: 'LIVE',
-  endsAt: Date.now() + 12000,
-  currentBid: 250,
-  highestBidder: 't1',
-  highestBidderName: 'Phoenix Blitz',
-  currentPlayer: {
-    id: 'p-satyam',
-    name: 'SATYAM',
-    category: 'A',
-    status: 'RETURNING',
-    type: 'Returning Player',
-    basePrice: 100,
-    lastYearPrice: 160,
-    xfactor: 'CLUTCH',
-    experience: '2 SEASONS',
-    registrationId: '027',
-    role: 'Clutch / All-Rounder'
-  },
-  recentBids: [
-    { id: 'b1', teamName: 'Phoenix Blitz', teamId: 't1', amount: 250, createdAt: Date.now() - 3000 },
-    { id: 'b2', teamName: 'Shadow Strikers', teamId: 't2', amount: 225, createdAt: Date.now() - 14000 }
-  ],
-  teams: [
-    { id: 't1', name: 'Phoenix Blitz', remainingBudget: 97610, players: [{}, {}, {}] },
-    { id: 't2', name: 'Shadow Strikers', remainingBudget: 99825, players: [{}, {}] }
-  ]
-};
-
 export default function MobileLiveView() {
   const { auctionId: paramAuctionId } = useParams();
   const { socket, connected, getServerTime } = useSocket();
@@ -42,7 +12,7 @@ export default function MobileLiveView() {
   const [recentBids, setRecentBids] = useState([]);
   const [soldOverlay, setSoldOverlay] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [timeRemaining, setTimeRemaining] = useState(12000);
+  const [timeRemaining, setTimeRemaining] = useState(0);
   const [liveBid, setLiveBid] = useState(null);
   const timerRef = useRef();
   const sequenceRef = useRef(0);
@@ -65,8 +35,8 @@ export default function MobileLiveView() {
         : auctions.find(a => a.status === 'LIVE' || a.status === 'SCHEDULED' || a.status === 'READY') || auctions[0];
 
       if (!auction) {
-        setSnapshot(MOCK_FALLBACK);
-        setRecentBids(MOCK_FALLBACK.recentBids);
+        setSnapshot(null);
+        setRecentBids([]);
         setLoading(false);
         return;
       }
@@ -77,15 +47,10 @@ export default function MobileLiveView() {
         setSnapshot(snapRes.data);
         setRecentBids(snapRes.data.recentBids || []);
         if (snapRes.data.sequence) sequenceRef.current = snapRes.data.sequence;
-      } else {
-        setSnapshot(MOCK_FALLBACK);
-        setRecentBids(MOCK_FALLBACK.recentBids);
       }
       setLoading(false);
     } catch (err) {
-      console.warn('Using fallback data for mobile live view:', err.message);
-      setSnapshot(MOCK_FALLBACK);
-      setRecentBids(MOCK_FALLBACK.recentBids);
+      console.warn('Failed to load live auction snapshot for mobile view:', err.message);
       setLoading(false);
     }
   }, [paramAuctionId, socket]);
@@ -214,8 +179,6 @@ export default function MobileLiveView() {
         const remaining = Math.max(0, snapshot.endsAt - (getServerTime ? getServerTime() : Date.now()));
         setTimeRemaining(remaining);
       }, 150);
-    } else if (snapshot?.status === 'LIVE' && !snapshot?.endsAt) {
-      setTimeRemaining(12000);
     } else {
       setTimeRemaining(0);
     }
@@ -229,11 +192,11 @@ export default function MobileLiveView() {
         alignItems: 'center',
         justifyContent: 'center',
         minHeight: '100vh',
-        background: '#F7F4EE',
+        background: '#F4F5F8',
         fontFamily: "'Barlow Condensed', sans-serif"
       }}>
         <div style={{ textAlign: 'center' }}>
-          <div className="spinner" style={{ margin: '0 auto 16px', borderColor: '#111111', borderTopColor: '#C41230' }} />
+          <div className="spinner" style={{ margin: '0 auto 16px', borderColor: '#E2E8F0', borderTopColor: '#C41230' }} />
           <div style={{ fontWeight: 900, color: '#C41230', letterSpacing: 2, fontSize: 16 }}>
             LOADING VALOR CUP LIVE...
           </div>
@@ -245,13 +208,14 @@ export default function MobileLiveView() {
   return (
     <div style={{
       minHeight: '100vh',
-      background: '#F7F4EE',
+      background: '#F4F5F8',
       width: '100%',
       boxSizing: 'border-box',
       display: 'flex',
       flexDirection: 'column',
       alignItems: 'center',
-      fontFamily: "'Barlow Condensed', sans-serif"
+      fontFamily: "'Barlow Condensed', sans-serif",
+      padding: '12px 10px 48px'
     }}>
       {/* Toast Notification */}
       {liveBid && (
@@ -262,7 +226,7 @@ export default function MobileLiveView() {
         </div>
       )}
 
-      <div className="vc-mobile-live-wrapper">
+      <div className="vc-mobile-live-wrapper" style={{ width: '100%', maxWidth: 480, margin: '0 auto' }}>
         {/* Top Navigation Bar */}
         <div style={{
           width: '100%',
@@ -279,44 +243,46 @@ export default function MobileLiveView() {
               alignItems: 'center',
               gap: 6,
               background: '#FFFFFF',
-              border: '2px solid #111111',
-              boxShadow: '2px 2px 0px #111111',
-              padding: '6px 12px',
+              border: '1px solid #CBD5E1',
+              boxShadow: '0 1px 3px rgba(0,0,0,0.05)',
+              padding: '6px 14px',
               fontSize: 13,
               fontWeight: 800,
-              color: '#111111',
+              color: '#0D0E12',
               textDecoration: 'none',
               letterSpacing: 1,
-              borderRadius: 4
+              borderRadius: 6,
+              transition: 'background 0.15s ease'
             }}
           >
-            <ArrowLeft size={14} /> DESKTOP VIEW
+            <ArrowLeft size={14} color="#C41230" /> DESKTOP VIEW
           </Link>
+
           <button
             onClick={loadAndJoin}
             style={{
               display: 'inline-flex',
               alignItems: 'center',
               gap: 6,
-              background: '#FFD43B',
-              border: '2px solid #111111',
-              boxShadow: '2px 2px 0px #111111',
-              padding: '6px 12px',
+              background: '#C41230',
+              border: '1px solid #9E0F27',
+              boxShadow: '0 1px 3px rgba(196,18,48,0.2)',
+              padding: '6px 14px',
               fontSize: 13,
               fontWeight: 900,
-              color: '#111111',
+              color: '#FFFFFF',
               cursor: 'pointer',
               letterSpacing: 1,
-              borderRadius: 4
+              borderRadius: 6
             }}
           >
             <RefreshCw size={13} /> REFRESH
           </button>
         </div>
 
-        {/* The Exact Responsive Mobile Live Card */}
+        {/* The Responsive Mobile Live Card */}
         <MobileLiveCard
-          snapshot={snapshot || MOCK_FALLBACK}
+          snapshot={snapshot}
           timeRemaining={timeRemaining}
           recentBids={recentBids}
         />
@@ -327,7 +293,7 @@ export default function MobileLiveView() {
         <div style={{
           position: 'fixed',
           inset: 0,
-          background: 'rgba(17,17,17,0.85)',
+          background: 'rgba(13,14,18,0.85)',
           zIndex: 9999,
           display: 'flex',
           alignItems: 'center',
@@ -336,39 +302,39 @@ export default function MobileLiveView() {
         }}>
           <div style={{
             background: '#FFFFFF',
-            border: '3px solid #111111',
-            boxShadow: '6px 6px 0px #111111',
-            borderRadius: 8,
-            padding: '24px 20px',
-            maxWidth: 340,
+            borderTop: `6px solid ${soldOverlay.type === 'SOLD' ? '#16A34A' : '#64748B'}`,
+            borderRadius: 12,
+            padding: '30px 24px',
+            maxWidth: 360,
             width: '100%',
-            textAlign: 'center'
+            textAlign: 'center',
+            boxShadow: '0 25px 50px -12px rgba(0,0,0,0.35)'
           }}>
             <div style={{
-              fontSize: 36,
+              fontSize: 44,
               fontWeight: 900,
               letterSpacing: 2,
-              color: soldOverlay.type === 'SOLD' ? '#16A765' : '#C41230',
+              color: soldOverlay.type === 'SOLD' ? '#16A34A' : '#64748B',
               textTransform: 'uppercase',
               lineHeight: 1
             }}>
               {soldOverlay.type}
             </div>
             <div style={{
-              fontSize: 22,
+              fontSize: 24,
               fontWeight: 900,
-              color: '#111111',
-              margin: '12px 0 6px',
+              color: '#0D0E12',
+              margin: '14px 0 8px',
               textTransform: 'uppercase'
             }}>
-              {soldOverlay.player?.name}
+              {soldOverlay.player?.name || soldOverlay.player?.fullName || soldOverlay.player?.full_name || soldOverlay.player?.displayName || 'Player'}
             </div>
             {soldOverlay.type === 'SOLD' && (
               <>
-                <div style={{ fontSize: 28, fontWeight: 900, color: '#C41230', marginBottom: 4 }}>
+                <div style={{ fontSize: 32, fontWeight: 900, color: '#C41230', marginBottom: 4 }}>
                   Qc {Number(soldOverlay.price || 0).toLocaleString()}
                 </div>
-                <div style={{ fontSize: 14, fontWeight: 800, color: '#4B5563', textTransform: 'uppercase' }}>
+                <div style={{ fontSize: 15, fontWeight: 800, color: '#475569', textTransform: 'uppercase', letterSpacing: 1 }}>
                   SOLD TO {soldOverlay.team?.name}
                 </div>
               </>

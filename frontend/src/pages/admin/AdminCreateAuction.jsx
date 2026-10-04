@@ -16,7 +16,7 @@ const defaultForm = {
   maxSquadSize: 11,
   minSquadSize: 7,
   minimumBid: 1000,
-  playerTimer: 90,
+  playerTimer: 120,
   numTeams: 8,
   maxPlayersPerTeam: 11,
   allowRebid: true,
@@ -166,7 +166,7 @@ export default function AdminCreateAuction() {
               step="5"
               value={form.playerTimer}
               onChange={handleFieldChange}
-              help="Default time per player: 90 seconds (1 minute 30 seconds)"
+              help="Default time per player: 120 seconds (2 minutes)"
             />
             <FormField
               label="Number of Teams"

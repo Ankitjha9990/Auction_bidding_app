@@ -122,8 +122,8 @@ async function runTests() {
       name: 'Default Player Timer Auction'
     }, adminHeaders);
     assert(
-      defaultTimerRes.status === 200 && defaultTimerRes.body.playerTimer === 90,
-      'New auctions default to a 90-second player timer'
+      defaultTimerRes.status === 200 && defaultTimerRes.body.playerTimer === 120,
+      'New auctions default to a 120-second (2-minute) player timer'
     );
 
     // 1. Create a Scheduled Auction in the Future

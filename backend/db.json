@@ -40,7 +40,7 @@
       "startingBudget": 100000,
       "minimumBid": 1000,
       "bidIncrement": 500,
-      "playerTimer": 20,
+      "playerTimer": 120,
       "numTeams": 2,
       "maxSquadSize": 11,
       "minSquadSize": 5,
@@ -54,7 +54,7 @@
       "highestBidderName": null,
       "roundStatus": "PAUSED",
       "endsAt": 1791113433993,
-      "pausedRemaining": 83889
+      "pausedRemaining": 120000
     }
   ],
   "teams": [

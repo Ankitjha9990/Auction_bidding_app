@@ -324,22 +324,27 @@ export default function ViewerLive() {
               <div style={{ display: 'flex', flexDirection: 'column' }}>
 
                 {/* Badges */}
-                <div style={{ display: 'flex', gap: 10, marginBottom: 12 }}>
+                <div style={{ display: 'flex', gap: 10, marginBottom: 12, flexWrap: 'wrap', alignItems: 'center' }}>
                   <span style={{ background: 'var(--maroon-dark)', color: '#FFFFFF', fontFamily: "'Barlow Condensed', sans-serif", fontWeight: 900, fontSize: 14, padding: '4px 10px', borderRadius: 4, letterSpacing: 1.5 }}>
-                    REG. ID #{currentPlayer.registrationId || currentPlayer.id?.slice(-3) || '27'}
+                    REG. ID #{currentPlayer.registrationId || currentPlayer.registration_id || currentPlayer.id?.slice(-3) || '—'}
                   </span>
                   <span style={{ background: 'var(--crimson)', color: '#FFFFFF', fontFamily: "'Barlow Condensed', sans-serif", fontWeight: 900, fontSize: 14, padding: '4px 10px', borderRadius: 4, letterSpacing: 1.5 }}>
-                    CATEGORY {currentPlayer.category || 'B'}
+                    CATEGORY {currentPlayer.category || currentPlayer.auction_category || 'A'}
                   </span>
+                  {(currentPlayer.playerType || currentPlayer.player_type || currentPlayer.player_type_name) && (
+                    <span style={{ background: '#E0E7FF', color: '#3730A3', fontFamily: "'Barlow Condensed', sans-serif", fontWeight: 900, fontSize: 14, padding: '4px 10px', borderRadius: 4, letterSpacing: 1.5 }}>
+                      {String(currentPlayer.playerType || currentPlayer.player_type || currentPlayer.player_type_name).toUpperCase()}
+                    </span>
+                  )}
                 </div>
 
-                {/* Huge Player Name */}
-                <div style={{ fontFamily: "'Barlow Condensed', sans-serif", fontWeight: 900, fontSize: 44, color: 'var(--text-dark)', textTransform: 'uppercase', lineHeight: 1, letterSpacing: 1, marginBottom: 20 }}>
-                  {currentPlayer.name}
+                {/* Huge Dynamic Player Name */}
+                <div style={{ fontFamily: "'Barlow Condensed', sans-serif", fontWeight: 900, fontSize: 44, color: 'var(--text-dark)', textTransform: 'uppercase', lineHeight: 1.05, letterSpacing: 1, marginBottom: 18 }}>
+                  {currentPlayer.name || currentPlayer.fullName || currentPlayer.full_name || currentPlayer.displayName || currentPlayer.display_name || 'Player'}
                 </div>
 
                 {/* MASSIVE CURRENT BID BOX */}
-                <div style={{ background: '#FFFFFF', borderRadius: 12, padding: '24px', border: '1px solid var(--border-light)', color: 'var(--text-dark)', marginBottom: 20, boxShadow: '0 4px 20px rgba(0,0,0,0.05)', position: 'relative' }}>
+                <div style={{ background: '#FFFFFF', borderRadius: 12, padding: '24px', border: '1px solid var(--border-light)', color: 'var(--text-dark)', marginBottom: 18, boxShadow: '0 4px 20px rgba(0,0,0,0.05)', position: 'relative' }}>
                   <div style={{ fontFamily: "'Barlow Condensed', sans-serif", fontWeight: 800, fontSize: 12, letterSpacing: 3, color: 'var(--text-faint)', textTransform: 'uppercase' }}>
                     CURRENT BID
                   </div>
@@ -373,28 +378,38 @@ export default function ViewerLive() {
                   <div style={{ background: '#F8F9FD', padding: 12, borderRadius: 6, border: '1px solid var(--border-light)' }}>
                     <div style={{ fontSize: 10, fontFamily: "'Barlow Condensed', sans-serif", fontWeight: 700, color: 'var(--text-faint)', letterSpacing: 1 }}>BASE PRICE</div>
                     <div style={{ fontFamily: "'Barlow Condensed', sans-serif", fontWeight: 900, fontSize: 16, color: 'var(--text-dark)' }}>
-                      Qc {(currentPlayer.basePrice || 60).toLocaleString()}
+                      Qc {Number(currentPlayer.basePrice ?? currentPlayer.base_price ?? 0).toLocaleString()}
                     </div>
                   </div>
                   <div style={{ background: '#F8F9FD', padding: 12, borderRadius: 6, border: '1px solid var(--border-light)' }}>
                     <div style={{ fontSize: 10, fontFamily: "'Barlow Condensed', sans-serif", fontWeight: 700, color: 'var(--text-faint)', letterSpacing: 1 }}>LAST YEAR PRICE</div>
                     <div style={{ fontFamily: "'Barlow Condensed', sans-serif", fontWeight: 900, fontSize: 16, color: 'var(--text-secondary)' }}>
-                      {currentPlayer.lastYearPrice ? `Qc ${currentPlayer.lastYearPrice.toLocaleString()}` : '—'}
+                      {(currentPlayer.lastYearPrice || currentPlayer.last_year_price) ? `Qc ${(currentPlayer.lastYearPrice || currentPlayer.last_year_price).toLocaleString()}` : '—'}
                     </div>
                   </div>
                   <div style={{ background: '#F8F9FD', padding: 12, borderRadius: 6, border: '1px solid var(--border-light)' }}>
                     <div style={{ fontSize: 10, fontFamily: "'Barlow Condensed', sans-serif", fontWeight: 700, color: 'var(--text-faint)', letterSpacing: 1 }}>X-FACTOR</div>
                     <div style={{ fontFamily: "'Barlow Condensed', sans-serif", fontWeight: 900, fontSize: 16, color: 'var(--crimson)' }}>
-                      {currentPlayer.xfactor || currentPlayer.xFactor || 'High'}
+                      {currentPlayer.xfactor || currentPlayer.xFactor || currentPlayer.x_factor || '—'}
                     </div>
                   </div>
                   <div style={{ background: '#F8F9FD', padding: 12, borderRadius: 6, border: '1px solid var(--border-light)' }}>
                     <div style={{ fontSize: 10, fontFamily: "'Barlow Condensed', sans-serif", fontWeight: 700, color: 'var(--text-faint)', letterSpacing: 1 }}>EXPERIENCE</div>
                     <div style={{ fontFamily: "'Barlow Condensed', sans-serif", fontWeight: 900, fontSize: 16, color: 'var(--text-dark)' }}>
-                      {currentPlayer.experience || '2 Years'}
+                      {currentPlayer.experience || '—'}
                     </div>
                   </div>
                 </div>
+
+                {/* Player Insights if available */}
+                {(currentPlayer.bio || currentPlayer.speciality) && (
+                  <div style={{ marginTop: 12, padding: '10px 14px', background: '#F8F9FD', borderRadius: 6, border: '1px solid var(--border-light)', fontSize: 13, color: 'var(--text-secondary)', display: 'flex', alignItems: 'center', gap: 8 }}>
+                    <span style={{ fontFamily: "'Barlow Condensed', sans-serif", fontWeight: 900, letterSpacing: 1, textTransform: 'uppercase', color: 'var(--crimson)', fontSize: 12 }}>
+                      INSIGHTS:
+                    </span>
+                    <span>{currentPlayer.bio || currentPlayer.speciality}</span>
+                  </div>
+                )}
 
               </div>
             </div>
@@ -497,7 +512,7 @@ export default function ViewerLive() {
               {soldOverlay.type}
             </div>
             <div style={{ fontFamily: "'Barlow Condensed', sans-serif", fontWeight: 900, fontSize: 32, color: 'var(--text-dark)', margin: '16px 0 8px', textTransform: 'uppercase' }}>
-              {soldOverlay.player?.name}
+              {soldOverlay.player?.name || soldOverlay.player?.fullName || soldOverlay.player?.full_name || soldOverlay.player?.displayName || 'Player'}
             </div>
             {soldOverlay.type === 'SOLD' && (
               <>
