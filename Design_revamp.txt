@@ -1,0 +1,1346 @@
+You are working on the existing full-stack web application:
+
+VALOR CUP — AUCTION 2026
+
+The Admin, Captain, and Viewer interfaces have already been implemented and their current layouts are correct.
+
+YOUR TASK:
+
+Transform the EXISTING UI into a premium NEO-BRUTALIST visual theme while PRESERVING THE CURRENT LAYOUT, INFORMATION ARCHITECTURE, COMPONENT STRUCTURE, AND FUNCTIONALITY.
+
+THIS IS A VISUAL THEME TRANSFORMATION.
+
+DO NOT REDESIGN THE PAGE STRUCTURE.
+
+DO NOT MOVE MAJOR SECTIONS.
+
+DO NOT REMOVE FEATURES.
+
+DO NOT CHANGE AUCTION LOGIC.
+
+DO NOT CHANGE SOCKET LOGIC.
+
+DO NOT CHANGE DATABASE LOGIC.
+
+DO NOT CHANGE AUTHENTICATION.
+
+DO NOT CHANGE ROUTING.
+
+DO NOT change the position of:
+
+- Admin columns
+- Captain columns
+- Viewer hero area
+- Team panels
+- Player profile sections
+- Auction controls
+- Bid controls
+- Tables
+- Timers
+- Bid history
+- Team cards
+- Sidebars
+- Headers
+- Navigation
+
+The existing layout is already approved.
+
+ONLY transform the VISUAL LANGUAGE.
+
+==================================================
+1. DESIGN DIRECTION
+==================================================
+
+Implement:
+
+NEO BRUTALISM
++
+SPORTS AUCTION
++
+VALOR CUP BRANDING
+
+The result should feel:
+
+- bold
+- graphic
+- energetic
+- editorial
+- raw
+- modern
+- high-contrast
+- confident
+- tournament-oriented
+
+The design must feel intentionally designed, not like a generic dashboard.
+
+Use Neo Brutalism through:
+
+- hard borders
+- strong geometric cards
+- offset shadows
+- bold typography
+- high-contrast surfaces
+- slightly imperfect visual energy
+- strong color blocking
+- flat colors
+- visible structure
+- obvious hierarchy
+
+BUT maintain professional UI/UX.
+
+Do NOT make it look childish.
+
+Do NOT make it look like a random meme website.
+
+Do NOT use excessive stickers, doodles, emojis, or decorative illustrations.
+
+==================================================
+2. CRITICAL RULE — PRESERVE CURRENT LAYOUT
+==================================================
+
+The current layout is LOCKED.
+
+Think of the existing UI as a wireframe whose:
+
+- dimensions
+- section positions
+- navigation
+- hierarchy
+- content
+- interactions
+
+are already approved.
+
+You are changing only:
+
+COLORS
+TYPOGRAPHY
+BORDERS
+SHADOWS
+CARDS
+BUTTONS
+BADGES
+INPUTS
+TABLES
+STATUS INDICATORS
+MICRO-INTERACTIONS
+VISUAL SURFACES
+
+Do NOT introduce a new grid.
+
+Do NOT convert the page into a different layout.
+
+Do NOT turn the Captain interface into a different dashboard.
+
+Do NOT move the bid panel.
+
+Do NOT move the player profile.
+
+Do NOT move the team stats.
+
+Do NOT move the Admin table.
+
+Do NOT change the Viewer composition.
+
+==================================================
+3. CORE COLOR SYSTEM
+==================================================
+
+Create a Neo-Brutalist Valor Cup palette.
+
+Primary:
+
+VALOR CRIMSON
+#C41230
+
+DEEP BURGUNDY
+#650014
+
+INK BLACK
+#111111
+
+OFF WHITE
+#F7F4EE
+
+COOL WHITE
+#FFFFFF
+
+LIGHT GRAY
+#E8E8E8
+
+ACCENT YELLOW
+#FFD43B
+
+LIVE GREEN
+#16A765
+
+Use the palette intentionally.
+
+IMPORTANT:
+
+The interface should NOT become predominantly dark.
+
+The main background should remain:
+
+OFF WHITE / WHITE.
+
+Neo Brutalism does not require a dark theme.
+
+Use dark ink primarily for:
+
+- borders
+- typography
+- shadows
+- emphasis
+
+Use crimson for:
+
+- primary actions
+- active states
+- auction state
+- important numbers
+- selected navigation
+- bid emphasis
+
+Use yellow sparingly for:
+
+- warnings
+- countdown urgency
+- special status
+- important attention states
+
+Use green only for:
+
+- live
+- connected
+- available
+- successful
+
+==================================================
+4. NEO-BRUTALIST BORDER SYSTEM
+==================================================
+
+Replace soft modern UI borders with clear structural borders.
+
+Cards:
+
+border: 2px solid #111111;
+
+Important cards:
+
+border: 3px solid #111111;
+
+Avoid hairline borders.
+
+Avoid ultra-subtle borders.
+
+The border should be visible.
+
+However, do not put a 3px black border around absolutely everything.
+
+Use hierarchy:
+
+Primary card:
+3px
+
+Secondary card:
+2px
+
+Small elements:
+1–2px
+
+==================================================
+5. NEO-BRUTALIST SHADOW SYSTEM
+==================================================
+
+Replace soft blurred shadows with hard offset shadows.
+
+Preferred style:
+
+box-shadow: 5px 5px 0 #111111;
+
+For larger hero elements:
+
+box-shadow: 8px 8px 0 #111111;
+
+For small controls:
+
+box-shadow: 3px 3px 0 #111111;
+
+NO:
+
+large blurred shadows
+
+NO:
+
+glass shadows
+
+NO:
+
+soft floating cards
+
+NO:
+
+heavy gradients
+
+The shadow should look intentionally offset and graphic.
+
+==================================================
+6. CARD DESIGN
+==================================================
+
+Cards should become visually stronger.
+
+Use:
+
+- flat background
+- thick dark border
+- hard offset shadow
+- modest corner radius
+
+Do NOT make every card completely square.
+
+Use approximately:
+
+border-radius: 4px–10px
+
+Keep cards structurally similar to their current positions and sizes.
+
+Example:
+
+┌───────────────────────────────┐
+│ CURRENT PLAYER                │
+│                               │
+│ MOHAMMAD SAMAR                │
+│                               │
+│ Qc 1,250                      │
+└───────────────────────────────┘
+              █████
+              █████
+              █████
+
+The offset shadow should create the Neo-Brutalist depth.
+
+==================================================
+7. CARD COLOR VARIATION
+==================================================
+
+Do not make every card white.
+
+Use controlled surface variation.
+
+Examples:
+
+CURRENT PLAYER:
+white
+
+CURRENT BID:
+light crimson tint
+
+AUCTION CONTROL:
+white
+
+TIME LEFT:
+yellow/cream accent
+
+PLAYER PROFILE:
+white
+
+TEAM CARDS:
+white with team-specific accent
+
+IMPORTANT:
+Color variation should communicate hierarchy.
+
+Do not randomly color components.
+
+==================================================
+8. SIDEBAR
+==================================================
+
+The existing sidebar layout MUST remain unchanged.
+
+Transform only the visual style.
+
+Keep the overall sidebar LIGHT.
+
+Do NOT return to the dark burgundy sidebar.
+
+Suggested appearance:
+
+background:
+#F7F4EE
+
+border-right:
+2px solid #111111
+
+Brand section:
+
+white/off-white
+
+with:
+
+VALOR CRIMSON logo
+
+INK BLACK typography
+
+possibly a small crimson accent block.
+
+Active navigation item:
+
+background:
+#C41230
+
+text:
+white
+
+border:
+2px solid #111111
+
+shadow:
+3px 3px 0 #111111
+
+Normal navigation:
+
+background:
+transparent
+
+text:
+#111111
+
+On hover:
+
+background:
+#FFD43B
+
+border-left or full 2px border
+
+Do not use giant rounded navigation pills.
+
+Neo Brutalism requires the navigation to look like a physical interface element.
+
+==================================================
+9. HEADER
+==================================================
+
+Preserve the current header structure.
+
+Transform it into a strong horizontal Neo-Brutalist bar.
+
+Use:
+
+background:
+#FFFFFF
+
+bottom border:
+2px solid #111111
+
+Brand:
+
+bold
+
+compact
+
+high contrast
+
+Status elements such as:
+
+CONNECTED
+LIVE
+ROUND 02
+LOT #005
+
+should look like compact brutalist labels.
+
+Example:
+
+[ ● CONNECTED ]
+
+[ ROUND 02 ]
+
+[ LOT #005 ]
+
+These should have:
+
+2px black border
+
+flat background
+
+slight offset shadow
+
+small radius.
+
+==================================================
+10. BUTTON SYSTEM
+==================================================
+
+Buttons should become one of the strongest Neo-Brutalist elements.
+
+Primary:
+
+background: #C41230;
+color: #FFFFFF;
+border: 2px solid #111111;
+box-shadow: 4px 4px 0 #111111;
+
+Hover:
+
+transform:
+translate(2px, 2px);
+
+box-shadow:
+2px 2px 0 #111111;
+
+Active:
+
+transform:
+translate(4px, 4px);
+
+box-shadow:
+0 0 0 #111111;
+
+This makes the button feel physical.
+
+Secondary buttons:
+
+background:
+#FFFFFF
+
+color:
+#111111
+
+border:
+2px solid #111111
+
+shadow:
+3px 3px 0 #111111
+
+Warning:
+
+background:
+#FFD43B
+
+Danger:
+
+background:
+#C41230
+
+Disabled:
+
+background:
+#D6D6D6
+
+opacity:
+0.65
+
+shadow:
+none or very small
+
+Do not use giant pill-shaped buttons.
+
+==================================================
+11. BID BUTTONS
+==================================================
+
+The Captain +10 / +25 / +50 / +100 buttons must become visually strong.
+
+Example:
+
+┌─────────────┐
+│     +10     │
+└─────────────┘
+      █████
+      █████
+
+Use:
+
+- large bold number
+- thick border
+- hard shadow
+- high contrast
+
+The +100 button may use Valor Crimson because it is the strongest increment.
+
+But do not make all buttons red.
+
+Possible:
+
++10 → white
++25 → white
++50 → yellow
++100 → crimson
+
+Use visual hierarchy.
+
+Do NOT change their position or functionality.
+
+==================================================
+12. CURRENT BID
+==================================================
+
+The current bid must become a major visual focal point.
+
+Example:
+
+CURRENT BID
+
+Qc 1,250
+
+Use:
+
+very large typography
+
+strong contrast
+
+thick border
+
+possibly:
+
+background:
+#FFD43B
+
+or
+
+light crimson
+
+Example:
+
+┌───────────────────────────┐
+│ CURRENT BID               │
+│                           │
+│ Qc 1,250                  │
+└───────────────────────────┘
+            █████
+            █████
+
+The amount should feel important enough that it can be read instantly.
+
+==================================================
+13. PLAYER NAME
+==================================================
+
+Large player names should use extremely strong typography.
+
+For example:
+
+MOHAMMAD
+SAMAR
+
+or:
+
+MOHAMMAD SAMAR
+
+depending on the existing layout.
+
+Keep the existing player-name placement.
+
+Do not cause the layout to expand.
+
+Use:
+
+font-weight: 800–900
+
+tight letter-spacing
+
+strong visual contrast
+
+Neo-Brutalism typography should feel like a sports poster.
+
+==================================================
+14. CATEGORY BADGES
+==================================================
+
+Category badges should become bold physical labels.
+
+Example:
+
+CATEGORY B
+
+Use:
+
+background:
+#C41230
+
+color:
+white
+
+border:
+2px solid #111111
+
+shadow:
+3px 3px 0 #111111
+
+Small radius.
+
+Do not make them subtle pills.
+
+==================================================
+15. PLAYER PHOTO
+==================================================
+
+Preserve the existing player image position and proportions.
+
+Give the image container a Neo-Brutalist treatment:
+
+- thick dark border
+- flat background
+- hard offset shadow
+- subtle crimson frame/accent
+
+Do NOT distort the player's image.
+
+Do NOT alter the image.
+
+Do NOT add excessive filters.
+
+The player remains the visual hero.
+
+==================================================
+16. TEAM CARDS
+==================================================
+
+Team cards should feel like physical tournament trading cards.
+
+Example:
+
+┌─────────────────────────────┐
+│ [LOGO]                      │
+│                             │
+│ PHOENIX BLITZ               │
+│ 4 / 11 PLAYERS              │
+│                             │
+│ QC LEFT                     │
+│ Qc 97,700                   │
+└─────────────────────────────┘
+             █████
+             █████
+
+Use:
+
+- dark border
+- offset shadow
+- logo
+- large team name
+- squad count
+- remaining budget
+
+Keep the existing team-card positions.
+
+==================================================
+17. TABLE — ADMIN
+==================================================
+
+Do NOT replace the existing All Players table.
+
+Only restyle it.
+
+Header:
+
+INK BLACK background
+WHITE text
+
+or:
+
+OFF-WHITE background
+INK BLACK text
+thick black border
+
+Rows:
+
+white
+
+2px bottom borders
+
+Hover:
+
+light yellow or light crimson tint
+
+Status badges:
+
+SOLD:
+green
+
+WAITING:
+off-white/gray
+
+BIDDING:
+crimson
+
+UNSOLD:
+light gray
+
+The table should look like a Neo-Brutalist tournament registry.
+
+Do not make it unnecessarily colorful.
+
+==================================================
+18. TIMER
+==================================================
+
+The timer should become a major visual object.
+
+Normal:
+
+00:28
+
+Use a black/white or white/crimson treatment.
+
+Warning:
+
+00:10
+
+Introduce yellow.
+
+Critical:
+
+00:05
+
+Introduce crimson.
+
+Use a subtle physical/pulse animation.
+
+Example:
+
+TIME LEFT
+
+┌───────────────┐
+│    00:05      │
+└───────────────┘
+       █████
+       █████
+
+Do not make the entire interface flash.
+
+==================================================
+19. LIVE BID ANIMATION
+==================================================
+
+Preserve the previously requested live-bid animation.
+
+Whenever a successful bid arrives:
+
+display:
+
+NEW BID
+
+TEAM NAME
+
+Qc 1,250
+
+The animation must now ALSO follow the Neo-Brutalist visual language.
+
+Animation:
+
+1. Card starts slightly offset.
+2. Card slides into position.
+3. Card lands with a subtle scale effect.
+4. Hard shadow briefly appears larger.
+5. Bid amount scales slightly.
+6. Card settles.
+
+Example:
+
+┌───────────────────────────────┐
+│ NEW BID                       │
+│                               │
+│ PHOENIX BLITZ                 │
+│ Qc 1,250                      │
+└───────────────────────────────┘
+             ██████
+             ██████
+
+No:
+
+- glassmorphism
+- glowing neon
+- excessive blur
+- particles
+- confetti
+- giant modal
+
+The animation should feel like a physical card landing on the interface.
+
+==================================================
+20. LIVE BID NUMBER ANIMATION
+==================================================
+
+Whenever the current bid changes:
+
+Qc 1,200
+↓
+Qc 1,250
+
+animate the number with:
+
+- slight scale
+- slight vertical movement
+- quick easing
+
+Duration:
+
+approximately 250–400ms
+
+Do not make the animation slow.
+
+Rapid bids should remain readable.
+
+==================================================
+21. SOLD ANIMATION
+==================================================
+
+The SOLD state should be bold Neo Brutalist.
+
+Example:
+
+┌───────────────────────────────┐
+│                               │
+│            SOLD!              │
+│                               │
+│        MOHAMMAD SAMAR         │
+│                               │
+│          Qc 1,250             │
+│                               │
+│       PHOENIX BLITZ           │
+│                               │
+└───────────────────────────────┘
+
+Use:
+
+Valor Crimson
+White
+Black
+
+and hard shadow.
+
+Do not use a soft/glowing esports animation.
+
+It should look like a powerful auction stamp.
+
+==================================================
+22. UNSOLD STATE
+==================================================
+
+Use a similarly strong but less aggressive treatment.
+
+UNSOLD
+
+PLAYER NAME
+
+BASE PRICE
+Qc 60
+
+Use neutral off-white + black + subtle gray.
+
+Do not make UNSOLD visually more important than SOLD.
+
+==================================================
+23. ICONS
+==================================================
+
+Use clean outline icons.
+
+Icons should:
+
+- remain simple
+- use consistent stroke weight
+- work well with thick borders
+- not overpower text
+
+Avoid excessive decorative icons.
+
+For Neo Brutalism, typography and geometry should do most of the visual work.
+
+==================================================
+24. INPUTS / SEARCH
+==================================================
+
+Admin search:
+
+SEARCH PLAYER / ID
+
+must become:
+
+white/off-white background
+
+2px black border
+
+hard shadow
+
+Focus:
+
+yellow or crimson accent
+
+Avoid soft blue focus rings.
+
+Dropdowns:
+
+same brutalist treatment.
+
+==================================================
+25. BADGES AND LABELS
+==================================================
+
+Status labels should look like physical tags.
+
+Examples:
+
+[ LIVE ]
+
+[ READY ]
+
+[ SOLD ]
+
+[ UNSOLD ]
+
+[ BIDDING ]
+
+Use:
+
+2px border
+
+flat fill
+
+bold condensed typography
+
+small shadow where appropriate.
+
+==================================================
+26. WHITESPACE
+==================================================
+
+IMPORTANT:
+
+Neo Brutalism does NOT mean filling every area.
+
+Preserve or slightly improve the existing whitespace.
+
+Do not remove whitespace simply to make the UI denser.
+
+The interface should have:
+
+clear grouping
+
+breathing room
+
+strong visual blocks
+
+intentional empty space
+
+Especially preserve whitespace in the Admin interface.
+
+==================================================
+27. DO NOT OVERDO NEO BRUTALISM
+==================================================
+
+THIS IS VERY IMPORTANT.
+
+The following are PROHIBITED:
+
+- every element having a different background color
+- every element having a huge black shadow
+- giant typography everywhere
+- random yellow decorations
+- cartoon illustrations
+- stickers
+- emoji-based UI
+- excessive rotation
+- intentionally broken alignment
+- excessive asymmetric layouts
+- excessive animations
+- neon effects
+- glassmorphism
+- gradient-heavy UI
+
+The design must remain professional.
+
+The desired aesthetic is:
+
+PREMIUM NEO-BRUTALISM
+
+not:
+
+CHAOTIC NEO-BRUTALISM.
+
+==================================================
+28. LAYOUT PRESERVATION CHECK
+==================================================
+
+After the redesign, compare the updated screens to the existing screens.
+
+The following must remain approximately identical in position:
+
+ADMIN:
+- sidebar
+- header
+- current player card
+- all players table
+- auction controls
+- timer
+- bid state
+- bid history
+- players-in-team
+
+CAPTAIN:
+- header
+- timer
+- other teams
+- player profile
+- player image
+- team budget
+- purchased players
+- bottom bid controls
+
+VIEWER:
+- header
+- player hero
+- player information
+- live bid area
+- teams scoreboard
+- timer
+
+ONLY VISUAL STYLING SHOULD CHANGE.
+
+==================================================
+29. RESPONSIVENESS
+==================================================
+
+Do not sacrifice the existing responsive behavior.
+
+Test at:
+
+1366 × 768
+1440 × 900
+1920 × 1080
+
+Captain:
+
+The bidding controls MUST remain visible without page scrolling.
+
+Viewer:
+
+Must remain readable on large displays.
+
+Admin:
+
+Must maintain comfortable whitespace.
+
+Do not allow:
+
+horizontal overflow
+
+unexpected page-level vertical scrolling
+
+clipped buttons
+
+overlapping cards
+
+text clipping
+
+==================================================
+30. ACCESSIBILITY
+==================================================
+
+Maintain:
+
+- readable contrast
+- keyboard focus
+- button accessibility
+- disabled states
+- reduced-motion support where possible
+
+Do not rely solely on color to communicate:
+
+LIVE
+SOLD
+OUTBID
+UNSOLD
+CONNECTED
+
+Text/state indicators must remain visible.
+
+==================================================
+31. IMPLEMENTATION STRATEGY
+==================================================
+
+Before editing:
+
+Inspect the existing CSS architecture.
+
+Identify:
+
+- global styles
+- CSS variables
+- shared components
+- Admin styles
+- Captain styles
+- Viewer styles
+- button styles
+- cards
+- tables
+- badges
+- sidebar
+- header
+
+Prefer creating a central Neo-Brutalist design system using CSS variables.
+
+For example:
+
+--vc-bg: #F7F4EE;
+--vc-surface: #FFFFFF;
+--vc-ink: #111111;
+--vc-crimson: #C41230;
+--vc-burgundy: #650014;
+--vc-yellow: #FFD43B;
+--vc-green: #16A765;
+
+--vc-border: 2px solid var(--vc-ink);
+
+--vc-shadow-sm: 3px 3px 0 var(--vc-ink);
+--vc-shadow-md: 5px 5px 0 var(--vc-ink);
+--vc-shadow-lg: 8px 8px 0 var(--vc-ink);
+
+Use these consistently.
+
+Do not duplicate arbitrary colors throughout the stylesheet.
+
+==================================================
+32. TYPOGRAPHY
+==================================================
+
+Keep the existing typography family where possible.
+
+Strengthen the hierarchy through:
+
+- font weight
+- condensed headings
+- uppercase labels
+- letter spacing
+- larger numbers
+- tighter display typography
+
+Player names:
+
+800–900 weight
+
+Auction headings:
+
+700–900
+
+Data:
+
+500–700
+
+Do not make body text excessively bold.
+
+==================================================
+33. MICRO-INTERACTIONS
+==================================================
+
+Use physical interaction cues.
+
+Buttons:
+
+hover:
+translate(2px, 2px)
+
+active:
+translate(4px, 4px)
+
+Cards:
+
+hover:
+small shadow/translation where interactive
+
+Bid:
+
+quick scale
+
+New bid:
+
+slide + land
+
+Sold:
+
+stamp-style entrance
+
+Keep all transitions fast.
+
+Approximately:
+
+150ms–350ms
+
+==================================================
+34. FINAL VISUAL GOAL
+==================================================
+
+The final UI should communicate:
+
+VALOR CUP
+
+TOURNAMENT
+ENERGY
+COMPETITION
+AUCTION
+CONFIDENCE
+
+The user should immediately recognize:
+
+This is a live sports auction platform.
+
+The visual identity should feel closer to:
+
+high-end sports editorial design
++
+Neo-Brutalist product design
++
+competitive auction interface
+
+rather than:
+
+generic React admin dashboard.
+
+==================================================
+35. FINAL ACCEPTANCE CRITERIA
+==================================================
+
+Before finishing:
+
+[ ] Existing layouts preserved
+[ ] No major sections moved
+[ ] No existing features removed
+[ ] No auction logic changed
+[ ] No socket logic broken
+[ ] No database changes unless unavoidable
+[ ] Admin visually converted to Neo Brutalism
+[ ] Captain visually converted to Neo Brutalism
+[ ] Viewer visually converted to Neo Brutalism
+[ ] Sidebar remains light rather than dark
+[ ] Cards use strong borders and offset shadows
+[ ] Buttons use physical Neo-Brutalist interaction
+[ ] Current bid is visually prominent
+[ ] Bid animation uses Neo-Brutalist style
+[ ] SOLD state uses Neo-Brutalist treatment
+[ ] Team cards feel like tournament cards
+[ ] Tables are restyled
+[ ] Timer is prominent
+[ ] Whitespace remains intentional
+[ ] Captain bidding requires no page scrolling
+[ ] Qc currency remains unchanged
+[ ] Real-time updates remain intact
+[ ] No hardcoded auction data introduced
+[ ] No excessive decorative elements
+[ ] No horizontal overflow
+[ ] Desktop layouts work at 1366×768 and above
+[ ] npm run build succeeds
+
+MOST IMPORTANT:
+
+DO NOT interpret this request as a request for a new layout.
+
+The CURRENT LAYOUT IS LOCKED.
+
+Only transform the visual design into PREMIUM NEO-BRUTALISM.
+
+Think:
+
+"SAME UI, COMPLETELY NEW VISUAL LANGUAGE."

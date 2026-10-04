@@ -1,0 +1,1329 @@
+@import url('https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700;800;900&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;600;700;800&display=swap');
+
+/* ══════════════════════════════════════════════════════════════════
+   SPECTRA ’26 — CLEAN EDITORIAL × ESPORTS AUCTION
+   Primary visual inspiration: Clean editorial discipline, generous whitespace,
+   calm typography, restrained Neo-Brutalist detail language.
+   ══════════════════════════════════════════════════════════════════ */
+
+.spectra-landing-page {
+  --sp-bg: #F7F5ED;
+  --sp-bg-subtle: #F0EDE1;
+  --sp-bg-card: #FFFFFF;
+  --sp-ink: #101728;
+  --sp-ink-muted: #525C76;
+  --sp-ink-light: #8A94A6;
+  --sp-border: #101728;
+  --sp-border-light: rgba(16, 23, 40, 0.12);
+  --sp-border-medium: rgba(16, 23, 40, 0.22);
+  
+  --sp-amber: #F5A900;
+  --sp-amber-light: #FFF4D9;
+  --sp-indigo: #5146E5;
+  --sp-indigo-hover: #4338CA;
+  --sp-green: #0D9488;
+  --sp-green-light: #CCFBF1;
+  
+  --sp-shadow-subtle: 3px 3px 0 #101728;
+  --sp-shadow-card: 4px 4px 0 #101728;
+  --sp-shadow-hover: 5px 5px 0 #101728;
+  --sp-radius: 6px;
+  
+  --sp-font-display: 'Space Grotesk', -apple-system, sans-serif;
+  --sp-font-body: 'Plus Jakarta Sans', -apple-system, sans-serif;
+  --sp-font-mono: 'Barlow Condensed', -apple-system, sans-serif;
+  
+  background-color: var(--sp-bg);
+  color: var(--sp-ink);
+  font-family: var(--sp-font-body);
+  min-height: 100vh;
+  width: 100%;
+  margin: 0;
+  padding: 0;
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.spectra-landing-page * {
+  box-sizing: border-box;
+}
+
+.spectra-landing-page a {
+  text-decoration: none;
+  color: inherit;
+}
+
+/* ══════════════════════════════════════════════════════════════════
+   HEADER
+   Clean, restrained editorial navigation
+   ══════════════════════════════════════════════════════════════════ */
+.spectra-header {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background-color: var(--sp-bg);
+  border-bottom: 1.5px solid var(--sp-border);
+  transition: background-color 0.2s ease;
+}
+
+.spectra-header-inner {
+  max-width: 1200px;
+  margin: 0 auto;
+  height: 68px;
+  padding: 0 32px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+}
+
+.spectra-brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  text-decoration: none;
+}
+
+.spectra-logo-mark {
+  width: 34px;
+  height: 34px;
+  background-color: var(--sp-amber);
+  border: 1.5px solid var(--sp-border);
+  box-shadow: 2px 2px 0 var(--sp-border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--sp-ink);
+  border-radius: 3px;
+  flex-shrink: 0;
+}
+
+.spectra-brand-text {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.1;
+}
+
+.spectra-brand-title {
+  font-family: var(--sp-font-display);
+  font-weight: 700;
+  font-size: 15px;
+  letter-spacing: 0.04em;
+  color: var(--sp-ink);
+}
+
+.spectra-brand-title span {
+  color: var(--sp-amber);
+}
+
+.spectra-brand-sub {
+  font-family: var(--sp-font-mono);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--sp-ink-muted);
+}
+
+.spectra-nav {
+  display: flex;
+  align-items: center;
+  gap: 36px;
+}
+
+.spectra-nav a {
+  font-family: var(--sp-font-mono);
+  font-size: 12.5px;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--sp-ink-muted);
+  transition: color 0.15s ease;
+  position: relative;
+  padding: 4px 0;
+}
+
+.spectra-nav a:hover {
+  color: var(--sp-ink);
+}
+
+.spectra-nav a::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 0;
+  height: 2px;
+  background-color: var(--sp-amber);
+  transition: width 0.2s ease;
+}
+
+.spectra-nav a:hover::after {
+  width: 100%;
+}
+
+.spectra-header-ctas {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+/* ══════════════════════════════════════════════════════════════════
+   BUTTONS (Subtle Neo-Brutalist Details)
+   ══════════════════════════════════════════════════════════════════ */
+.sp-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  height: 40px;
+  padding: 0 18px;
+  border: 1.5px solid var(--sp-border);
+  border-radius: var(--sp-radius);
+  font-family: var(--sp-font-mono);
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  cursor: pointer;
+  background-color: transparent;
+  color: var(--sp-ink);
+  box-shadow: var(--sp-shadow-subtle);
+  transition: transform 0.15s ease, box-shadow 0.15s ease, background-color 0.15s ease, color 0.15s ease;
+  white-space: nowrap;
+}
+
+.sp-btn:hover {
+  transform: translate(-1.5px, -1.5px);
+  box-shadow: var(--sp-shadow-hover);
+}
+
+.sp-btn:active {
+  transform: translate(1.5px, 1.5px);
+  box-shadow: 1px 1px 0 var(--sp-border);
+}
+
+.sp-btn-primary {
+  background-color: var(--sp-indigo) !important;
+  color: #FFFFFF !important;
+}
+
+.sp-btn-primary span,
+.sp-btn-primary svg {
+  color: #FFFFFF !important;
+  stroke: #FFFFFF;
+}
+
+.sp-btn-primary:hover {
+  background-color: var(--sp-indigo-hover) !important;
+  color: #FFFFFF !important;
+}
+
+.sp-btn-secondary {
+  background-color: var(--sp-bg-card);
+  color: var(--sp-ink);
+}
+
+.sp-btn-secondary:hover {
+  background-color: var(--sp-bg-subtle);
+}
+
+.sp-btn-ghost {
+  background-color: transparent;
+  color: var(--sp-ink);
+  box-shadow: none;
+  border-color: var(--sp-border-medium);
+}
+
+.sp-btn-ghost:hover {
+  border-color: var(--sp-border);
+  box-shadow: var(--sp-shadow-subtle);
+  background-color: var(--sp-bg-card);
+}
+
+.sp-btn-lg {
+  height: 52px;
+  padding: 0 28px;
+  font-size: 13px;
+  letter-spacing: 0.16em;
+}
+
+/* ══════════════════════════════════════════════════════════════════
+   MAIN LAYOUT & HERO SECTION
+   Editorial composition, controlled column, intentional whitespace
+   ══════════════════════════════════════════════════════════════════ */
+.spectra-main {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 32px;
+}
+
+.spectra-hero-section {
+  padding: 96px 0 80px;
+  position: relative;
+}
+
+.spectra-hero-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1.35fr) minmax(320px, 0.95fr);
+  gap: 56px;
+  align-items: center;
+}
+
+.spectra-hero-content {
+  display: flex;
+  flex-direction: column;
+}
+
+/* Hero Eyebrow / Metadata */
+.spectra-hero-eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 24px;
+}
+
+.spectra-eyebrow-tag {
+  font-family: var(--sp-font-mono);
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--sp-ink);
+}
+
+.spectra-eyebrow-divider {
+  width: 4px;
+  height: 4px;
+  background-color: var(--sp-amber);
+  border-radius: 1px;
+}
+
+.spectra-eyebrow-sub {
+  font-family: var(--sp-font-mono);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--sp-ink-muted);
+}
+
+/* Hero Headline */
+.spectra-hero-headline {
+  margin: 0 0 24px 0;
+  font-family: var(--sp-font-display);
+  font-size: clamp(2.75rem, 5.2vw, 4.6rem);
+  font-weight: 700;
+  line-height: 1.04;
+  letter-spacing: -0.04em;
+  color: var(--sp-ink);
+}
+
+.spectra-hero-headline .highlight-amber {
+  color: var(--sp-amber);
+  position: relative;
+  display: inline-block;
+}
+
+/* Hero Description */
+.spectra-hero-desc {
+  margin: 0 0 36px 0;
+  font-size: 18px;
+  line-height: 1.65;
+  color: var(--sp-ink-muted);
+  max-width: 580px;
+}
+
+/* Hero CTA Row */
+.spectra-hero-ctas {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+/* ══════════════════════════════════════════════════════════════════
+   HERO COMPACT PRODUCT PREVIEW (Clean, subtle live floor window)
+   ══════════════════════════════════════════════════════════════════ */
+.spectra-hero-preview {
+  position: relative;
+}
+
+.spectra-preview-card {
+  background-color: var(--sp-bg-card);
+  border: 1.5px solid var(--sp-border);
+  border-radius: var(--sp-radius);
+  box-shadow: var(--sp-shadow-card);
+  overflow: hidden;
+}
+
+.spectra-preview-card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 18px;
+  border-bottom: 1.5px solid var(--sp-border-light);
+  background-color: var(--sp-bg-subtle);
+}
+
+.spectra-preview-badge-live {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  font-family: var(--sp-font-mono);
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.18em;
+  color: var(--sp-green);
+  text-transform: uppercase;
+}
+
+.spectra-live-pulse-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background-color: var(--sp-green);
+  box-shadow: 0 0 0 2px rgba(13, 148, 136, 0.25);
+  animation: spectraDotPulse 1.8s infinite ease-in-out;
+}
+
+@keyframes spectraDotPulse {
+  0%, 100% { transform: scale(1); opacity: 1; }
+  50% { transform: scale(1.3); opacity: 0.7; }
+}
+
+.spectra-preview-room-tag {
+  font-family: var(--sp-font-mono);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  color: var(--sp-ink-muted);
+  text-transform: uppercase;
+}
+
+.spectra-preview-card-body {
+  padding: 24px 20px 20px;
+}
+
+.spectra-preview-player-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 20px;
+}
+
+.spectra-preview-player-info {
+  display: flex;
+  flex-direction: column;
+}
+
+.spectra-preview-kicker {
+  font-family: var(--sp-font-mono);
+  font-size: 10.5px;
+  font-weight: 800;
+  letter-spacing: 0.22em;
+  color: var(--sp-amber);
+  text-transform: uppercase;
+  margin-bottom: 4px;
+}
+
+.spectra-preview-player-name {
+  font-family: var(--sp-font-display);
+  font-size: 22px;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  color: var(--sp-ink);
+  line-height: 1.1;
+}
+
+.spectra-preview-player-role {
+  font-family: var(--sp-font-mono);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  color: var(--sp-ink-muted);
+  text-transform: uppercase;
+  margin-top: 4px;
+}
+
+.spectra-preview-tier-badge {
+  font-family: var(--sp-font-mono);
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.14em;
+  padding: 4px 10px;
+  background-color: var(--sp-bg-subtle);
+  border: 1px solid var(--sp-border-medium);
+  border-radius: 4px;
+  color: var(--sp-ink);
+}
+
+.spectra-preview-bid-box {
+  background-color: var(--sp-bg-subtle);
+  border: 1px solid var(--sp-border-medium);
+  border-radius: 4px;
+  padding: 16px;
+  margin-bottom: 18px;
+}
+
+.spectra-preview-bid-meta {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 6px;
+}
+
+.spectra-preview-bid-meta span {
+  font-family: var(--sp-font-mono);
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.2em;
+  color: var(--sp-ink-muted);
+  text-transform: uppercase;
+}
+
+.spectra-preview-bid-val {
+  font-family: var(--sp-font-display);
+  font-size: 28px;
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  color: var(--sp-ink);
+  line-height: 1;
+}
+
+.spectra-preview-bid-team {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-family: var(--sp-font-mono);
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.14em;
+  color: var(--sp-indigo);
+  text-transform: uppercase;
+  margin-top: 8px;
+}
+
+.spectra-preview-footer-strip {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-top: 14px;
+  border-top: 1px solid var(--sp-border-light);
+  font-family: var(--sp-font-mono);
+  font-size: 11px;
+  color: var(--sp-ink-muted);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.spectra-preview-footer-strip strong {
+  color: var(--sp-ink);
+  font-weight: 800;
+}
+
+/* ══════════════════════════════════════════════════════════════════
+   STATEMENT & STRIP SECTION
+   Restrained editorial statement + minimal horizontal feature row
+   ══════════════════════════════════════════════════════════════════ */
+.spectra-statement-section {
+  padding: 80px 0 60px;
+  border-top: 1.5px solid var(--sp-border);
+}
+
+.spectra-statement-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 2fr);
+  gap: 48px;
+  align-items: baseline;
+  margin-bottom: 56px;
+}
+
+.spectra-statement-kicker {
+  font-family: var(--sp-font-mono);
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 0.26em;
+  text-transform: uppercase;
+  color: var(--sp-amber);
+}
+
+.spectra-statement-headline {
+  margin: 0;
+  font-family: var(--sp-font-display);
+  font-size: clamp(1.8rem, 3.2vw, 2.6rem);
+  font-weight: 700;
+  line-height: 1.25;
+  letter-spacing: -0.03em;
+  color: var(--sp-ink);
+}
+
+.spectra-statement-row {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 0;
+  border-top: 1px solid var(--sp-border);
+  border-bottom: 1px solid var(--sp-border);
+}
+
+.spectra-statement-col {
+  padding: 24px 20px;
+  border-right: 1px solid var(--sp-border);
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.spectra-statement-col:last-child {
+  border-right: none;
+}
+
+.spectra-statement-num {
+  font-family: var(--sp-font-mono);
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.2em;
+  color: var(--sp-amber);
+}
+
+.spectra-statement-col h4 {
+  margin: 0;
+  font-family: var(--sp-font-mono);
+  font-size: 14px;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--sp-ink);
+}
+
+.spectra-statement-col p {
+  margin: 0;
+  font-size: 13.5px;
+  line-height: 1.5;
+  color: var(--sp-ink-muted);
+}
+
+/* ══════════════════════════════════════════════════════════════════
+   LIVE AUCTION STATUS BANNER (If Active)
+   ══════════════════════════════════════════════════════════════════ */
+.spectra-live-banner {
+  margin: 40px 0;
+  padding: 24px 32px;
+  background-color: var(--sp-bg-card);
+  border: 1.5px solid var(--sp-border);
+  border-radius: var(--sp-radius);
+  box-shadow: var(--sp-shadow-subtle);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+}
+
+.spectra-live-banner-content {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.spectra-live-banner-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-family: var(--sp-font-mono);
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.22em;
+  color: var(--sp-green);
+  text-transform: uppercase;
+}
+
+.spectra-live-banner h3 {
+  margin: 0;
+  font-family: var(--sp-font-display);
+  font-size: 24px;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  color: var(--sp-ink);
+}
+
+.spectra-live-banner p {
+  margin: 0;
+  font-size: 14px;
+  color: var(--sp-ink-muted);
+}
+
+/* ══════════════════════════════════════════════════════════════════
+   EDITORIAL FEATURES SECTION
+   Whitespace, big numbers, clean typography
+   ══════════════════════════════════════════════════════════════════ */
+.spectra-features-section {
+  padding: 100px 0 80px;
+  border-top: 1.5px solid var(--sp-border);
+}
+
+.spectra-section-header {
+  margin-bottom: 56px;
+  max-width: 680px;
+}
+
+.spectra-section-kicker {
+  font-family: var(--sp-font-mono);
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.26em;
+  text-transform: uppercase;
+  color: var(--sp-amber);
+  margin-bottom: 8px;
+  display: block;
+}
+
+.spectra-section-title {
+  margin: 0 0 12px 0;
+  font-family: var(--sp-font-display);
+  font-size: clamp(2rem, 3.8vw, 3rem);
+  font-weight: 700;
+  line-height: 1.1;
+  letter-spacing: -0.03em;
+  color: var(--sp-ink);
+}
+
+.spectra-section-sub {
+  margin: 0;
+  font-size: 16.5px;
+  line-height: 1.6;
+  color: var(--sp-ink-muted);
+}
+
+.spectra-features-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 32px;
+}
+
+.spectra-feature-item {
+  display: flex;
+  flex-direction: column;
+  padding: 32px 28px;
+  background-color: var(--sp-bg-card);
+  border: 1.5px solid var(--sp-border);
+  border-radius: var(--sp-radius);
+  box-shadow: var(--sp-shadow-subtle);
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.spectra-feature-item:hover {
+  transform: translate(-2px, -2px);
+  box-shadow: var(--sp-shadow-hover);
+}
+
+.spectra-feature-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 24px;
+}
+
+.spectra-feature-num {
+  font-family: var(--sp-font-mono);
+  font-size: 20px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  color: var(--sp-amber);
+}
+
+.spectra-feature-icon-box {
+  width: 38px;
+  height: 38px;
+  border-radius: 4px;
+  background-color: var(--sp-bg-subtle);
+  border: 1px solid var(--sp-border-medium);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--sp-ink);
+}
+
+.spectra-feature-item h3 {
+  margin: 0 0 10px 0;
+  font-family: var(--sp-font-mono);
+  font-size: 17px;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--sp-ink);
+}
+
+.spectra-feature-item p {
+  margin: 0;
+  font-size: 14.5px;
+  line-height: 1.6;
+  color: var(--sp-ink-muted);
+}
+
+/* ══════════════════════════════════════════════════════════════════
+   STATISTICS STRIP (Clean border-top / border-bottom, large numbers)
+   ══════════════════════════════════════════════════════════════════ */
+.spectra-stats-section {
+  padding: 60px 0;
+  border-top: 1.5px solid var(--sp-border);
+  border-bottom: 1.5px solid var(--sp-border);
+  margin: 40px 0;
+}
+
+.spectra-stats-strip {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 24px;
+  text-align: center;
+}
+
+.spectra-stat-cell {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  padding: 12px 8px;
+  border-right: 1px solid var(--sp-border-light);
+}
+
+.spectra-stat-cell:last-child {
+  border-right: none;
+}
+
+.spectra-stat-val {
+  font-family: var(--sp-font-display);
+  font-size: clamp(2.4rem, 4.2vw, 3.6rem);
+  font-weight: 800;
+  line-height: 1;
+  letter-spacing: -0.04em;
+  color: var(--sp-ink);
+}
+
+.spectra-stat-val.accent {
+  color: var(--sp-amber);
+}
+
+.spectra-stat-label {
+  font-family: var(--sp-font-mono);
+  font-size: 11.5px;
+  font-weight: 800;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--sp-ink-muted);
+}
+
+/* ══════════════════════════════════════════════════════════════════
+   AUCTION FLOW / HOW IT WORKS (Horizontal Timeline)
+   ══════════════════════════════════════════════════════════════════ */
+.spectra-flow-section {
+  padding: 100px 0 80px;
+}
+
+.spectra-flow-timeline {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 24px;
+  position: relative;
+  margin-top: 48px;
+}
+
+.spectra-flow-card {
+  background-color: var(--sp-bg-card);
+  border: 1.5px solid var(--sp-border);
+  border-radius: var(--sp-radius);
+  box-shadow: var(--sp-shadow-subtle);
+  padding: 24px 20px;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+}
+
+.spectra-flow-step-num {
+  font-family: var(--sp-font-mono);
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.2em;
+  color: var(--sp-amber);
+  margin-bottom: 12px;
+}
+
+.spectra-flow-card h4 {
+  margin: 0 0 8px 0;
+  font-family: var(--sp-font-mono);
+  font-size: 15px;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--sp-ink);
+}
+
+.spectra-flow-card p {
+  margin: 0;
+  font-size: 13.5px;
+  line-height: 1.55;
+  color: var(--sp-ink-muted);
+}
+
+/* ══════════════════════════════════════════════════════════════════
+   PRODUCT PREVIEW SECTION (The Auction Floor Showcase)
+   ══════════════════════════════════════════════════════════════════ */
+.spectra-floor-section {
+  padding: 100px 0 120px;
+  border-top: 1.5px solid var(--sp-border);
+}
+
+.spectra-floor-mockup {
+  background-color: var(--sp-bg-card);
+  border: 1.5px solid var(--sp-border);
+  border-radius: 8px;
+  box-shadow: var(--sp-shadow-card);
+  overflow: hidden;
+  margin-top: 48px;
+}
+
+.spectra-floor-topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 24px;
+  background-color: var(--sp-bg-subtle);
+  border-bottom: 1.5px solid var(--sp-border);
+}
+
+.spectra-floor-dots {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.spectra-floor-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  border: 1px solid var(--sp-border);
+  background-color: #FFFFFF;
+}
+
+.spectra-floor-dot.active {
+  background-color: var(--sp-amber);
+}
+
+.spectra-floor-title {
+  font-family: var(--sp-font-mono);
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--sp-ink);
+}
+
+.spectra-floor-status {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-family: var(--sp-font-mono);
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.16em;
+  color: var(--sp-green);
+  text-transform: uppercase;
+}
+
+.spectra-floor-body {
+  padding: 32px;
+  display: grid;
+  grid-template-columns: minmax(0, 1.4fr) minmax(300px, 1fr);
+  gap: 32px;
+}
+
+.spectra-floor-main-col {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.spectra-floor-player-card {
+  border: 1.5px solid var(--sp-border);
+  border-radius: var(--sp-radius);
+  padding: 24px;
+  background-color: var(--sp-bg);
+}
+
+.spectra-floor-player-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.spectra-floor-player-title {
+  font-family: var(--sp-font-display);
+  font-size: 28px;
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  color: var(--sp-ink);
+  line-height: 1.1;
+}
+
+.spectra-floor-player-stats-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+  margin-top: 18px;
+}
+
+.spectra-floor-mini-stat {
+  padding: 12px 14px;
+  background-color: var(--sp-bg-card);
+  border: 1px solid var(--sp-border-medium);
+  border-radius: 4px;
+}
+
+.spectra-floor-mini-stat span {
+  display: block;
+  font-family: var(--sp-font-mono);
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--sp-ink-muted);
+  margin-bottom: 4px;
+}
+
+.spectra-floor-mini-stat strong {
+  font-family: var(--sp-font-display);
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--sp-ink);
+}
+
+/* Floor Right Column (Live Bids Log) */
+.spectra-floor-side-col {
+  border: 1.5px solid var(--sp-border);
+  border-radius: var(--sp-radius);
+  padding: 20px;
+  background-color: var(--sp-bg-subtle);
+  display: flex;
+  flex-direction: column;
+}
+
+.spectra-floor-side-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--sp-border-medium);
+  margin-bottom: 16px;
+}
+
+.spectra-floor-side-head h5 {
+  margin: 0;
+  font-family: var(--sp-font-mono);
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--sp-ink);
+}
+
+.spectra-floor-bid-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.spectra-floor-bid-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 14px;
+  background-color: var(--sp-bg-card);
+  border: 1px solid var(--sp-border-light);
+  border-radius: 4px;
+}
+
+.spectra-floor-bid-item.active-bid {
+  border-color: var(--sp-amber);
+  background-color: var(--sp-amber-light);
+}
+
+.spectra-floor-bid-team {
+  font-family: var(--sp-font-mono);
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--sp-ink);
+}
+
+.spectra-floor-bid-amount {
+  font-family: var(--sp-font-display);
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--sp-ink);
+}
+
+/* ══════════════════════════════════════════════════════════════════
+   FINAL CALL TO ACTION SECTION
+   ══════════════════════════════════════════════════════════════════ */
+.spectra-final-cta {
+  padding: 80px 0 100px;
+  border-top: 1.5px solid var(--sp-border);
+}
+
+.spectra-final-cta-box {
+  background-color: var(--sp-bg-card);
+  border: 1.5px solid var(--sp-border);
+  border-radius: 8px;
+  box-shadow: var(--sp-shadow-card);
+  padding: 64px 48px;
+  text-align: center;
+  max-width: 860px;
+  margin: 0 auto;
+}
+
+.spectra-final-cta-box h2 {
+  margin: 0 0 16px 0;
+  font-family: var(--sp-font-display);
+  font-size: clamp(2rem, 4vw, 3.2rem);
+  font-weight: 700;
+  line-height: 1.15;
+  letter-spacing: -0.03em;
+  color: var(--sp-ink);
+}
+
+.spectra-final-cta-box p {
+  margin: 0 0 32px 0;
+  font-size: 17px;
+  line-height: 1.6;
+  color: var(--sp-ink-muted);
+  max-width: 580px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.spectra-final-cta-buttons {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+/* ══════════════════════════════════════════════════════════════════
+   FOOTER
+   Clean, minimal single-border footer
+   ══════════════════════════════════════════════════════════════════ */
+.spectra-footer {
+  border-top: 1.5px solid var(--sp-border);
+  background-color: var(--sp-bg);
+}
+
+.spectra-footer-inner {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 40px 32px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  flex-wrap: wrap;
+}
+
+.spectra-footer-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.spectra-footer-copy {
+  font-size: 13.5px;
+  color: var(--sp-ink-muted);
+}
+
+.spectra-footer-links {
+  display: flex;
+  align-items: center;
+  gap: 28px;
+}
+
+.spectra-footer-links a {
+  font-family: var(--sp-font-mono);
+  font-size: 11.5px;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--sp-ink-muted);
+  transition: color 0.15s ease;
+}
+
+.spectra-footer-links a:hover {
+  color: var(--sp-ink);
+}
+
+/* ══════════════════════════════════════════════════════════════════
+   RESPONSIVE DESIGN (Breakpoints for 1024px, 768px, 430px, 390px)
+   ══════════════════════════════════════════════════════════════════ */
+@media (max-width: 1024px) {
+  .spectra-hero-layout {
+    grid-template-columns: 1fr;
+    gap: 48px;
+  }
+  
+  .spectra-statement-grid {
+    grid-template-columns: 1fr;
+    gap: 20px;
+  }
+  
+  .spectra-statement-row {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  
+  .spectra-statement-col:nth-child(2) {
+    border-right: none;
+  }
+  
+  .spectra-statement-col:nth-child(3) {
+    border-top: 1px solid var(--sp-border);
+  }
+  
+  .spectra-statement-col:nth-child(4) {
+    border-top: 1px solid var(--sp-border);
+    border-right: none;
+  }
+  
+  .spectra-features-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  
+  .spectra-flow-timeline {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  
+  .spectra-floor-body {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 768px) {
+  .spectra-header-inner {
+    padding: 0 20px;
+  }
+  
+  .spectra-nav {
+    display: none;
+  }
+  
+  .spectra-main {
+    padding: 0 20px;
+  }
+  
+  .spectra-hero-section {
+    padding: 56px 0 48px;
+  }
+  
+  .spectra-stats-strip {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 24px 0;
+  }
+  
+  .spectra-stat-cell:nth-child(2) {
+    border-right: none;
+  }
+  
+  .spectra-stat-cell:nth-child(3) {
+    border-top: 1px solid var(--sp-border-light);
+    padding-top: 20px;
+  }
+  
+  .spectra-stat-cell:nth-child(4) {
+    border-top: 1px solid var(--sp-border-light);
+    border-right: none;
+    padding-top: 20px;
+  }
+  
+  .spectra-live-banner {
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 20px;
+  }
+  
+  .spectra-live-banner .sp-btn {
+    width: 100%;
+  }
+  
+  .spectra-footer-inner {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 20px;
+    padding: 32px 20px;
+  }
+  
+  .spectra-footer-links {
+    flex-wrap: wrap;
+    gap: 16px 24px;
+  }
+}
+
+@media (max-width: 480px) {
+  .spectra-hero-eyebrow {
+    flex-wrap: wrap;
+    gap: 6px 10px;
+  }
+  
+  .spectra-hero-desc {
+    font-size: 16px;
+  }
+  
+  .spectra-hero-ctas {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  
+  .spectra-hero-ctas .sp-btn {
+    width: 100%;
+  }
+  
+  .spectra-statement-row {
+    grid-template-columns: 1fr;
+  }
+  
+  .spectra-statement-col {
+    border-right: none;
+    border-bottom: 1px solid var(--sp-border);
+  }
+  
+  .spectra-statement-col:last-child {
+    border-bottom: none;
+  }
+  
+  .spectra-features-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .spectra-flow-timeline {
+    grid-template-columns: 1fr;
+  }
+  
+  .spectra-final-cta-box {
+    padding: 40px 20px;
+  }
+  
+  .spectra-final-cta-buttons {
+    flex-direction: column;
+    width: 100%;
+  }
+  
+  .spectra-final-cta-buttons .sp-btn {
+    width: 100%;
+  }
+  
+  .spectra-floor-body {
+    padding: 18px;
+  }
+  
+  .spectra-floor-player-stats-grid {
+    grid-template-columns: 1fr;
+  }
+}

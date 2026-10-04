@@ -1,0 +1,3177 @@
+Absolutely. What you are describing is not just a CRUD auction form—it is a **real-time auction platform with three different experiences**, where the captain's bidding screen must behave almost like a live trading interface.
+
+Below is a PRD you can give directly to your development agent. I’ve designed it around the **clean navy + orange UI from your first reference**, while allowing the **SPECTRA/Valor Cup black-red visual identity** from your second reference to be used for event branding, player cards, banners, and auction visuals.
+
+---
+
+# Product Requirements Document
+# Real-Time Tournament Auction Platform
+
+**Version:** 1.0  
+**Product Type:** Real-Time Web Auction Platform  
+**Primary Use Case:** College Tournament / Sports Player Auction  
+**Primary Goal:** Enable administrators to conduct a fast, reliable, visually engaging live player auction while allowing team captains to bid in real time and spectators/players to monitor the auction.
+
+---
+
+# 1. Product Vision
+
+Build a **premium, fast, real-time tournament auction web application** where:
+
+- An **Admin** creates and controls an auction.
+- **Team Captains** participate in live bidding.
+- **Players/Viewers** watch the auction in real time.
+- Every bid, budget change, player status change, and auction event propagates to connected users **without page refresh**.
+- The interface should feel like a professional sports auction rather than a generic admin dashboard.
+
+The application should prioritize:
+
+> **Speed → Real-time synchronization → Clear auction state → Visual quality → Reliability**
+
+The application must remain usable even when many users are simultaneously connected.
+
+---
+
+# 2. Core User Roles
+
+There are exactly three primary roles.
+
+| Role | Access |
+|---|---|
+| Admin | Complete auction management |
+| Captain | Real-time bidding for their team |
+| Player / Viewer | Read-only live auction information |
+
+---
+
+# 3. Role 1 — ADMIN
+
+The Admin is the controller of the entire auction.
+
+The Admin should have complete authority over:
+
+- Auction creation
+- Team creation
+- Captain assignment
+- Player registration
+- Player images
+- Player metadata
+- Budgets
+- Player categories
+- Auction order
+- Player nomination
+- Bid management
+- Bid increments
+- Auction timer
+- Sold / Unsold status
+- Re-auction
+- Undo / correction
+- Auction pause/resume
+- Live dashboard
+- Results
+- Reports
+
+---
+
+# 4. Role 2 — TEAM CAPTAIN
+
+Each team captain receives an authenticated account.
+
+The captain can:
+
+- Join the active auction
+- View current player
+- See player information
+- See current highest bid
+- See current highest-bidding team
+- See their remaining budget
+- See their squad
+- See their remaining slots
+- See eligible bid amount
+- Place a bid
+- Receive instant bid updates
+- Receive auction timer updates
+- See when a player is SOLD
+- See when a player is UNSOLD
+
+The captain **cannot**:
+
+- Modify player information
+- Modify team information
+- Modify budgets
+- Change auction state
+- Change bid increments
+- Change another team's data
+- Delete bids
+- Access admin controls
+
+---
+
+# 5. Role 3 — PLAYER / VIEWER
+
+This should essentially be a **read-only live auction experience**.
+
+Viewer can see:
+
+### Current Auction
+
+- Current player
+- Player image
+- Player name
+- Category
+- X-Factor
+- Base price
+- Current bid
+- Current highest bidder/team
+- Countdown timer
+- Player status
+
+### Auction Progress
+
+- Players sold
+- Players remaining
+- Current player number
+- Total players
+- Teams participating
+- Team budgets
+- Players purchased by each team
+- Recent bids
+
+Viewer cannot interact with the auction.
+
+---
+
+# 6. High-Level Application Structure
+
+Create the application around these major areas:
+
+```text
+AUTHENTICATION
+      │
+      ├── ADMIN
+      │     ├── Dashboard
+      │     ├── Create Auction
+      │     ├── Teams
+      │     ├── Players
+      │     ├── Auction Control
+      │     ├── Live Auction
+      │     └── Results
+      │
+      ├── CAPTAIN
+      │     ├── Live Auction
+      │     ├── My Team
+      │     ├── Budget
+      │     └── Purchased Players
+      │
+      └── VIEWER
+            ├── Live Auction
+            ├── Players
+            ├── Teams
+            └── Auction Statistics
+```
+
+---
+
+# 7. DESIGN DIRECTION
+
+## Primary visual reference
+
+Use the first uploaded reference as the primary **application UI inspiration**.
+
+It has:
+
+- White/light gray background
+- Deep navy typography
+- Orange/gold primary action color
+- Rounded cards
+- Thin borders
+- Soft shadows
+- Large clean headings
+- Icon-based section labels
+- Spacious layout
+- Professional dashboard aesthetic
+
+However, do **not simply copy the screenshot**.
+
+The application should feel like a purpose-built product.
+
+---
+
+# 8. Recommended Design System
+
+### Primary
+
+```text
+Deep Navy
+#12315B
+
+Dark Navy
+#0B2342
+
+Orange
+#F6A51A
+
+Light Orange
+#FFF4DD
+```
+
+### Background
+
+```text
+#F6F8FB
+```
+
+### Cards
+
+```text
+#FFFFFF
+```
+
+### Borders
+
+```text
+#E4E9F0
+```
+
+### Text
+
+```text
+Primary: #16233B
+Secondary: #64748B
+Muted: #94A3B8
+```
+
+### Auction Status
+
+```text
+LIVE       → Orange
+SOLD       → Green
+UNSOLD     → Red
+PAUSED     → Gray/Orange
+```
+
+The black/red **SPECTRA '26** branding can be used selectively for:
+
+- Event header
+- Hero banners
+- Player artwork
+- Auction loading screen
+- Tournament logo
+- Promotional sections
+
+Do not make the entire application black/red because it would reduce the clarity of the live auction dashboard.
+
+---
+
+# 9. TYPOGRAPHY
+
+Use a modern sans-serif.
+
+Recommended:
+
+```text
+Inter
+Manrope
+Plus Jakarta Sans
+```
+
+Typography hierarchy:
+
+```text
+Page Title
+32–40px
+
+Section Heading
+20–24px
+
+Card Heading
+16–18px
+
+Body
+14–16px
+
+Metadata
+12–13px
+```
+
+The current screenshot's typography should inspire the structure, but the new interface should have stronger visual hierarchy.
+
+---
+
+# 10. ADMIN DASHBOARD
+
+The Admin landing page should show:
+
+```text
+┌──────────────────────────────────────────────┐
+│ SPECTRA 26              Admin     Logout     │
+├──────────────────────────────────────────────┤
+│                                              │
+│  AUCTION DASHBOARD                           │
+│                                              │
+│  Players       Teams       Sold       Left   │
+│    80            8          42        38     │
+│                                              │
+├──────────────────────────────────────────────┤
+│ CURRENT AUCTION                              │
+│                                              │
+│       Player Image                           │
+│                                              │
+│       Rahul Sharma                           │
+│       All-Rounder                            │
+│                                              │
+│       Current Bid                            │
+│       ₹ 8,500                                │
+│                                              │
+│       [ PAUSE AUCTION ] [ NEXT PLAYER ]      │
+└──────────────────────────────────────────────┘
+```
+
+---
+
+# 11. ADMIN SIDEBAR
+
+Navigation:
+
+```text
+Dashboard
+
+Auction
+ ├── Live Auction
+ ├── Auction Queue
+ ├── Bid History
+ └── Auction Settings
+
+Players
+ ├── All Players
+ ├── Add Player
+ ├── Categories
+ └── Import Players
+
+Teams
+ ├── All Teams
+ ├── Add Team
+ └── Team Budgets
+
+Results
+ ├── Sold Players
+ ├── Unsold Players
+ └── Final Squads
+
+Analytics
+
+Settings
+```
+
+---
+
+# 12. CREATE AUCTION SCREEN
+
+This should evolve from your reference screenshot.
+
+Header:
+
+> 🏆 CREATE AUCTION
+
+Auction type cards:
+
+```text
+┌─────────────────┐
+│ 👥              │
+│ Tournament      │
+│ Auction         │
+└─────────────────┘
+
+┌─────────────────┐
+│ ⚡              │
+│ IPL Style       │
+│ Auction         │
+└─────────────────┘
+
+┌─────────────────┐
+│ 🤖              │
+│ Automatic       │
+│ Allocation      │
+└─────────────────┘
+```
+
+For the MVP, only **Tournament Auction** needs to be fully implemented.
+
+---
+
+# 13. AUCTION CREATION FORM
+
+Fields:
+
+### Basic Information
+
+- Auction Name
+- Series Name
+- Organizer Name
+- Tournament Name
+- Auction Date
+- Location
+- Sponsor
+- Tournament Logo
+- Auction Banner
+
+### Auction Configuration
+
+- Starting Budget
+- Maximum Squad Size
+- Minimum Squad Size
+- Minimum Bid
+- Bid Increment
+- Default Player Timer
+- Number of Teams
+- Maximum Players Per Team
+- Allow Re-bid
+- Allow Unsold Re-auction
+
+Example:
+
+```text
+Starting Budget
+₹100,000
+
+Minimum Bid
+₹1,000
+
+Bid Increment
+₹500
+
+Player Timer
+20 seconds
+
+Squad Size
+11
+
+Teams
+8
+```
+
+---
+
+# 14. PLAYER MANAGEMENT
+
+Admin should be able to create detailed player profiles.
+
+Each player should contain:
+
+```text
+Player ID
+
+Name
+
+Profile Image
+
+Category
+
+Position / Role
+
+X-Factor
+
+Base Price
+
+Previous Year Sold Price
+
+Previous Team
+
+Age
+
+Experience
+
+Performance Stats
+
+Short Description
+
+Skills
+
+Tags
+
+Auction Status
+```
+
+---
+
+# 15. PLAYER CARD
+
+The player should have a visually impressive profile.
+
+Example:
+
+```text
+┌──────────────────────────────────────┐
+│                                      │
+│            PLAYER IMAGE              │
+│                                      │
+├──────────────────────────────────────┤
+│ RAHUL SHARMA                         │
+│ All-Rounder                          │
+│                                      │
+│ ⭐ X-FACTOR                          │
+│ Match Finisher                       │
+│                                      │
+│ Base Price       ₹2,000              │
+│ Last Sold        ₹7,500              │
+│                                      │
+│ Pace      ████████░░                 │
+│ Batting   █████████░                 │
+│ Fielding  ████████░░                 │
+└──────────────────────────────────────┘
+```
+
+The exact statistics should be configurable rather than hardcoded.
+
+---
+
+# 16. PLAYER IMAGE SYSTEM
+
+Images are important to this application.
+
+Support:
+
+- JPG
+- PNG
+- WebP
+
+Images should be automatically:
+
+- Resized
+- Compressed
+- Optimized
+- Converted to appropriate web format
+- Served through CDN/storage
+
+Use consistent image dimensions.
+
+Recommended:
+
+```text
+Profile image:
+600 × 800
+
+Player thumbnail:
+300 × 400
+```
+
+Do not load the original huge image during live auction.
+
+---
+
+# 17. BULK PLAYER IMPORT
+
+Admin should have the ability to upload players in bulk.
+
+Support:
+
+```text
+CSV
+Excel
+```
+
+Example:
+
+```csv
+name,category,base_price,xfactor,last_sold_price
+Rahul Sharma,All Rounder,2000,Finisher,7500
+Aman Kumar,Batsman,1500,Power Hitter,5000
+```
+
+Images can be uploaded separately and mapped using:
+
+```text
+player_id
+```
+
+or filename.
+
+Example:
+
+```text
+PLY001.jpg
+PLY002.jpg
+PLY003.jpg
+```
+
+---
+
+# 18. TEAM MANAGEMENT
+
+Admin creates teams.
+
+Each team:
+
+```text
+Team ID
+Team Name
+Team Logo
+Captain
+Starting Budget
+Remaining Budget
+Players Bought
+Players Remaining Slots
+```
+
+Example:
+
+```text
+TEAM A
+
+Budget
+₹100,000
+
+Remaining
+₹63,500
+
+Players
+4 / 11
+
+Captain
+Rahul
+```
+
+---
+
+# 19. CAPTAIN AUTHENTICATION
+
+Each captain receives:
+
+```text
+Username / Email
+Password
+```
+
+After login:
+
+```text
+CAPTAIN DASHBOARD
+```
+
+They should immediately enter the live auction if an auction is active.
+
+---
+
+# 20. LIVE AUCTION — MOST IMPORTANT SCREEN
+
+This is the core product.
+
+The live auction screen should be highly optimized.
+
+Desktop layout:
+
+```text
+┌───────────────────────────────────────────────────────────────┐
+│ SPECTRA 26        LIVE AUCTION            🟢 LIVE             │
+├───────────────────────────────────────────────────────────────┤
+│                                                               │
+│  PLAYER                     CURRENT BID       TIMER             │
+│                                                               │
+│  ┌─────────────┐            ₹8,500           00:12            │
+│  │             │                                                  │
+│  │ PLAYER IMG  │            TEAM A             │
+│  │             │            ₹8,500             │
+│  └─────────────┘                                                │
+│                                                               │
+│  Rahul Sharma                                                  │
+│  All-Rounder                                                   │
+│                                                               │
+│  ⭐ X-Factor: Finisher                                         │
+│                                                               │
+├───────────────────────────────────────────────────────────────┤
+│                                                               │
+│             BID ₹9,000                                        │
+│                                                               │
+├───────────────────────────────────────────────────────────────┤
+│                                                               │
+│ TEAM A       TEAM B       TEAM C       TEAM D                  │
+│ ₹63,500      ₹72,000      ₹55,500      ₹81,000                │
+│                                                               │
+└───────────────────────────────────────────────────────────────┘
+```
+
+---
+
+# 21. CAPTAIN LIVE BIDDING SCREEN
+
+For captains, the interface must be slightly different.
+
+The captain should always see:
+
+### Current Player
+
+```text
+IMAGE
+
+Rahul Sharma
+All-Rounder
+
+X-Factor
+Finisher
+
+Base Price
+₹2,000
+
+Current Bid
+₹8,500
+
+Highest Bidder
+Team A
+```
+
+Then:
+
+```text
+┌────────────────────────────┐
+│       ₹9,000               │
+│                            │
+│        BID NOW             │
+└────────────────────────────┘
+```
+
+The button should automatically calculate:
+
+```text
+Current Bid + Bid Increment
+```
+
+Example:
+
+```text
+Current: ₹8,500
+Increment: ₹500
+
+Button:
+BID ₹9,000
+```
+
+This reduces cognitive load and prevents manual input errors.
+
+---
+
+# 22. BIDDING INTERACTION
+
+When captain clicks:
+
+> BID ₹9,000
+
+The client should immediately provide visual feedback.
+
+```text
+BIDDING...
+```
+
+Then:
+
+```text
+✓ BID ACCEPTED
+₹9,000
+```
+
+The new bid should appear to all connected users almost immediately.
+
+No page refresh.
+
+---
+
+# 23. REAL-TIME ARCHITECTURE
+
+This is one of the most important technical requirements.
+
+Do **not** implement live bidding using:
+
+```text
+setInterval()
++
+API polling
+```
+
+as the primary mechanism.
+
+Use:
+
+```text
+WebSockets
+```
+
+or a managed realtime infrastructure.
+
+Recommended architecture:
+
+```text
+Frontend
+   │
+   │ WebSocket
+   ▼
+Realtime Server
+   │
+   ├── Auction Engine
+   │
+   ├── Bid Validation
+   │
+   └── Event Broadcaster
+   │
+   ▼
+Database
+```
+
+Possible stack:
+
+```text
+Frontend
+React + Vite
+
+Backend
+Node.js + Express
+
+Realtime
+Socket.IO
+
+Database
+PostgreSQL
+
+Cache / realtime state
+Redis
+
+Storage
+Supabase Storage / S3-compatible storage
+```
+
+Since you already work with React/Node/Supabase, an alternative is:
+
+```text
+React
++
+Node.js
++
+Supabase PostgreSQL
++
+Supabase Realtime
++
+Supabase Storage
+```
+
+For the **highest control over auction concurrency**, I would architect the bidding engine as a server-authoritative service rather than trusting the frontend.
+
+---
+
+# 24. SERVER-AUTHORITATIVE BIDDING
+
+This is critical.
+
+Never allow:
+
+```text
+Frontend
+→ Database
+```
+
+to directly determine whether a bid is valid.
+
+Instead:
+
+```text
+Captain
+   ↓
+Bid Request
+   ↓
+Server
+   ↓
+Validate
+   ↓
+Atomic Transaction
+   ↓
+Update Auction State
+   ↓
+Broadcast Event
+   ↓
+All Clients
+```
+
+The server decides:
+
+- Is auction live?
+- Is player currently active?
+- Is captain authorized?
+- Does team have enough budget?
+- Is bid greater than current bid?
+- Is bid increment valid?
+- Has timer expired?
+- Is team allowed to bid?
+- Is the team already full?
+
+---
+
+# 25. BID VALIDATION
+
+Example:
+
+Current bid:
+
+```text
+₹8,000
+```
+
+Increment:
+
+```text
+₹500
+```
+
+Valid next bid:
+
+```text
+₹8,500
+```
+
+If a captain attempts:
+
+```text
+₹8,200
+```
+
+server returns:
+
+```json
+{
+  "success": false,
+  "reason": "INVALID_BID_INCREMENT"
+}
+```
+
+---
+
+# 26. CONCURRENT BID PROTECTION
+
+This is extremely important.
+
+Imagine:
+
+```text
+Captain A clicks ₹10,000
+Captain B clicks ₹10,000
+```
+
+at almost exactly the same time.
+
+The backend must ensure that **only one valid bid wins**.
+
+Use:
+
+- Database transaction
+- Row-level locking / atomic update
+- Server-side sequence number
+- Server timestamp
+
+Example:
+
+```text
+Bid #103
+₹10,000
+Team A
+Server Timestamp: 21:14:32.281
+```
+
+Team B should receive:
+
+```text
+Bid rejected.
+Current bid is now ₹10,000.
+```
+
+No duplicate auction state should ever occur.
+
+---
+
+# 27. AUCTION STATE MACHINE
+
+The auction should have explicit states.
+
+```text
+DRAFT
+   ↓
+READY
+   ↓
+LIVE
+   ↓
+PAUSED
+   ↓
+LIVE
+   ↓
+SOLD
+   ↓
+NEXT PLAYER
+```
+
+Possible states:
+
+```text
+DRAFT
+READY
+LIVE
+PAUSED
+SOLD
+UNSOLD
+COMPLETED
+CANCELLED
+```
+
+Do not rely on random frontend variables to determine auction state.
+
+Store the state server-side.
+
+---
+
+# 28. PLAYER AUCTION FLOW
+
+Admin selects:
+
+> START NEXT PLAYER
+
+System:
+
+```text
+Player status → LIVE
+Timer → 20 seconds
+Current Bid → Base Price
+Highest Bidder → None
+```
+
+Then captains receive:
+
+```text
+PLAYER_STARTED
+```
+
+event.
+
+All clients update simultaneously.
+
+---
+
+# 29. TIMER
+
+The timer must be **server-authoritative**.
+
+Do not simply count:
+
+```javascript
+setInterval(() => timer--, 1000)
+```
+
+because different clients will drift.
+
+Instead server maintains:
+
+```text
+auction_started_at
+auction_ends_at
+```
+
+Clients calculate:
+
+```text
+remaining =
+auction_ends_at - server_time
+```
+
+The UI can animate the countdown locally, but the server remains authoritative.
+
+---
+
+# 30. BID TIMER RESET
+
+Decide whether bidding extends the timer.
+
+Recommended configuration:
+
+```text
+Initial timer:
+20 seconds
+
+Bid received:
+Timer resets to 10 seconds
+```
+
+This prevents last-second accidental endings.
+
+Make this configurable:
+
+```text
+Enable Bid Extension
+Extension Duration
+Maximum Auction Duration
+```
+
+---
+
+# 31. SOLD LOGIC
+
+When timer reaches zero:
+
+If a valid bid exists:
+
+```text
+PLAYER → SOLD
+```
+
+System records:
+
+```text
+Player
+Team
+Final Bid
+Timestamp
+```
+
+Team budget updates automatically.
+
+Example:
+
+```text
+Team A
+
+Before:
+₹63,500
+
+Player:
+₹9,000
+
+After:
+₹54,500
+```
+
+The event is broadcast to everyone.
+
+---
+
+# 32. UNSOLD LOGIC
+
+If no team bids:
+
+```text
+PLAYER → UNSOLD
+```
+
+Display:
+
+```text
+UNSOLD
+```
+
+Admin can later:
+
+```text
+Re-auction
+```
+
+or:
+
+```text
+Skip
+```
+
+---
+
+# 33. ADMIN AUCTION CONTROL PANEL
+
+Admin should have a dedicated control panel.
+
+```text
+CURRENT PLAYER
+
+Rahul Sharma
+
+₹8,500
+
+Highest Bid:
+Team A
+
+Timer:
+00:04
+
+────────────────────
+
+[ PAUSE ]
+
+[ FORCE SOLD ]
+
+[ MARK UNSOLD ]
+
+[ EXTEND TIMER ]
+
+[ CANCEL PLAYER ]
+
+[ NEXT PLAYER ]
+```
+
+Dangerous actions should require confirmation.
+
+For example:
+
+> Are you sure you want to mark this player as SOLD for ₹8,500 to Team A?
+
+---
+
+# 34. EMERGENCY CONTROLS
+
+Admin needs:
+
+### Pause Auction
+
+Immediately freeze:
+
+- Bidding
+- Timer
+- Player state
+
+### Resume
+
+Continue from remaining server time.
+
+### Cancel Current Player
+
+Return player to queue.
+
+### Undo Last Bid
+
+Only admin.
+
+Must be heavily protected and logged.
+
+### Force Sold
+
+Admin can manually close auction.
+
+### Force Unsold
+
+Admin can manually mark unsold.
+
+---
+
+# 35. LIVE BID FEED
+
+Show a small real-time feed:
+
+```text
+LIVE BIDS
+
+Team Alpha
+₹8,500
+2 sec ago
+
+Team Warriors
+₹8,000
+5 sec ago
+
+Team Alpha
+₹7,500
+8 sec ago
+```
+
+This creates a strong live-auction feeling.
+
+---
+
+# 36. TEAM STATUS PANEL
+
+Right side or bottom panel:
+
+```text
+TEAMS
+
+TEAM A
+₹54,500
+4 Players
+
+TEAM B
+₹61,000
+3 Players
+
+TEAM C
+₹48,500
+5 Players
+
+TEAM D
+₹71,000
+2 Players
+```
+
+For captains, highlight their own team.
+
+Example:
+
+```text
+YOU
+TEAM A
+₹54,500
+```
+
+---
+
+# 37. PLAYER QUEUE
+
+Admin:
+
+```text
+AUCTION QUEUE
+
+01 Rahul Sharma       LIVE
+02 Aman Kumar         Waiting
+03 Rohit Singh        Waiting
+04 Aryan Raj          Waiting
+05 Kunal Kumar        Waiting
+```
+
+Viewer:
+
+```text
+NEXT UP
+
+Aman Kumar
+Rohit Singh
+Aryan Raj
+```
+
+---
+
+# 38. PLAYER FILTERING
+
+Players should be filterable by:
+
+- Category
+- Position
+- Price
+- X-Factor
+- Status
+- Sold/Unsold
+- Team
+- Search
+
+Example:
+
+```text
+[ Search Player ]
+
+[ All Categories ▼ ]
+
+[ All Status ▼ ]
+
+[ Price ▼ ]
+```
+
+---
+
+# 39. LIVE STATISTICS
+
+Dashboard should display:
+
+```text
+TOTAL PLAYERS
+80
+
+SOLD
+51
+
+UNSOLD
+7
+
+REMAINING
+22
+
+TOTAL SPENT
+₹4,82,000
+
+HIGHEST SALE
+₹18,500
+
+AVERAGE SALE
+₹9,450
+```
+
+---
+
+# 40. TEAM DETAIL PAGE
+
+Clicking a team:
+
+```text
+TEAM ALPHA
+
+Captain
+Rahul
+
+Remaining Budget
+₹42,500
+
+Players
+6 / 11
+
+Total Spent
+₹57,500
+```
+
+Purchased players:
+
+```text
+Player         Price
+
+Aman            ₹7,000
+Rohit           ₹8,500
+Kunal           ₹6,000
+Rahul           ₹10,000
+```
+
+---
+
+# 41. AUCTION RESULTS
+
+After auction:
+
+```text
+AUCTION COMPLETED
+
+80 Players
+73 Sold
+7 Unsold
+8 Teams
+₹7,42,500 Total Spend
+```
+
+Provide:
+
+```text
+Download Results
+```
+
+Formats:
+
+```text
+CSV
+Excel
+PDF
+```
+
+---
+
+# 42. EVENT BRANDING
+
+Admin should be able to configure:
+
+```text
+Tournament Name
+Tournament Logo
+Sponsor Logo
+Primary Color
+Secondary Color
+Background Image
+Auction Banner
+```
+
+Therefore the application can be reused for:
+
+```text
+SPECTRA 2026
+Valor Cup
+Sports Fest
+College Premier League
+Department Tournament
+```
+
+without modifying the code.
+
+---
+
+# 43. RESPONSIVE DESIGN
+
+Desktop is the primary target because captains and admin will likely use laptops.
+
+But support:
+
+### Desktop
+
+Full dashboard.
+
+### Tablet
+
+Two-column layout.
+
+### Mobile
+
+Stacked auction layout.
+
+Mobile captain interface should prioritize:
+
+```text
+PLAYER
+↓
+CURRENT BID
+↓
+TIMER
+↓
+BID BUTTON
+↓
+TEAM BUDGET
+```
+
+The BID button must remain easily accessible.
+
+---
+
+# 44. PERFORMANCE REQUIREMENTS
+
+This is a **major requirement**.
+
+Target:
+
+```text
+Initial page load:
+< 2.5 seconds on reasonable broadband
+
+Normal API response:
+< 300 ms
+
+Bid acknowledgement:
+Target < 200 ms
+
+Realtime propagation:
+Target < 500 ms
+
+UI interaction:
+Instant visual feedback
+```
+
+Do not make users wait for unnecessary API calls.
+
+---
+
+# 45. FRONTEND PERFORMANCE
+
+Use:
+
+- Code splitting
+- Lazy loading
+- Image optimization
+- WebP/AVIF
+- CDN
+- React memoization where useful
+- Virtualized long lists
+- Debounced search
+- Optimistic UI for safe visual feedback
+- WebSocket events for live updates
+
+Do not repeatedly fetch the entire auction state.
+
+Instead:
+
+```text
+Initial:
+GET auction state
+
+Then:
+WebSocket events
+```
+
+Example:
+
+```text
+BID_PLACED
+PLAYER_STARTED
+PLAYER_SOLD
+PLAYER_UNSOLD
+TIMER_UPDATED
+AUCTION_PAUSED
+AUCTION_RESUMED
+TEAM_UPDATED
+```
+
+---
+
+# 46. REALTIME EVENT MODEL
+
+Example:
+
+```json
+{
+  "event": "BID_PLACED",
+  "auctionId": "AUC001",
+  "playerId": "PLY001",
+  "bidId": "BID104",
+  "teamId": "TEAM03",
+  "amount": 9000,
+  "sequence": 104,
+  "timestamp": 1791042272281
+}
+```
+
+Every client processes the event.
+
+---
+
+# 47. EVENT SEQUENCE NUMBERS
+
+Every auction event should have:
+
+```text
+sequence_number
+```
+
+Example:
+
+```text
+101
+102
+103
+104
+```
+
+If a client receives:
+
+```text
+101
+102
+104
+```
+
+it knows:
+
+```text
+103 is missing
+```
+
+and can request state reconciliation.
+
+This prevents realtime synchronization bugs.
+
+---
+
+# 48. RECONNECTION
+
+If internet temporarily disconnects:
+
+```text
+Disconnected
+```
+
+show:
+
+```text
+⚠ Reconnecting...
+```
+
+When connection returns:
+
+```text
+✓ Connected
+```
+
+Then request latest auction state.
+
+The application should **never assume the client remained synchronized while offline**.
+
+---
+
+# 49. DATABASE STRUCTURE
+
+Suggested PostgreSQL schema:
+
+### users
+
+```text
+id
+name
+email
+password_hash
+role
+created_at
+```
+
+### auctions
+
+```text
+id
+name
+series
+date
+location
+status
+starting_budget
+bid_increment
+player_timer
+created_by
+created_at
+```
+
+### teams
+
+```text
+id
+auction_id
+name
+logo_url
+captain_id
+initial_budget
+remaining_budget
+created_at
+```
+
+### players
+
+```text
+id
+auction_id
+name
+image_url
+category
+xfactor
+base_price
+previous_sold_price
+previous_team
+stats
+status
+auction_order
+```
+
+### bids
+
+```text
+id
+auction_id
+player_id
+team_id
+amount
+sequence_number
+created_at
+```
+
+### purchases
+
+```text
+id
+auction_id
+player_id
+team_id
+final_price
+sold_at
+```
+
+### auction_events
+
+```text
+id
+auction_id
+event_type
+player_id
+team_id
+metadata
+sequence_number
+created_at
+```
+
+---
+
+# 50. SECURITY
+
+This application involves money-like virtual budgets, so security matters.
+
+Never trust:
+
+```text
+remaining_budget
+role
+team_id
+bid_amount
+auction_status
+```
+
+coming from frontend.
+
+All must be validated server-side.
+
+Use:
+
+```text
+JWT / secure session
+Role-based authorization
+Rate limiting
+Input validation
+Database transactions
+Audit logs
+```
+
+---
+
+# 51. CAPTAIN SECURITY
+
+Captain should only be able to place bids for:
+
+```text
+their own team
+```
+
+Never allow:
+
+```text
+POST /bid
+{
+  "teamId": "TEAM_OTHER"
+}
+```
+
+to bypass authorization.
+
+Backend should determine:
+
+```text
+authenticatedUser → captain → team
+```
+
+rather than trusting submitted team ID.
+
+---
+
+# 52. ADMIN AUDIT LOG
+
+Record sensitive operations:
+
+```text
+Admin started player
+Admin paused auction
+Admin changed bid increment
+Admin forced sold
+Admin changed budget
+Admin reverted bid
+Admin re-auctioned player
+```
+
+Example:
+
+```text
+ADMIN ACTION
+
+Rahul Admin
+Forced player PLY023 as SOLD
+
+Team Alpha
+₹12,500
+
+04 Oct 2026
+21:32:12
+```
+
+---
+
+# 53. AUCTION HISTORY
+
+Every important event should be recoverable.
+
+This allows the admin to investigate:
+
+```text
+What happened?
+
+Who bid?
+
+When did they bid?
+
+What was the previous amount?
+
+Who won?
+
+Was the auction manually changed?
+```
+
+This is particularly useful if there is a dispute during the live event.
+
+---
+
+# 54. UI MICROINTERACTIONS
+
+The app should feel alive.
+
+When a bid arrives:
+
+```text
+₹8,000
+↓
+₹8,500
+```
+
+animate the number briefly.
+
+When someone bids:
+
+```text
+TEAM ALPHA
+₹8,500
+```
+
+highlight the team for a short duration.
+
+When SOLD:
+
+```text
+████████████████
+
+       SOLD
+
+    ₹12,500
+
+    TEAM ALPHA
+
+████████████████
+```
+
+Use subtle animation.
+
+Avoid excessive animations that slow down the interface.
+
+---
+
+# 55. PLAYER SOLD ANIMATION
+
+A premium full-screen/central animation can appear for approximately 1–2 seconds:
+
+```text
+        SOLD
+
+    RAHUL SHARMA
+
+       ₹12,500
+
+       TEAM A
+```
+
+Then automatically transition to:
+
+```text
+NEXT PLAYER
+```
+
+This is where your SPECTRA black/red branding can be used strongly.
+
+---
+
+# 56. VIEWER EXPERIENCE
+
+Viewer page should feel like a live sports broadcast.
+
+Top:
+
+```text
+🔴 LIVE AUCTION
+```
+
+Center:
+
+```text
+PLAYER IMAGE
+
+RAHUL SHARMA
+All Rounder
+
+X-FACTOR
+Finisher
+```
+
+Large:
+
+```text
+₹12,500
+```
+
+Below:
+
+```text
+TEAM ALPHA
+```
+
+Then:
+
+```text
+LIVE BIDS
+```
+
+and:
+
+```text
+TEAMS
+```
+
+---
+
+# 57. AUCTION PROGRESS BAR
+
+Show:
+
+```text
+PLAYER 42 / 80
+
+████████████░░░░░░░░
+```
+
+Also:
+
+```text
+52.5% Complete
+```
+
+---
+
+# 58. CURRENT PLAYER HEADER
+
+Every screen should clearly show:
+
+```text
+SPECTRA 2026
+
+LIVE AUCTION
+
+PLAYER 42 OF 80
+```
+
+Never make users wonder whether the screen is stale.
+
+---
+
+# 59. CAPTAIN BUDGET VISIBILITY
+
+For captains, budget should always be visible.
+
+Example:
+
+```text
+MY TEAM
+
+SPECTRA WARRIORS
+
+Remaining Budget
+₹42,500
+
+Spent
+₹57,500
+
+Players
+6 / 11
+```
+
+Before bidding:
+
+```text
+Maximum possible bid:
+₹42,500
+```
+
+If captain cannot afford the next bid:
+
+```text
+INSUFFICIENT BUDGET
+```
+
+and disable the button.
+
+---
+
+# 60. SMART BID BUTTON
+
+Instead of:
+
+```text
+[ BID ]
+```
+
+use:
+
+```text
+[ BID ₹13,000 ]
+```
+
+This makes the action extremely clear.
+
+When disabled:
+
+```text
+[ ₹13,000 — INSUFFICIENT BUDGET ]
+```
+
+---
+
+# 61. BID CONFIRMATION
+
+For normal bids, **do not use a confirmation modal**.
+
+That would introduce unnecessary latency.
+
+User clicks:
+
+```text
+BID ₹13,000
+```
+
+and the bid is submitted immediately.
+
+Use confirmation only for dangerous admin operations.
+
+---
+
+# 62. AUCTION SEARCH / HISTORY
+
+Admin can search:
+
+```text
+Rahul Sharma
+```
+
+and see:
+
+```text
+Base Price
+₹2,000
+
+Final Price
+₹12,500
+
+Team
+Team Alpha
+
+Total Bids
+21
+
+Highest Bid
+₹12,500
+```
+
+---
+
+# 63. ERROR HANDLING
+
+Errors should be human-readable.
+
+Instead of:
+
+```text
+400 Bad Request
+```
+
+show:
+
+```text
+This bid is no longer valid.
+Another team has already placed a higher bid.
+```
+
+Other examples:
+
+```text
+Auction has ended.
+
+You cannot bid on this player.
+
+Your team does not have enough budget.
+
+This player has already been sold.
+
+Connection lost. Reconnecting...
+```
+
+---
+
+# 64. LOADING STATES
+
+Never display blank screens.
+
+Use skeleton loaders:
+
+```text
+┌───────────────┐
+│ ░░░░░░░░░░░░ │
+│ ░░░░░░░░░░░░ │
+│ ░░░░░░░░░░░░ │
+└───────────────┘
+```
+
+---
+
+# 65. EMPTY STATES
+
+Examples:
+
+```text
+No players added yet.
+
+Add your first player to begin building the auction.
+```
+
+or:
+
+```text
+No teams created yet.
+```
+
+---
+
+# 66. ADMIN WORKFLOW
+
+Complete workflow:
+
+```text
+LOGIN
+ ↓
+CREATE AUCTION
+ ↓
+CONFIGURE AUCTION
+ ↓
+ADD TEAMS
+ ↓
+ADD CAPTAINS
+ ↓
+ADD PLAYERS
+ ↓
+UPLOAD PLAYER IMAGES
+ ↓
+SET AUCTION ORDER
+ ↓
+REVIEW
+ ↓
+START AUCTION
+ ↓
+SELECT PLAYER
+ ↓
+LIVE BIDDING
+ ↓
+SOLD / UNSOLD
+ ↓
+NEXT PLAYER
+ ↓
+...
+ ↓
+AUCTION COMPLETE
+ ↓
+GENERATE RESULTS
+```
+
+---
+
+# 67. CAPTAIN WORKFLOW
+
+```text
+LOGIN
+ ↓
+JOIN AUCTION
+ ↓
+WAITING ROOM
+ ↓
+LIVE AUCTION
+ ↓
+VIEW PLAYER
+ ↓
+PLACE BID
+ ↓
+RECEIVE REALTIME UPDATES
+ ↓
+PLAYER SOLD / UNSOLD
+ ↓
+NEXT PLAYER
+ ↓
+AUCTION COMPLETE
+```
+
+---
+
+# 68. VIEWER WORKFLOW
+
+```text
+OPEN AUCTION LINK
+ ↓
+LIVE AUCTION
+ ↓
+VIEW CURRENT PLAYER
+ ↓
+WATCH BIDS
+ ↓
+VIEW TEAMS
+ ↓
+VIEW SOLD PLAYERS
+ ↓
+VIEW RESULTS
+```
+
+Viewer should ideally be able to access a public auction URL without creating an account.
+
+Example:
+
+```text
+auction.example.com/live/VC2
+```
+
+---
+
+# 69. WAITING ROOM
+
+Before auction starts:
+
+```text
+SPECTRA 2026
+
+VALOR CUP — SEASON 2
+
+AUCTION STARTING SOON
+
+Teams
+8
+
+Players
+80
+
+Status
+WAITING FOR ADMIN
+
+        ⏳
+```
+
+Captains should remain connected to realtime infrastructure so that when Admin starts the auction, their screen automatically changes.
+
+---
+
+# 70. AUCTION COMPLETION
+
+Final screen:
+
+```text
+🏆 AUCTION COMPLETED
+
+80 PLAYERS
+
+73 SOLD
+7 UNSOLD
+
+₹7,42,500 TOTAL SPEND
+```
+
+Then:
+
+```text
+TEAM RESULTS
+```
+
+---
+
+# 71. ADMIN RESULT EXPORT
+
+Generate:
+
+### Team-wise
+
+```text
+Team
+Player
+Price
+Category
+```
+
+### Player-wise
+
+```text
+Player
+Base Price
+Final Price
+Team
+```
+
+### Auction summary
+
+```text
+Total players
+Sold
+Unsold
+Highest bid
+Lowest bid
+Average bid
+Total spending
+```
+
+---
+
+# 72. API DESIGN
+
+Suggested API structure:
+
+```text
+POST /auth/login
+
+GET /auctions/:id
+
+POST /auctions
+
+PATCH /auctions/:id
+
+GET /auctions/:id/players
+
+POST /auctions/:id/players
+
+PATCH /players/:id
+
+GET /auctions/:id/teams
+
+POST /auctions/:id/teams
+
+POST /auctions/:id/start
+
+POST /auctions/:id/pause
+
+POST /auctions/:id/next-player
+
+POST /auctions/:id/bid
+
+POST /players/:id/sell
+
+POST /players/:id/unsold
+
+POST /players/:id/reauction
+```
+
+Realtime:
+
+```text
+WS /auction/:auctionId
+```
+
+---
+
+# 73. IMPORTANT: DON'T OVERFETCH
+
+Do not repeatedly call:
+
+```text
+GET /auction
+GET /players
+GET /teams
+GET /bids
+```
+
+every second.
+
+Instead:
+
+### Initial load
+
+Fetch current snapshot.
+
+### After connection
+
+Receive events:
+
+```text
+BID_PLACED
+PLAYER_STARTED
+PLAYER_SOLD
+TEAM_UPDATED
+AUCTION_PAUSED
+```
+
+Only update the affected state.
+
+---
+
+# 74. CACHING
+
+Use caching for relatively static data:
+
+```text
+Player profile
+Player image
+Team logo
+Auction configuration
+```
+
+Do **not** blindly cache mutable bidding state.
+
+The current auction state must remain authoritative.
+
+---
+
+# 75. IMAGE OPTIMIZATION
+
+Player images are potentially one of the biggest performance bottlenecks.
+
+Use:
+
+```text
+CDN
+WebP/AVIF
+Responsive sizes
+Lazy loading
+Blur placeholders
+```
+
+But the currently active player image should be **preloaded**.
+
+When player 42 is active:
+
+```text
+preload player 43 image
+```
+
+so the next transition feels instant.
+
+---
+
+# 76. PRELOADING
+
+The client should preload:
+
+```text
+Next player image
+Next player metadata
+Team logos
+```
+
+This is especially important for the auction transition.
+
+---
+
+# 77. OFFLINE / NETWORK RESILIENCE
+
+If the captain loses connection:
+
+```text
+⚠ CONNECTION LOST
+```
+
+Disable bidding until synchronized.
+
+Never allow a disconnected client to assume that its bid succeeded.
+
+When connection returns:
+
+```text
+Synchronizing auction...
+```
+
+Then restore latest server state.
+
+---
+
+# 78. ADMIN MOBILE WARNING
+
+Admin dashboard should be responsive, but the **full auction-control experience should be optimized for desktop/tablet**.
+
+Captain bidding should be strongly mobile-friendly.
+
+Viewer should work on everything.
+
+---
+
+# 79. ACCESSIBILITY
+
+Use:
+
+- Keyboard navigation
+- Visible focus states
+- Proper contrast
+- ARIA labels
+- Accessible buttons
+- Screen-reader-friendly status changes
+
+Do not rely only on:
+
+```text
+red = unsold
+green = sold
+```
+
+Use text/icons too.
+
+---
+
+# 80. DATABASE CONSISTENCY
+
+When a player is sold, these operations should happen atomically:
+
+```text
+Create purchase
++
+Update player status
++
+Update team budget
++
+Update team player count
++
+Create auction event
+```
+
+If any part fails:
+
+```text
+ROLLBACK
+```
+
+Never allow:
+
+```text
+Player says SOLD
+but
+team budget wasn't deducted.
+```
+
+---
+
+# 81. AUCTION SNAPSHOT
+
+Maintain an easily retrievable current snapshot:
+
+```json
+{
+  "auctionStatus": "LIVE",
+  "currentPlayer": {
+    "id": "PLY001",
+    "name": "Rahul Sharma",
+    "basePrice": 2000
+  },
+  "currentBid": 12500,
+  "highestBidder": "TEAM01",
+  "endsAt": 1791042272281
+}
+```
+
+This allows fast reconnection.
+
+---
+
+# 82. ADMIN DASHBOARD — VISUAL LAYOUT
+
+Use a structure similar to:
+
+```text
+┌─────────────────────────────────────────────────────────┐
+│ 🏆 SPECTRA 26              LIVE AUCTION      ADMIN      │
+├────────────┬────────────────────────────────────────────┤
+│            │                                            │
+│ Dashboard  │          CURRENT PLAYER                    │
+│            │                                            │
+│ Auction    │       ┌──────────────┐                     │
+│            │       │              │     ₹12,500         │
+│ Players    │       │ PLAYER IMG   │     TEAM ALPHA      │
+│            │       │              │                     │
+│ Teams      │       └──────────────┘                     │
+│            │                                            │
+│ Results    │              00:07                          │
+│            │                                            │
+│ Analytics  │      [ PAUSE ] [ SOLD ] [ UNSOLD ]        │
+│            │                                            │
+└────────────┴────────────────────────────────────────────┘
+```
+
+---
+
+# 83. CAPTAIN DASHBOARD — VISUAL LAYOUT
+
+```text
+┌─────────────────────────────────────────────────────────┐
+│ SPECTRA 26                  🔴 LIVE                     │
+├─────────────────────────────────────────────────────────┤
+│                                                         │
+│                 RAHUL SHARMA                            │
+│                                                         │
+│              ┌───────────────┐                          │
+│              │               │                          │
+│              │ PLAYER IMAGE  │                          │
+│              │               │                          │
+│              └───────────────┘                          │
+│                                                         │
+│                  All-Rounder                            │
+│                                                         │
+│              ⭐ FINISHER                                │
+│                                                         │
+│                  ₹12,500                               │
+│                  TEAM ALPHA                             │
+│                                                         │
+│                    00:07                               │
+│                                                         │
+│             ┌─────────────────────┐                     │
+│             │     BID ₹13,000     │                     │
+│             └─────────────────────┘                     │
+│                                                         │
+├─────────────────────────────────────────────────────────┤
+│ MY TEAM                                                 │
+│                                                         │
+│ Budget: ₹42,500          Players: 6/11                 │
+└─────────────────────────────────────────────────────────┘
+```
+
+---
+
+# 84. VIEWER SCREEN
+
+Viewer gets less clutter.
+
+```text
+                 🔴 LIVE AUCTION
+
+                    PLAYER 42
+
+              ┌───────────────┐
+              │               │
+              │ PLAYER IMAGE  │
+              │               │
+              └───────────────┘
+
+                  RAHUL SHARMA
+
+                   ₹12,500
+
+                  TEAM ALPHA
+
+                  00:07
+
+────────────────────────────────────────
+
+LIVE BIDS
+
+TEAM ALPHA       ₹12,500
+TEAM BETA        ₹12,000
+TEAM GAMMA       ₹11,500
+```
+
+---
+
+# 85. DESIGN PRINCIPLE
+
+The live auction screen should have:
+
+### One dominant thing:
+
+**CURRENT PLAYER + CURRENT BID**
+
+Everything else is secondary.
+
+Do not overload the screen with:
+
+- 15 cards
+- giant analytics
+- unnecessary charts
+- excessive animations
+- complicated navigation
+
+The captain should understand the situation in **less than one second**.
+
+---
+
+# 86. AUCTION STATE COLORS
+
+Use consistent visual semantics:
+
+```text
+LIVE
+Orange
+
+SOLD
+Green
+
+UNSOLD
+Red
+
+PAUSED
+Gray / Amber
+
+WAITING
+Blue/Gray
+```
+
+---
+
+# 87. RESPONSIVENESS TARGETS
+
+Breakpoints:
+
+```text
+Mobile
+< 640px
+
+Tablet
+640–1024px
+
+Desktop
+> 1024px
+```
+
+---
+
+# 88. MVP SCOPE
+
+The first version should include:
+
+### Admin
+
+- Authentication
+- Create auction
+- Create teams
+- Create captains
+- Add players
+- Upload images
+- Configure budget
+- Configure bid increment
+- Configure timer
+- Start auction
+- Pause auction
+- Sell player
+- Unsold player
+- Re-auction
+- Results
+
+### Captain
+
+- Login
+- Live auction
+- Real-time bidding
+- Budget
+- Squad
+
+### Viewer
+
+- Public live auction
+- Current player
+- Current bid
+- Timer
+- Team status
+- Sold players
+- Remaining players
+
+---
+
+# 89. PHASE 2
+
+Later:
+
+- Advanced statistics
+- Player performance graphs
+- Auction analytics
+- Multiple auction rooms
+- Multiple simultaneous auctions
+- Automated player allocation
+- Advanced recommendations
+- QR-based viewer access
+- Public shareable auction page
+- Live commentary
+- Sponsor placements
+- Custom themes
+- Tournament branding
+- PWA support
+
+---
+
+# 90. NON-FUNCTIONAL REQUIREMENTS
+
+### Reliability
+
+Auction state must survive:
+
+- Browser refresh
+- Temporary network disconnect
+- Multiple simultaneous bids
+- Admin reconnect
+- Captain reconnect
+
+### Security
+
+No client-side privilege escalation.
+
+### Performance
+
+Realtime events should propagate rapidly.
+
+### Scalability
+
+Architecture should support at least:
+
+```text
+1 Admin
++
+8–20 Captains
++
+100–500 Viewers
+```
+
+for the initial college use case.
+
+The architecture should not artificially limit the number of viewers.
+
+---
+
+# 91. CRITICAL EDGE CASES
+
+The agent must explicitly test:
+
+### Case 1
+
+Two captains bid simultaneously.
+
+### Case 2
+
+Captain bids exactly when timer expires.
+
+### Case 3
+
+Captain loses internet after clicking bid.
+
+### Case 4
+
+Admin refreshes the page during auction.
+
+### Case 5
+
+Viewer joins in the middle of a player auction.
+
+### Case 6
+
+Captain reconnects after missing several bids.
+
+### Case 7
+
+Team has insufficient budget.
+
+### Case 8
+
+Team has reached maximum squad size.
+
+### Case 9
+
+Player has no bids.
+
+### Case 10
+
+Admin accidentally pauses auction.
+
+### Case 11
+
+Admin changes player order.
+
+### Case 12
+
+Browser is refreshed immediately after SOLD.
+
+### Case 13
+
+Two admins attempt to control the same auction.
+
+### Case 14
+
+Database update succeeds but websocket broadcast fails.
+
+The system must recover by allowing clients to resynchronize with the authoritative state.
+
+---
+
+# 92. ACCEPTANCE CRITERIA
+
+The application is considered successful when:
+
+### Authentication
+
+- Each role sees only its permitted interface.
+- Captain cannot access admin controls.
+- Viewer cannot place bids.
+
+### Auction
+
+- Admin can start an auction.
+- Admin can select a player.
+- All connected clients see that player automatically.
+
+### Bidding
+
+- Captain can place a valid bid.
+- Invalid bids are rejected server-side.
+- Two simultaneous bids cannot corrupt auction state.
+- Budget updates automatically.
+
+### Realtime
+
+When Team A bids:
+
+```text
+Captain A
+Captain B
+Admin
+Viewer 1
+Viewer 2
+```
+
+all should receive the new auction state without refreshing.
+
+### Timer
+
+Timer remains synchronized across clients.
+
+### Sold
+
+After auction ends:
+
+```text
+Player → SOLD
+Team → receives player
+Budget → deducted
+```
+
+all atomically.
+
+---
+
+# 93. RECOMMENDED TECH STACK
+
+For your specific use case, I'd structure the implementation as:
+
+```text
+FRONTEND
+React
+Vite
+TypeScript
+Tailwind CSS
+Framer Motion
+
+BACKEND
+Node.js
+Express
+TypeScript
+
+REALTIME
+Socket.IO
+
+DATABASE
+PostgreSQL
+
+CACHE / CONCURRENCY
+Redis
+
+AUTH
+JWT / secure session
+
+FILE STORAGE
+Supabase Storage / S3-compatible storage
+
+IMAGE OPTIMIZATION
+Sharp
+
+DEPLOYMENT
+Vercel / Cloudflare
++
+Railway / Render / VPS
++
+Managed PostgreSQL
++
+Redis
+```
+
+If you want to stay closer to your existing stack:
+
+```text
+React
++
+Node.js
++
+Supabase
++
+PostgreSQL
++
+Supabase Storage
++
+Realtime
+```
+
+is also completely viable for the initial tournament scale.
+
+---
+
+# 94. MOST IMPORTANT ARCHITECTURAL RULE
+
+Tell your coding agent this explicitly:
+
+> **The frontend must never be the source of truth for auction state. The backend is authoritative.**
+
+The frontend only renders:
+
+```text
+SERVER STATE
+```
+
+The server controls:
+
+```text
+Bids
+Timer
+Player state
+Team budget
+Auction state
+Sold state
+Auction sequence
+```
+
+This single architectural decision will prevent a huge number of live-auction bugs.
+
+---
+
+# 95. FINAL UI DIRECTION FOR THE AGENT
+
+Give the agent this exact visual direction:
+
+> Build a premium sports-auction dashboard inspired by the uploaded reference UI. Use a clean light interface with deep navy typography, orange/gold interactive elements, white cards, subtle gray backgrounds, thin borders, rounded 10–14px corners, restrained shadows, strong iconography, and generous spacing. Do not copy the reference screenshot literally.
+>
+> Combine this dashboard aesthetic with the SPECTRA 2026 visual identity from the supplied event artwork: black/red imagery, dramatic player photography, tournament branding, and energetic sports presentation should appear selectively in hero sections, player cards, auction transitions, and event banners.
+>
+> The interface must feel like a professional sports auction platform rather than a generic CRUD dashboard. The current player, current bid, countdown, and bidding action must always dominate the visual hierarchy.
+>
+> Prioritize instant interaction, realtime feedback, minimal loading states, optimized images, smooth but restrained animations, and extremely clear auction states such as LIVE, SOLD, UNSOLD, PAUSED, and WAITING.
+
+---
+
+# 96. DIRECT BUILD INSTRUCTION FOR YOUR AGENT
+
+You can finish your agent prompt with this:
+
+> **Build this as a production-quality real-time auction application, not as a static prototype.**
+>
+> First implement the complete data model and server-authoritative auction engine. Then implement role-based authentication. Then build the admin auction-control interface. Then build the captain live-bidding interface. Then build the public viewer interface.
+>
+> All bidding must happen through the backend and be validated atomically. Use WebSockets/realtime events to synchronize all connected clients without page refresh. The server must be authoritative for bid validity, auction timers, player state, team budgets, sold/unsold state, and auction sequencing.
+>
+> Optimize the application for extremely fast perceived response. Do not repeatedly poll the server for auction changes. Load the initial auction snapshot once and use realtime events for subsequent state changes. Preload the next player's image and metadata. Optimize all uploaded player images.
+>
+> Build the UI around the supplied references but create an original, polished design system. Use the SPECTRA 2026 branding where appropriate without allowing the branding to compromise usability.
+>
+> Every important auction action must have a clear visual state. Every destructive admin action must have confirmation. Every realtime client must support reconnection and state reconciliation.
+>
+> Test the system specifically against simultaneous bids, timer expiration races, reconnects, refreshes, duplicate bids, insufficient budgets, maximum squad limits, admin intervention, and missed realtime events.
+>
+> Do not consider the project complete until the full Admin → Captain → Viewer workflow works end-to-end with multiple browser windows connected simultaneously.
+
+---
+
+## One additional recommendation
+
+For your actual implementation, I would make the **Live Auction screen a completely separate application shell from the normal Admin dashboard**.
+
+In other words:
+
+```text
+/admin
+```
+
+for management,
+
+```text
+/captain
+```
+
+for bidding,
+
+and
+
+```text
+/live/:auctionId
+```
+
+for the public screen.
+
+That lets you make `/live` extremely lightweight and fast. You can even open it on a **large projector/LED screen at the tournament**, while captains use their phones/laptops and the admin controls everything from another device.
+
+The result becomes less like a normal college website and more like an actual **live auction control system**.
