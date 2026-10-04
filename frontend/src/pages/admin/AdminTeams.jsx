@@ -291,7 +291,7 @@ export default function AdminTeams() {
                               <span style={{ fontSize: 11, color: 'var(--text-muted)' }}>({p.category})</span>
                             </div>
                             <span style={{ fontWeight: 700, color: 'var(--orange)' }}>
-                              {formatCurrency(p.soldPrice || p.currentBid || p.basePrice)}
+                              {formatCurrency(p.soldPrice ?? p.price ?? p.currentBid ?? p.basePrice)}
                             </span>
                           </div>
                         ))}

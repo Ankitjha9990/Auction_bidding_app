@@ -3,34 +3,9 @@ import { useParams, Link } from 'react-router-dom';
 import { useSocket } from '../../context/SocketContext';
 import { api, getImageUrl, formatTime, timeAgo } from '../../utils/api';
 import PlayerAvatar from '../../components/PlayerAvatar';
-import { Radio, Clock, Trophy, Award, Activity, Smartphone } from 'lucide-react';
-
-function TeamLogo({ logoUrl, name, size = 32 }) {
-  const src = logoUrl ? getImageUrl(logoUrl) : null;
-  const initials = (name || '?').slice(0, 2).toUpperCase();
-  if (src) {
-    return (
-      <img
-        src={src}
-        alt={name}
-        style={{ width: size, height: size, objectFit: 'contain', borderRadius: 4, background: '#F1F5F9', border: '1px solid #E2E8F0', flexShrink: 0 }}
-        onError={e => { e.target.style.display = 'none'; }}
-      />
-    );
-  }
-  return (
-    <div style={{
-      width: size, height: size, borderRadius: 4,
-      background: 'rgba(196,18,48,0.12)', border: '1px solid var(--border-crimson)',
-      display: 'flex', alignItems: 'center', justifyContent: 'center',
-      fontFamily: "'Barlow Condensed', sans-serif",
-      fontWeight: 800, fontSize: Math.max(11, Math.round(size * 0.4)),
-      color: 'var(--crimson)', flexShrink: 0,
-    }}>
-      {initials}
-    </div>
-  );
-}
+import TeamLogo from '../../components/TeamLogo';
+import TeamSquadModal from '../../components/TeamSquadModal';
+import { Radio, Clock, Trophy, Award, Activity, Smartphone, Eye } from 'lucide-react';
 
 export default function ViewerLive() {
   const { auctionId: paramAuctionId } = useParams();
@@ -38,6 +13,7 @@ export default function ViewerLive() {
   const [snapshot, setSnapshot] = useState(null);
   const [recentBids, setRecentBids] = useState([]);
   const [soldOverlay, setSoldOverlay] = useState(null);
+  const [selectedTeamModal, setSelectedTeamModal] = useState(null);
   const [loading, setLoading] = useState(true);
   const [timeRemaining, setTimeRemaining] = useState(0);
   const [liveBid, setLiveBid] = useState(null);
@@ -143,6 +119,9 @@ export default function ViewerLive() {
         players: prev.players?.map(p => p.id === data.player?.id ? data.player : p),
         teams: prev.teams?.map(t => t.id === data.team?.id ? data.team : t)
       } : prev);
+      if (selectedTeamModal?.id === data.team?.id) {
+        setSelectedTeamModal(data.team);
+      }
       setTimeout(() => setSoldOverlay(null), 4000);
     };
 
@@ -172,6 +151,17 @@ export default function ViewerLive() {
       setSnapshot(prev => prev ? { ...prev, status: 'COMPLETED' } : prev);
     };
 
+    const handleTeamUpdated = (data) => {
+      if (!checkSeq(data)) return;
+      setSnapshot(prev => prev ? {
+        ...prev,
+        teams: prev.teams?.map(t => t.id === data.team?.id ? data.team : t)
+      } : prev);
+      if (selectedTeamModal?.id === data.team?.id) {
+        setSelectedTeamModal(data.team);
+      }
+    };
+
     socket.on('AUCTION_STATE', handleState);
     socket.on('BID_PLACED', handleBid);
     socket.on('PLAYER_STARTED', handlePlayerStarted);
@@ -181,6 +171,7 @@ export default function ViewerLive() {
     socket.on('AUCTION_PAUSED', handlePaused);
     socket.on('AUCTION_RESUMED', handleResumed);
     socket.on('AUCTION_COMPLETED', handleCompleted);
+    socket.on('TEAM_UPDATED', handleTeamUpdated);
 
     return () => {
       socket.off('AUCTION_STATE', handleState);
@@ -192,6 +183,7 @@ export default function ViewerLive() {
       socket.off('AUCTION_PAUSED', handlePaused);
       socket.off('AUCTION_RESUMED', handleResumed);
       socket.off('AUCTION_COMPLETED', handleCompleted);
+      socket.off('TEAM_UPDATED', handleTeamUpdated);
     };
   }, [socket, snapshot?.auction?.id, triggerBidToast]);
 
@@ -468,8 +460,13 @@ export default function ViewerLive() {
       {/* ── ALL TEAMS SCOREBOARD (BOTTOM) ── */}
       <div style={{ background: '#FFFFFF', borderTop: '2px solid var(--border-light)', padding: '16px 20px', boxShadow: '0 -4px 16px rgba(0,0,0,0.04)' }}>
         <div style={{ maxWidth: 1800, margin: '0 auto' }}>
-          <div style={{ fontFamily: "'Barlow Condensed', sans-serif", fontWeight: 900, fontSize: 13, letterSpacing: 2, color: 'var(--text-dim)', textTransform: 'uppercase', marginBottom: 10 }}>
-            TEAMS SCOREBOARD
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 10, flexWrap: 'wrap', gap: 8 }}>
+            <div style={{ fontFamily: "'Barlow Condensed', sans-serif", fontWeight: 900, fontSize: 13, letterSpacing: 2, color: 'var(--text-dim)', textTransform: 'uppercase' }}>
+              TEAMS SCOREBOARD
+            </div>
+            <div style={{ fontSize: 11, fontFamily: "'Barlow Condensed', sans-serif", fontWeight: 800, color: 'var(--crimson)', letterSpacing: 1, display: 'flex', alignItems: 'center', gap: 4 }}>
+              <Eye size={12} /> CLICK ANY TEAM TO VIEW SQUAD & SPENT DETAILS
+            </div>
           </div>
 
           <div className="vc-viewer-scoreboard-grid">
@@ -477,18 +474,45 @@ export default function ViewerLive() {
               const pCount = (t.players || []).length;
               const isLeading = t.id === highestBidder;
               return (
-                <div key={t.id} style={{
-                  background: isLeading ? '#FFF0F3' : '#F8F9FD',
-                  border: `1px solid ${isLeading ? 'var(--border-crimson)' : 'var(--border-light)'}`,
-                  borderRadius: 6, padding: '10px 14px', display: 'flex', alignItems: 'center', gap: 12
-                }}>
+                <div
+                  key={t.id}
+                  onClick={() => setSelectedTeamModal(t)}
+                  role="button"
+                  tabIndex={0}
+                  onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') setSelectedTeamModal(t); }}
+                  title={`Click to inspect ${t.name}'s squad and budget details`}
+                  style={{
+                    background: isLeading ? '#FFF0F3' : '#F8F9FD',
+                    border: `1px solid ${isLeading ? 'var(--border-crimson)' : 'var(--border-light)'}`,
+                    borderRadius: 6,
+                    padding: '10px 14px',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: 12,
+                    cursor: 'pointer',
+                    transition: 'all 0.15s ease',
+                    userSelect: 'none'
+                  }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.transform = 'translateY(-2px)';
+                    e.currentTarget.style.boxShadow = '0 6px 14px rgba(0,0,0,0.08)';
+                    e.currentTarget.style.borderColor = 'var(--crimson)';
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.transform = 'none';
+                    e.currentTarget.style.boxShadow = 'none';
+                    e.currentTarget.style.borderColor = isLeading ? 'var(--border-crimson)' : 'var(--border-light)';
+                  }}
+                >
                   <TeamLogo logoUrl={t.logoUrl} name={t.name} size={32} />
                   <div style={{ minWidth: 0, flex: 1 }}>
-                    <div style={{ fontFamily: "'Barlow Condensed', sans-serif", fontWeight: 900, fontSize: 14, color: 'var(--text-dark)', textOverflow: 'ellipsis', overflow: 'hidden', whiteSpace: 'nowrap' }}>
-                      {t.name}
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                      <span style={{ fontFamily: "'Barlow Condensed', sans-serif", fontWeight: 900, fontSize: 14, color: 'var(--text-dark)', textOverflow: 'ellipsis', overflow: 'hidden', whiteSpace: 'nowrap' }}>
+                        {t.name}
+                      </span>
                     </div>
                     <div style={{ fontSize: 11, color: 'var(--text-faint)', fontFamily: "'Barlow Condensed', sans-serif", fontWeight: 700 }}>
-                      {pCount} / {maxSquad} PLAYERS
+                      {pCount} / {maxSquad} PLAYERS · <span style={{ color: 'var(--crimson)', fontWeight: 800 }}>VIEW SQUAD ↗</span>
                     </div>
                   </div>
                   <div style={{ textAlign: 'right' }}>
@@ -503,6 +527,17 @@ export default function ViewerLive() {
           </div>
         </div>
       </div>
+
+      {/* ── INTERACTIVE TEAM SQUAD MODAL FOR VIEWERS ── */}
+      <TeamSquadModal
+        isOpen={Boolean(selectedTeamModal)}
+        onClose={() => setSelectedTeamModal(null)}
+        team={selectedTeamModal ? (teams.find(t => t.id === selectedTeamModal.id) || selectedTeamModal) : null}
+        teams={teams}
+        onSelectTeam={setSelectedTeamModal}
+        maxSquadSize={maxSquad}
+        allPlayers={snapshot?.players || []}
+      />
 
       {/* ── BROADCAST SOLD/UNSOLD OVERLAY ── */}
       {soldOverlay && (

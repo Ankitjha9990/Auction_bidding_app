@@ -85,6 +85,12 @@ function enrichPlayer(p) {
   const stats = p.stats || {};
   const status = p.status || p.auction_status || 'WAITING';
   const playerType = p.playerType || p.player_type || p.player_type_name || 'NEW';
+  const soldPrice = p.soldPrice !== undefined && p.soldPrice !== null
+    ? Number(p.soldPrice)
+    : (p.sold_price !== undefined && p.sold_price !== null
+      ? Number(p.sold_price)
+      : (p.price !== undefined && p.price !== null && status === 'SOLD' ? Number(p.price) : null));
+  const soldTo = p.soldTo || p.sold_team_id || null;
 
   return {
     ...p,
@@ -116,8 +122,83 @@ function enrichPlayer(p) {
     stats,
     status,
     playerType,
-    player_type: playerType
+    player_type: playerType,
+    soldPrice,
+    sold_price: soldPrice,
+    price: soldPrice !== null ? soldPrice : basePrice,
+    soldTo,
+    sold_team_id: soldTo
   };
+}
+
+function enrichTeam(team, auctionId) {
+  if (!team) return null;
+  const initialBudget = Number(team.initialBudget || 100000);
+
+  let captainName = team.captainName || '';
+  let captainEmail = team.captainEmail || '';
+  if (team.captainId && (!captainName || !captainEmail)) {
+    const cap = (db.users || []).find(u => u.id === team.captainId);
+    if (cap) {
+      captainName = captainName || cap.name || '';
+      captainEmail = captainEmail || cap.email || '';
+    }
+  }
+
+  const rawPlayers = Array.isArray(team.players) ? team.players : [];
+  const players = rawPlayers.map((tp, idx) => {
+    const playerId = tp.playerId || tp.id;
+    const master = (db.players || []).find(p => p.id === playerId) || {};
+    const price = Number(tp.soldPrice ?? tp.price ?? tp.finalPrice ?? master.soldPrice ?? master.price ?? 0);
+    const id = playerId || master.id || `tp-${idx}`;
+    const name = tp.name || master.full_name || master.name || master.displayName || 'Player';
+    const category = getCategoryLabel(tp.category || master.category || master.auction_category);
+    const registrationId = tp.registrationId || master.registration_id || master.registrationId || (id ? String(id).slice(-3) : '');
+    const imageUrl = tp.imageUrl || master.image_url || master.imageUrl || null;
+    const purchasedAt = tp.purchasedAt || master.soldAt || new Date().toISOString();
+
+    return {
+      ...tp,
+      id,
+      playerId: id,
+      name,
+      fullName: name,
+      category,
+      price,
+      soldPrice: price,
+      finalPrice: price,
+      registrationId,
+      imageUrl,
+      purchasedAt
+    };
+  });
+
+  const totalSpent = players.reduce((sum, p) => sum + (p.soldPrice || 0), 0);
+  const remainingBudget = Math.max(0, initialBudget - totalSpent);
+
+  return {
+    ...team,
+    captainName,
+    captainEmail,
+    initialBudget,
+    totalSpent,
+    remainingBudget,
+    players
+  };
+}
+
+function normalizeTeamFinancials() {
+  let changed = false;
+  if (Array.isArray(db.teams)) {
+    db.teams = db.teams.map(t => {
+      const enriched = enrichTeam(t, t.auctionId);
+      if (t.totalSpent !== enriched.totalSpent || t.remainingBudget !== enriched.remainingBudget) {
+        changed = true;
+      }
+      return enriched;
+    });
+  }
+  if (changed) saveDb();
 }
 
 function normalizeAuctionTimers() {
@@ -163,6 +244,7 @@ function loadDb() {
       db = JSON.parse(data);
       normalizeStoredCategories();
       normalizeAuctionTimers();
+      normalizeTeamFinancials();
       console.log(`Loaded ${db.players?.length || 0} players and ${db.auctions?.length || 0} auctions from ${dbFilePath}`);
     } else if (fs.existsSync(defaultPlayersPath)) {
       const defaultPlayers = JSON.parse(fs.readFileSync(defaultPlayersPath, 'utf-8'));
@@ -344,12 +426,13 @@ function sellCurrentPlayer(teamId, amount, by) {
   const team = db.teams.find(t => t.id === teamId);
   if (!team) return;
 
+  const numAmount = Number(amount);
   const now = Date.now();
 
   // Strict team exclusivity: remove player from any previous team's roster
   db.teams.forEach(t => {
     if (t.players) {
-      t.players = t.players.filter(tp => tp.playerId !== player.id);
+      t.players = t.players.filter(tp => (tp.playerId || tp.id) !== player.id);
     }
   });
 
@@ -359,7 +442,8 @@ function sellCurrentPlayer(teamId, amount, by) {
   if (apIdx !== -1) {
     db.auction_players[apIdx].auction_status = 'SOLD';
     db.auction_players[apIdx].sold_team_id = teamId;
-    db.auction_players[apIdx].sold_price = amount;
+    db.auction_players[apIdx].sold_price = numAmount;
+    db.auction_players[apIdx].soldPrice = numAmount;
     db.auction_players[apIdx].updated_at = now;
   }
 
@@ -368,22 +452,31 @@ function sellCurrentPlayer(teamId, amount, by) {
   if (pIdx !== -1) {
     db.players[pIdx].status = 'SOLD';
     db.players[pIdx].soldTo = teamId;
-    db.players[pIdx].soldPrice = amount;
+    db.players[pIdx].soldPrice = numAmount;
+    db.players[pIdx].price = numAmount;
     db.players[pIdx].soldAt = new Date(now).toISOString();
   }
 
   // Deduct budget & record in winning team
   const tIdx = db.teams.findIndex(t => t.id === teamId);
   if (tIdx !== -1) {
-    db.teams[tIdx].remainingBudget -= amount;
     if (!db.teams[tIdx].players) db.teams[tIdx].players = [];
+    const master = db.players[pIdx] || player;
     db.teams[tIdx].players.push({
+      id: player.id,
       playerId: player.id,
-      name: player.full_name || player.name,
-      category: player.category,
-      price: amount,
+      name: master.full_name || master.name || player.name,
+      fullName: master.full_name || master.name || player.name,
+      category: master.category || player.category || 'Category A',
+      price: numAmount,
+      soldPrice: numAmount,
+      finalPrice: numAmount,
+      registrationId: master.registration_id || master.registrationId || (player.id ? player.id.slice(-3) : ''),
+      imageUrl: master.image_url || master.imageUrl || null,
       purchasedAt: new Date(now).toISOString()
     });
+
+    db.teams[tIdx] = enrichTeam(db.teams[tIdx], auctionEngine.auctionId);
   }
 
   // Record purchase
@@ -392,7 +485,9 @@ function sellCurrentPlayer(teamId, amount, by) {
     auctionId: auctionEngine.auctionId,
     playerId: player.id,
     teamId,
-    finalPrice: amount,
+    finalPrice: numAmount,
+    price: numAmount,
+    soldPrice: numAmount,
     soldAt: now,
     serverTimestamp: new Date(now).toISOString()
   });
@@ -402,11 +497,27 @@ function sellCurrentPlayer(teamId, amount, by) {
   persistCurrentRound();
   saveDb();
 
+  const enrichedSoldTeam = enrichTeam(db.teams[tIdx], auctionEngine.auctionId);
+  const enrichedSoldPlayer = {
+    ...(db.players[pIdx] || player),
+    status: 'SOLD',
+    soldTo: teamId,
+    soldPrice: numAmount,
+    price: numAmount,
+    finalPrice: numAmount
+  };
+
   broadcast('PLAYER_SOLD', {
-    player: { ...(db.players[pIdx] || player), status: 'SOLD', soldTo: teamId, soldPrice: amount },
-    team: db.teams[tIdx],
-    finalPrice: amount,
+    player: enrichedSoldPlayer,
+    team: enrichedSoldTeam,
+    finalPrice: numAmount,
+    soldPrice: numAmount,
+    price: numAmount,
     by
+  });
+
+  broadcast('TEAM_UPDATED', {
+    team: enrichedSoldTeam
   });
 
   setTimeout(() => {
@@ -493,8 +604,16 @@ function getEnrichedAuctionPlayers(auctionId) {
       auctionPlayerId: ap.id,
       auctionId: ap.auction_id,
       status: ap.auction_status || 'WAITING',
-      soldTo: ap.sold_team_id || null,
-      soldPrice: ap.sold_price || null,
+      soldTo: ap.sold_team_id || master.soldTo || null,
+      soldPrice: ap.sold_price !== null && ap.sold_price !== undefined
+        ? Number(ap.sold_price)
+        : (master.soldPrice !== null && master.soldPrice !== undefined ? Number(master.soldPrice) : null),
+      sold_price: ap.sold_price !== null && ap.sold_price !== undefined
+        ? Number(ap.sold_price)
+        : (master.soldPrice !== null && master.soldPrice !== undefined ? Number(master.soldPrice) : null),
+      price: ap.sold_price !== null && ap.sold_price !== undefined
+        ? Number(ap.sold_price)
+        : (master.soldPrice !== null && master.soldPrice !== undefined ? Number(master.soldPrice) : (ap.auction_base_price || master.base_price || 100)),
       basePrice: ap.auction_base_price || master.base_price || 100,
       auctionOrder: ap.auction_order || 999,
       isCurrentPlayer: ap.is_current_player || false,
@@ -523,7 +642,7 @@ function getEnrichedAuctionPlayers(auctionId) {
 function getSnapshot(customAuctionId) {
   const targetAuctionId = customAuctionId || auctionEngine.auctionId;
   const auction = db.auctions.find(a => a.id === targetAuctionId);
-  const teams = db.teams.filter(t => t.auctionId === targetAuctionId);
+  const teams = db.teams.filter(t => t.auctionId === targetAuctionId).map(t => enrichTeam(t, targetAuctionId));
   const players = getEnrichedAuctionPlayers(targetAuctionId);
   const recentBids = db.bids
     .filter(b => b.auctionId === targetAuctionId &&
@@ -1133,7 +1252,14 @@ router.post('/auctions/:id/complete', authenticateToken, requireRole(['admin']),
 
 // ── Teams with Logo Support ─────────────────────────────────────────────────
 router.get('/auctions/:id/teams', (req, res) => {
-  res.json(db.teams.filter(t => t.auctionId === req.params.id));
+  const teams = db.teams.filter(t => t.auctionId === req.params.id);
+  res.json(teams.map(t => enrichTeam(t, req.params.id)));
+});
+
+router.get('/teams/:id', (req, res) => {
+  const team = db.teams.find(t => t.id === req.params.id);
+  if (!team) return res.status(404).json({ error: 'Team not found' });
+  res.json(enrichTeam(team, team.auctionId));
 });
 
 router.post('/auctions/:id/teams', authenticateToken, requireRole(['admin']), upload.single('logo'), (req, res) => {
@@ -1143,7 +1269,7 @@ router.post('/auctions/:id/teams', authenticateToken, requireRole(['admin']), up
   const budget = Number(req.body.budget) || auction.startingBudget || 100000;
   const logoUrl = req.file ? `/uploads/${req.file.filename}` : (req.body.logoUrl || null);
 
-  const team = {
+  const team = enrichTeam({
     id: uuidv4(),
     auctionId: req.params.id,
     name: req.body.name,
@@ -1151,11 +1277,12 @@ router.post('/auctions/:id/teams', authenticateToken, requireRole(['admin']), up
     logoUrl,
     remainingBudget: budget,
     initialBudget: budget,
+    totalSpent: 0,
     captainName: req.body.captainName || '',
     captainEmail: req.body.captainEmail || '',
     players: [],
     createdAt: Date.now()
-  };
+  }, req.params.id);
 
   if (req.body.captainEmail && req.body.captainPassword) {
     const existingUser = db.users.find(u => u.email.toLowerCase() === req.body.captainEmail.toLowerCase());
@@ -1180,6 +1307,7 @@ router.post('/auctions/:id/teams', authenticateToken, requireRole(['admin']), up
 
   db.teams.push(team);
   saveDb();
+  broadcast('TEAM_UPDATED', { team });
   res.json(team);
 });
 
@@ -1198,8 +1326,9 @@ router.patch('/teams/:id', authenticateToken, requireRole(['admin']), upload.sin
     updates.remainingBudget = Math.max(0, (db.teams[idx].remainingBudget || 0) + diff);
   }
 
-  db.teams[idx] = { ...db.teams[idx], ...updates };
+  db.teams[idx] = enrichTeam({ ...db.teams[idx], ...updates }, db.teams[idx].auctionId);
   saveDb();
+  broadcast('TEAM_UPDATED', { team: db.teams[idx] });
   res.json(db.teams[idx]);
 });
 
@@ -1209,15 +1338,19 @@ router.post('/teams/:id/topup', authenticateToken, requireRole(['admin']), (req,
   const amount = Number(req.body.amount || 0);
   db.teams[idx].initialBudget = (db.teams[idx].initialBudget || 0) + amount;
   db.teams[idx].remainingBudget = (db.teams[idx].remainingBudget || 0) + amount;
+  db.teams[idx] = enrichTeam(db.teams[idx], db.teams[idx].auctionId);
   saveDb();
+  broadcast('TEAM_UPDATED', { team: db.teams[idx] });
   res.json(db.teams[idx]);
 });
 
 router.delete('/teams/:id', authenticateToken, requireRole(['admin']), (req, res) => {
   const idx = db.teams.findIndex(t => t.id === req.params.id);
   if (idx === -1) return res.status(404).json({ error: 'Team not found' });
+  const deletedId = req.params.id;
   db.teams.splice(idx, 1);
   saveDb();
+  broadcast('TEAM_DELETED', { teamId: deletedId });
   res.json({ success: true });
 });
 
@@ -1969,4 +2102,4 @@ if (require.main === module) {
   });
 }
 
-module.exports = { app, server, db, auctionEngine, saveDb, loadDb };
+module.exports = { app, server, db, auctionEngine, saveDb, loadDb, enrichTeam, enrichPlayer };

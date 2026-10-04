@@ -51,6 +51,7 @@ export default function MobileLiveCard({
   snapshot,
   timeRemaining = 0,
   recentBids = [],
+  onSelectTeam = null,
   className = '',
   style = {}
 }) {
@@ -516,15 +517,19 @@ export default function MobileLiveCard({
         padding: '12px 16px',
         background: '#FFFFFF'
       }}>
-        <div style={{
-          fontSize: 11,
-          fontWeight: 900,
-          letterSpacing: 2,
-          color: '#64748B',
-          textTransform: 'uppercase',
-          marginBottom: 8
-        }}>
-          TEAMS SCOREBOARD
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
+          <div style={{
+            fontSize: 11,
+            fontWeight: 900,
+            letterSpacing: 2,
+            color: '#64748B',
+            textTransform: 'uppercase'
+          }}>
+            TEAMS SCOREBOARD
+          </div>
+          <div style={{ fontSize: 10, fontWeight: 800, color: '#C41230', letterSpacing: 0.5 }}>
+            TAP TEAM FOR SQUAD ↗
+          </div>
         </div>
         <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
           {teams.map((team, idx) => {
@@ -533,6 +538,9 @@ export default function MobileLiveCard({
             return (
               <div
                 key={team.id || idx}
+                onClick={() => onSelectTeam && onSelectTeam(team)}
+                role="button"
+                tabIndex={0}
                 style={{
                   display: 'flex',
                   justifyContent: 'space-between',
@@ -541,7 +549,9 @@ export default function MobileLiveCard({
                   background: isLeading ? '#FFF0F3' : '#F8F9FD',
                   border: isLeading ? '1px solid rgba(196,18,48,0.4)' : '1px solid #E2E8F0',
                   borderRadius: 4,
-                  gap: 8
+                  gap: 8,
+                  cursor: onSelectTeam ? 'pointer' : 'default',
+                  transition: 'background 0.15s ease'
                 }}
               >
                 <div style={{
@@ -558,7 +568,7 @@ export default function MobileLiveCard({
                       {team.name}
                     </div>
                     <div style={{ fontSize: 10, color: '#64748B', fontWeight: 800 }}>
-                      {pCount} / {maxSquad} PLAYERS
+                      {pCount} / {maxSquad} PLAYERS · <span style={{ color: '#C41230' }}>SQUAD ↗</span>
                     </div>
                   </div>
                 </div>

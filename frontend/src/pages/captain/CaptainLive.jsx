@@ -3,34 +3,9 @@ import { useAuth } from '../../context/AuthContext';
 import { useSocket } from '../../context/SocketContext';
 import { api, getImageUrl, formatTime, timeAgo } from '../../utils/api';
 import PlayerAvatar from '../../components/PlayerAvatar';
-import { Shield, Zap, TrendingUp, AlertTriangle, CheckCircle, Clock } from 'lucide-react';
-
-function TeamLogo({ logoUrl, name, size = 26 }) {
-  const src = logoUrl ? getImageUrl(logoUrl) : null;
-  const initials = (name || '?').slice(0, 2).toUpperCase();
-  if (src) {
-    return (
-      <img
-        src={src}
-        alt={name}
-        style={{ width: size, height: size, objectFit: 'contain', borderRadius: 4, background: '#F1F5F9', border: '1px solid #E2E8F0', flexShrink: 0 }}
-        onError={e => { e.target.style.display = 'none'; }}
-      />
-    );
-  }
-  return (
-    <div style={{
-      width: size, height: size, borderRadius: 4,
-      background: 'rgba(196,18,48,0.1)', border: '1px solid var(--border-crimson)',
-      display: 'flex', alignItems: 'center', justifyContent: 'center',
-      fontFamily: "'Barlow Condensed', sans-serif",
-      fontWeight: 800, fontSize: Math.max(10, Math.round(size * 0.4)),
-      color: 'var(--crimson)', flexShrink: 0,
-    }}>
-      {initials}
-    </div>
-  );
-}
+import TeamLogo from '../../components/TeamLogo';
+import TeamSquadModal from '../../components/TeamSquadModal';
+import { Shield, Zap, TrendingUp, AlertTriangle, CheckCircle, Clock, Eye } from 'lucide-react';
 
 export default function CaptainLive() {
   const { user, logout } = useAuth();
@@ -38,6 +13,7 @@ export default function CaptainLive() {
 
   const [snapshot, setSnapshot] = useState(null);
   const [myTeam, setMyTeam] = useState(null);
+  const [selectedTeamModal, setSelectedTeamModal] = useState(null);
   const [recentBids, setRecentBids] = useState([]);
   const [bidState, setBidState] = useState('idle');
   const [bidError, setBidError] = useState('');
@@ -149,9 +125,13 @@ export default function CaptainLive() {
       if (!checkSeq(data)) return;
       setSoldOverlay({ type: 'SOLD', player: data.player, team: data.team, price: data.finalPrice });
       setSnapshot(prev => prev ? {
-        ...prev, status: 'SOLD', teams: prev.teams?.map(t => t.id === data.team?.id ? data.team : t)
+        ...prev,
+        status: 'SOLD',
+        players: prev.players?.map(p => p.id === data.player?.id ? data.player : p),
+        teams: prev.teams?.map(t => t.id === data.team?.id ? data.team : t)
       } : prev);
       if (data.team?.id === myTeam?.id) setMyTeam(data.team);
+      if (selectedTeamModal?.id === data.team?.id) setSelectedTeamModal(data.team);
       setTimeout(() => setSoldOverlay(null), 4000);
     };
 
@@ -182,6 +162,16 @@ export default function CaptainLive() {
       setSnapshot(prev => prev ? { ...prev, status: 'COMPLETED' } : prev);
     };
 
+    const handleTeamUpdated = (data) => {
+      if (!checkSeq(data)) return;
+      if (data.team?.id === myTeam?.id) setMyTeam(data.team);
+      if (selectedTeamModal?.id === data.team?.id) setSelectedTeamModal(data.team);
+      setSnapshot(prev => prev ? {
+        ...prev,
+        teams: prev.teams?.map(t => t.id === data.team?.id ? data.team : t)
+      } : prev);
+    };
+
     socket.on('AUCTION_STATE', handleState);
     socket.on('BID_PLACED', handleBid);
     socket.on('PLAYER_STARTED', handlePlayerStarted);
@@ -191,6 +181,7 @@ export default function CaptainLive() {
     socket.on('AUCTION_PAUSED', handlePaused);
     socket.on('AUCTION_RESUMED', handleResumed);
     socket.on('AUCTION_COMPLETED', handleCompleted);
+    socket.on('TEAM_UPDATED', handleTeamUpdated);
 
     return () => {
       socket.off('AUCTION_STATE', handleState);
@@ -202,6 +193,7 @@ export default function CaptainLive() {
       socket.off('AUCTION_PAUSED', handlePaused);
       socket.off('AUCTION_RESUMED', handleResumed);
       socket.off('AUCTION_COMPLETED', handleCompleted);
+      socket.off('TEAM_UPDATED', handleTeamUpdated);
     };
   }, [socket, myTeam, snapshot?.auction?.id, triggerBidToast]);
 
@@ -396,8 +388,13 @@ export default function CaptainLive() {
 
           {/* OTHER TEAMS STATS CARD */}
           <div style={{ background: '#FFFFFF', border: '1px solid var(--border-light)', borderRadius: 6, padding: 16, boxShadow: 'var(--shadow-sm)', flex: 1, display: 'flex', flexDirection: 'column' }}>
-            <div style={{ fontFamily: "'Barlow Condensed', sans-serif", fontWeight: 900, fontSize: 14, letterSpacing: 2, color: 'var(--text-dark)', textTransform: 'uppercase', marginBottom: 12 }}>
-              OTHER TEAM STATS
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
+              <div style={{ fontFamily: "'Barlow Condensed', sans-serif", fontWeight: 900, fontSize: 14, letterSpacing: 2, color: 'var(--text-dark)', textTransform: 'uppercase' }}>
+                OTHER TEAM STATS
+              </div>
+              <div style={{ fontSize: 10, fontFamily: "'Barlow Condensed', sans-serif", fontWeight: 800, color: 'var(--crimson)' }}>
+                CLICK TO VIEW SQUAD ↗
+              </div>
             </div>
 
             <div style={{ overflowY: 'auto', flex: 1, display: 'flex', flexDirection: 'column', gap: 10, maxHeight: 480 }}>
@@ -408,17 +405,41 @@ export default function CaptainLive() {
                   const pCount = (t.players || []).length;
                   const isLeading = t.id === highestBidder;
                   return (
-                    <div key={t.id} style={{
-                      padding: 10, borderRadius: 6, border: `1px solid ${isLeading ? 'var(--border-crimson)' : 'var(--border-light)'}`,
-                      background: isLeading ? '#FFF0F3' : '#F8F9FD', display: 'flex', alignItems: 'center', gap: 10
-                    }}>
+                    <div
+                      key={t.id}
+                      onClick={() => setSelectedTeamModal(t)}
+                      role="button"
+                      tabIndex={0}
+                      title={`Click to view ${t.name}'s squad and budget details`}
+                      style={{
+                        padding: 10,
+                        borderRadius: 6,
+                        border: `1px solid ${isLeading ? 'var(--border-crimson)' : 'var(--border-light)'}`,
+                        background: isLeading ? '#FFF0F3' : '#F8F9FD',
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: 10,
+                        cursor: 'pointer',
+                        transition: 'all 0.15s ease'
+                      }}
+                      onMouseEnter={(e) => {
+                        e.currentTarget.style.transform = 'translateY(-1px)';
+                        e.currentTarget.style.boxShadow = '0 4px 10px rgba(0,0,0,0.06)';
+                        e.currentTarget.style.borderColor = 'var(--crimson)';
+                      }}
+                      onMouseLeave={(e) => {
+                        e.currentTarget.style.transform = 'none';
+                        e.currentTarget.style.boxShadow = 'none';
+                        e.currentTarget.style.borderColor = isLeading ? 'var(--border-crimson)' : 'var(--border-light)';
+                      }}
+                    >
                       <TeamLogo logoUrl={t.logoUrl} name={t.name} size={30} />
                       <div style={{ minWidth: 0, flex: 1 }}>
                         <div style={{ fontFamily: "'Barlow Condensed', sans-serif", fontWeight: 800, fontSize: 13, color: 'var(--text-dark)', textOverflow: 'ellipsis', overflow: 'hidden', whiteSpace: 'nowrap' }}>
                           {t.name}
                         </div>
                         <div style={{ fontSize: 10, color: 'var(--text-faint)', fontFamily: "'Barlow Condensed', sans-serif", fontWeight: 700 }}>
-                          {pCount} / {maxSquad} PLAYERS
+                          {pCount} / {maxSquad} PLAYERS · <span style={{ color: 'var(--crimson)' }}>SQUAD ↗</span>
                         </div>
                       </div>
                       <div style={{ textAlign: 'right' }}>
@@ -637,9 +658,27 @@ export default function CaptainLive() {
 
           {/* PURCHASED PLAYERS HISTORY CARD */}
           <div style={{ background: '#FFFFFF', border: '1px solid var(--border-light)', borderRadius: 6, padding: 16, boxShadow: 'var(--shadow-sm)', flex: 1, display: 'flex', flexDirection: 'column' }}>
-            <div style={{ fontFamily: "'Barlow Condensed', sans-serif", fontWeight: 900, fontSize: 14, letterSpacing: 2, color: 'var(--text-dark)', textTransform: 'uppercase', marginBottom: 10, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <div
+              onClick={() => myTeam && setSelectedTeamModal(myTeam)}
+              role="button"
+              tabIndex={0}
+              title="Click to view complete squad details"
+              style={{
+                fontFamily: "'Barlow Condensed', sans-serif",
+                fontWeight: 900,
+                fontSize: 14,
+                letterSpacing: 2,
+                color: 'var(--text-dark)',
+                textTransform: 'uppercase',
+                marginBottom: 10,
+                display: 'flex',
+                justifyContent: 'space-between',
+                alignItems: 'center',
+                cursor: 'pointer'
+              }}
+            >
               <span>PLAYERS BOUGHT</span>
-              <span style={{ fontSize: 11, fontWeight: 800, color: 'var(--text-dim)' }}>{myPlayers.length} PLAYERS</span>
+              <span style={{ fontSize: 11, fontWeight: 800, color: 'var(--crimson)' }}>{myPlayers.length} PLAYERS · DETAILS ↗</span>
             </div>
 
             <div style={{ overflowY: 'auto', flex: 1, maxHeight: 280, paddingRight: 4 }}>
@@ -658,7 +697,7 @@ export default function CaptainLive() {
                       </div>
                     </div>
                     <span style={{ fontFamily: "'Barlow Condensed', sans-serif", fontWeight: 900, color: 'var(--crimson)', fontSize: 13 }}>
-                      Qc {Number(p.soldPrice || p.currentBid || 0).toLocaleString()}
+                      Qc {Number(p.soldPrice ?? p.price ?? p.currentBid ?? 0).toLocaleString()}
                     </span>
                   </div>
                 ))
@@ -809,6 +848,17 @@ export default function CaptainLive() {
           </div>
         </div>
       )}
+
+      {/* ── INTERACTIVE SQUAD MODAL FOR CAPTAIN ── */}
+      <TeamSquadModal
+        isOpen={Boolean(selectedTeamModal)}
+        onClose={() => setSelectedTeamModal(null)}
+        team={selectedTeamModal ? (teams.find(t => t.id === selectedTeamModal.id) || (selectedTeamModal.id === myTeam?.id ? myTeam : selectedTeamModal)) : null}
+        teams={teams}
+        onSelectTeam={setSelectedTeamModal}
+        maxSquadSize={maxSquad}
+        allPlayers={snapshot?.players || []}
+      />
     </div>
   );
 }

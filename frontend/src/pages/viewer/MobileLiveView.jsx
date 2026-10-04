@@ -3,6 +3,7 @@ import { useParams, Link } from 'react-router-dom';
 import { useSocket } from '../../context/SocketContext';
 import { api } from '../../utils/api';
 import MobileLiveCard from '../../components/MobileLiveCard';
+import TeamSquadModal from '../../components/TeamSquadModal';
 import { ArrowLeft, RefreshCw } from 'lucide-react';
 
 export default function MobileLiveView() {
@@ -11,6 +12,7 @@ export default function MobileLiveView() {
   const [snapshot, setSnapshot] = useState(null);
   const [recentBids, setRecentBids] = useState([]);
   const [soldOverlay, setSoldOverlay] = useState(null);
+  const [selectedTeamModal, setSelectedTeamModal] = useState(null);
   const [loading, setLoading] = useState(true);
   const [timeRemaining, setTimeRemaining] = useState(0);
   const [liveBid, setLiveBid] = useState(null);
@@ -120,6 +122,9 @@ export default function MobileLiveView() {
         players: prev.players?.map(p => p.id === data.player?.id ? data.player : p),
         teams: prev.teams?.map(t => t.id === data.team?.id ? data.team : t)
       } : prev);
+      if (selectedTeamModal?.id === data.team?.id) {
+        setSelectedTeamModal(data.team);
+      }
       setTimeout(() => setSoldOverlay(null), 4000);
     };
 
@@ -149,6 +154,17 @@ export default function MobileLiveView() {
       setSnapshot(prev => prev ? { ...prev, status: 'COMPLETED' } : prev);
     };
 
+    const handleTeamUpdated = (data) => {
+      if (!checkSeq(data)) return;
+      setSnapshot(prev => prev ? {
+        ...prev,
+        teams: prev.teams?.map(t => t.id === data.team?.id ? data.team : t)
+      } : prev);
+      if (selectedTeamModal?.id === data.team?.id) {
+        setSelectedTeamModal(data.team);
+      }
+    };
+
     socket.on('AUCTION_STATE', handleState);
     socket.on('BID_PLACED', handleBid);
     socket.on('PLAYER_STARTED', handlePlayerStarted);
@@ -158,6 +174,7 @@ export default function MobileLiveView() {
     socket.on('AUCTION_PAUSED', handlePaused);
     socket.on('AUCTION_RESUMED', handleResumed);
     socket.on('AUCTION_COMPLETED', handleCompleted);
+    socket.on('TEAM_UPDATED', handleTeamUpdated);
 
     return () => {
       socket.off('AUCTION_STATE', handleState);
@@ -169,6 +186,7 @@ export default function MobileLiveView() {
       socket.off('AUCTION_PAUSED', handlePaused);
       socket.off('AUCTION_RESUMED', handleResumed);
       socket.off('AUCTION_COMPLETED', handleCompleted);
+      socket.off('TEAM_UPDATED', handleTeamUpdated);
     };
   }, [socket, snapshot?.auction?.id, triggerBidToast]);
 
@@ -285,8 +303,20 @@ export default function MobileLiveView() {
           snapshot={snapshot}
           timeRemaining={timeRemaining}
           recentBids={recentBids}
+          onSelectTeam={setSelectedTeamModal}
         />
       </div>
+
+      {/* Team Detail / Squad Modal for Mobile */}
+      <TeamSquadModal
+        isOpen={Boolean(selectedTeamModal)}
+        onClose={() => setSelectedTeamModal(null)}
+        team={selectedTeamModal ? (snapshot?.teams?.find(t => t.id === selectedTeamModal.id) || selectedTeamModal) : null}
+        teams={snapshot?.teams || []}
+        onSelectTeam={setSelectedTeamModal}
+        maxSquadSize={snapshot?.auction?.maxSquadSize}
+        allPlayers={snapshot?.players || []}
+      />
 
       {/* Sold/Unsold Overlay */}
       {soldOverlay && (

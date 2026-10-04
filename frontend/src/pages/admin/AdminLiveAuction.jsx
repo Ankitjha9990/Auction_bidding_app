@@ -4,34 +4,8 @@ import { api, getStatusBadgeClass, formatTime, timeAgo, getImageUrl } from '../.
 import { AuctionProvider, useAuction } from '../../context/AuctionContext';
 import { useSocket } from '../../context/SocketContext';
 import PlayerAvatar from '../../components/PlayerAvatar';
+import TeamLogo from '../../components/TeamLogo';
 import { Shuffle, Search, AlertCircle, CheckCircle, ShieldAlert } from 'lucide-react';
-
-function TeamLogo({ logoUrl, name, size = 26 }) {
-  const src = logoUrl ? getImageUrl(logoUrl) : null;
-  const initials = (name || '?').slice(0, 2).toUpperCase();
-  if (src) {
-    return (
-      <img
-        src={src}
-        alt={name}
-        style={{ width: size, height: size, objectFit: 'contain', borderRadius: 4, background: 'rgba(255,255,255,0.06)', flexShrink: 0 }}
-        onError={e => { e.target.style.display = 'none'; }}
-      />
-    );
-  }
-  return (
-    <div style={{
-      width: size, height: size, borderRadius: 4,
-      background: 'rgba(79, 70, 229, 0.12)', border: '1px solid rgba(79, 70, 229, 0.24)',
-      display: 'flex', alignItems: 'center', justifyContent: 'center',
-      fontFamily: "'Barlow Condensed', sans-serif",
-      fontWeight: 800, fontSize: Math.max(10, Math.round(size * 0.4)),
-      color: '#312E81', flexShrink: 0,
-    }}>
-      {initials}
-    </div>
-  );
-}
 
 function LiveControl({ auctionId }) {
   const { snapshot, loading, recentBids, soldOverlay, refetchSnapshot } = useAuction();
@@ -374,7 +348,7 @@ function LiveControl({ auctionId }) {
                       </div>
                     </div>
                     <span style={{ fontFamily: "'Barlow Condensed', sans-serif", fontWeight: 800, color: 'var(--crimson)', fontSize: 13, letterSpacing: 0.5 }}>
-                      Qc {Number(p.soldPrice || p.currentBid || 0).toLocaleString()}
+                      Qc {Number(p.soldPrice ?? p.price ?? p.currentBid ?? 0).toLocaleString()}
                     </span>
                   </div>
                 ))
@@ -480,7 +454,7 @@ function LiveControl({ auctionId }) {
                           </td>
                           <td style={{ padding: '10px 12px', fontFamily: "'Barlow Condensed', sans-serif", fontWeight: 800, color: isSold ? '#059669' : 'var(--text-faint)' }}>
                             {isSold ? (
-                              <span style={{ background: 'rgba(5,150,105,0.1)', padding: '2px 6px', borderRadius: 4 }}>Qc {Number(p.soldPrice || p.currentBid || 0).toLocaleString()}</span>
+                              <span style={{ background: 'rgba(5,150,105,0.1)', padding: '2px 6px', borderRadius: 4 }}>Qc {Number(p.soldPrice ?? p.price ?? p.currentBid ?? 0).toLocaleString()}</span>
                             ) : '—'}
                           </td>
                           <td style={{ padding: '10px 12px', fontFamily: "'Barlow Condensed', sans-serif", fontWeight: 700 }}>
