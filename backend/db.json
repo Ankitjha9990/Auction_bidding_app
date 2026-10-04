@@ -36,7 +36,7 @@
       "scheduledAt": null,
       "startedAt": "2026-10-04T07:33:39.938Z",
       "endedAt": null,
-      "status": "LIVE",
+      "status": "COMPLETED",
       "startingBudget": 100000,
       "minimumBid": 1000,
       "bidIncrement": 500,
@@ -48,13 +48,29 @@
       "allowUnsoldReauction": true,
       "createdAt": 1791099219942,
       "createdServerTimestamp": "2026-10-04T07:33:39.942Z",
-      "currentPlayerId": "c022bd1f-93e4-4e23-81c9-36fae884d1eb",
+      "currentPlayerId": null,
       "currentBid": 40,
       "highestBidder": null,
       "highestBidderName": null,
-      "roundStatus": "PAUSED",
+      "roundStatus": "COMPLETED",
       "endsAt": 1791113433993,
       "pausedRemaining": 120000
+    },
+    {
+      "id": "811272a3-db3d-4612-8a8a-05187a85ee99",
+      "name": "Tomorrow Cup 2026",
+      "tournamentName": "Tomorrow Cup",
+      "scheduledAt": "2026-10-05T19:29:17.476Z",
+      "auctionDate": "2026-10-05T19:29:17.476Z",
+      "startingBudget": 100000,
+      "playerTimer": 120,
+      "startedAt": null,
+      "endedAt": null,
+      "status": "SCHEDULED",
+      "minimumBid": 1000,
+      "numTeams": 8,
+      "createdAt": 1791142157468,
+      "createdServerTimestamp": "2026-10-04T19:29:17.468Z"
     }
   ],
   "teams": [
@@ -64,7 +80,7 @@
       "name": "Phoenix Blitz",
       "tag": "PBZ",
       "logoUrl": null,
-      "remainingBudget": 97270,
+      "remainingBudget": 99660,
       "initialBudget": 100000,
       "captainId": "captain-alpha-id",
       "captainName": "Captain Alpha",
@@ -75,10 +91,17 @@
           "name": "Satyam Kumar Soni",
           "category": "Category C",
           "price": 340,
-          "purchasedAt": "2026-10-04T11:28:01.307Z"
+          "purchasedAt": "2026-10-04T11:28:01.307Z",
+          "id": "933d2f27-2aa5-4cd4-af9e-0d666a91ea7e",
+          "fullName": "Satyam Kumar Soni",
+          "soldPrice": 340,
+          "finalPrice": 340,
+          "registrationId": "#RET-42",
+          "imageUrl": null
         }
       ],
-      "createdAt": 1791099219942
+      "createdAt": 1791099219942,
+      "totalSpent": 340
     },
     {
       "id": "team-shadow-strikers",
@@ -86,7 +109,7 @@
       "name": "Shadow Strikers",
       "tag": "SSK",
       "logoUrl": null,
-      "remainingBudget": 99515,
+      "remainingBudget": 99690,
       "initialBudget": 100000,
       "captainId": "captain-beta-id",
       "captainName": "Captain Beta",
@@ -97,10 +120,17 @@
           "name": "Mayank Kumar",
           "category": "Category B",
           "price": 310,
-          "purchasedAt": "2026-10-04T11:28:51.403Z"
+          "purchasedAt": "2026-10-04T11:28:51.403Z",
+          "id": "d05a75ed-9bb5-433f-8114-7a38a7879eb2",
+          "fullName": "Mayank Kumar",
+          "soldPrice": 310,
+          "finalPrice": 310,
+          "registrationId": "#RET-24",
+          "imageUrl": null
         }
       ],
-      "createdAt": 1791099219942
+      "createdAt": 1791099219942,
+      "totalSpent": 310
     }
   ],
   "players": [
@@ -150,7 +180,8 @@
       "row_number": 2,
       "created_at": 1791112731124,
       "updated_at": 1791130303441,
-      "imageUrl": "/uploads/45669a8d-fb8d-4fbb-b4c5-5b570ed2c2d0.jpeg"
+      "imageUrl": "/uploads/45669a8d-fb8d-4fbb-b4c5-5b570ed2c2d0.jpeg",
+      "auctionId": "811272a3-db3d-4612-8a8a-05187a85ee99"
     },
     {
       "id": "748da544-de59-41ea-8d7e-3c7adb377ca2",
@@ -198,7 +229,8 @@
       "row_number": 3,
       "created_at": 1791112731124,
       "updated_at": 1791129305888,
-      "imageUrl": "/uploads/4dd199fe-5fea-4b9a-9eaf-f424374dfbc0.png"
+      "imageUrl": "/uploads/4dd199fe-5fea-4b9a-9eaf-f424374dfbc0.png",
+      "auctionId": "811272a3-db3d-4612-8a8a-05187a85ee99"
     },
     {
       "id": "c022bd1f-93e4-4e23-81c9-36fae884d1eb",
@@ -247,7 +279,8 @@
       "created_at": 1791112731124,
       "updated_at": 1791130278139,
       "status": "LIVE",
-      "imageUrl": "/uploads/50981b5f-36b0-4424-9316-8c8a6a3ffda2.jpeg"
+      "imageUrl": "/uploads/50981b5f-36b0-4424-9316-8c8a6a3ffda2.jpeg",
+      "auctionId": "811272a3-db3d-4612-8a8a-05187a85ee99"
     },
     {
       "id": "1bf80c96-968f-408d-9250-4ebaca25ff6d",
@@ -295,7 +328,8 @@
       "row_number": 5,
       "created_at": 1791112731125,
       "updated_at": 1791130501281,
-      "imageUrl": "/uploads/5a3f7e0c-60fd-4ab7-9b3b-8b80f9bee103.jpeg"
+      "imageUrl": "/uploads/5a3f7e0c-60fd-4ab7-9b3b-8b80f9bee103.jpeg",
+      "auctionId": "811272a3-db3d-4612-8a8a-05187a85ee99"
     },
     {
       "id": "8772047b-abfb-4cfa-83a5-4c545dc72843",
@@ -343,7 +377,8 @@
       "row_number": 6,
       "created_at": 1791112731125,
       "updated_at": 1791131577907,
-      "imageUrl": "/uploads/ac9f6634-9091-42fe-b93f-f40f6ae2fe7d.png"
+      "imageUrl": "/uploads/ac9f6634-9091-42fe-b93f-f40f6ae2fe7d.png",
+      "auctionId": "811272a3-db3d-4612-8a8a-05187a85ee99"
     },
     {
       "id": "8312ec69-ede8-4194-8a68-2969a8146f4d",
@@ -390,7 +425,8 @@
       "sheet_source": "Form Responses 1",
       "row_number": 7,
       "created_at": 1791112731125,
-      "updated_at": 1791112731125
+      "updated_at": 1791112731125,
+      "auctionId": "811272a3-db3d-4612-8a8a-05187a85ee99"
     },
     {
       "id": "b4923ba1-563d-46ed-b103-6524375f33ec",
@@ -438,7 +474,8 @@
       "row_number": 8,
       "created_at": 1791112731125,
       "updated_at": 1791131521971,
-      "imageUrl": "/uploads/c64ded9a-91b6-49d1-907d-cfa73d2bcf5c.jpg"
+      "imageUrl": "/uploads/c64ded9a-91b6-49d1-907d-cfa73d2bcf5c.jpg",
+      "auctionId": "811272a3-db3d-4612-8a8a-05187a85ee99"
     },
     {
       "id": "40da8c16-44d2-497c-89af-82a39d1b35bf",
@@ -485,7 +522,8 @@
       "sheet_source": "Form Responses 1",
       "row_number": 9,
       "created_at": 1791112731125,
-      "updated_at": 1791112731125
+      "updated_at": 1791112731125,
+      "auctionId": "811272a3-db3d-4612-8a8a-05187a85ee99"
     },
     {
       "id": "4a38b6b2-d41b-401c-9dc5-bd2dc9fbf1e6",
@@ -533,7 +571,8 @@
       "row_number": 10,
       "created_at": 1791112731125,
       "updated_at": 1791131221300,
-      "imageUrl": "/uploads/42b95ce5-4c8f-4b1d-8ad0-f41e2a696838.jpg"
+      "imageUrl": "/uploads/42b95ce5-4c8f-4b1d-8ad0-f41e2a696838.jpg",
+      "auctionId": "811272a3-db3d-4612-8a8a-05187a85ee99"
     },
     {
       "id": "ea42352a-d853-4c38-bcb4-db8712193cfd",
@@ -581,7 +620,8 @@
       "row_number": 11,
       "created_at": 1791112731125,
       "updated_at": 1791132056037,
-      "imageUrl": "/uploads/38622846-974e-4731-ab23-9b14062c507e.jpeg"
+      "imageUrl": "/uploads/38622846-974e-4731-ab23-9b14062c507e.jpeg",
+      "auctionId": "811272a3-db3d-4612-8a8a-05187a85ee99"
     },
     {
       "id": "f26700c8-5f6e-4876-a5ef-66982703d2e5",
@@ -629,7 +669,8 @@
       "row_number": 12,
       "created_at": 1791112731125,
       "updated_at": 1791131441416,
-      "imageUrl": "/uploads/456ea85c-8f74-4d51-ba61-d08bf2c14e6b.jpg"
+      "imageUrl": "/uploads/456ea85c-8f74-4d51-ba61-d08bf2c14e6b.jpg",
+      "auctionId": "811272a3-db3d-4612-8a8a-05187a85ee99"
     },
     {
       "id": "691d80e6-0945-49b4-b760-5f75051d33c2",
@@ -677,7 +718,8 @@
       "row_number": 14,
       "created_at": 1791112731125,
       "updated_at": 1791129416132,
-      "imageUrl": "/uploads/3f70a4bc-9312-471a-a00c-25f2411d44c8.jpeg"
+      "imageUrl": "/uploads/3f70a4bc-9312-471a-a00c-25f2411d44c8.jpeg",
+      "auctionId": "811272a3-db3d-4612-8a8a-05187a85ee99"
     },
     {
       "id": "e472c336-c28e-4396-948a-7ff74ae44094",
@@ -725,7 +767,8 @@
       "row_number": 15,
       "created_at": 1791112731125,
       "updated_at": 1791130266875,
-      "imageUrl": "/uploads/406ca7a8-4e81-416a-be11-9de7f34c1c3f.jpeg"
+      "imageUrl": "/uploads/406ca7a8-4e81-416a-be11-9de7f34c1c3f.jpeg",
+      "auctionId": "811272a3-db3d-4612-8a8a-05187a85ee99"
     },
     {
       "id": "44590a02-be67-4d09-895f-0ad197b0715a",
@@ -773,7 +816,8 @@
       "row_number": 16,
       "created_at": 1791112731125,
       "updated_at": 1791130694566,
-      "imageUrl": "/uploads/b97c2c00-2a95-4445-852a-5c39205322e1.jpeg"
+      "imageUrl": "/uploads/b97c2c00-2a95-4445-852a-5c39205322e1.jpeg",
+      "auctionId": "811272a3-db3d-4612-8a8a-05187a85ee99"
     },
     {
       "id": "7e568a79-1c0d-443f-80c9-fd7a78972593",
@@ -821,7 +865,8 @@
       "row_number": 17,
       "created_at": 1791112731125,
       "updated_at": 1791131667637,
-      "imageUrl": "/uploads/f9e0feeb-8a31-4255-a65e-71add696f792.png"
+      "imageUrl": "/uploads/f9e0feeb-8a31-4255-a65e-71add696f792.png",
+      "auctionId": "811272a3-db3d-4612-8a8a-05187a85ee99"
     },
     {
       "id": "2d23d440-4380-474b-a2fd-a1a29f377732",
@@ -868,7 +913,8 @@
       "sheet_source": "Form Responses 1",
       "row_number": 18,
       "created_at": 1791112731125,
-      "updated_at": 1791112731125
+      "updated_at": 1791112731125,
+      "auctionId": "811272a3-db3d-4612-8a8a-05187a85ee99"
     },
     {
       "id": "8dc337ba-aa60-4538-9483-e3e6f08ada42",
@@ -916,7 +962,8 @@
       "row_number": 19,
       "created_at": 1791112731125,
       "updated_at": 1791131174211,
-      "imageUrl": "/uploads/66142338-f21a-41e3-9c8d-bcba825b4ed7.jpg"
+      "imageUrl": "/uploads/66142338-f21a-41e3-9c8d-bcba825b4ed7.jpg",
+      "auctionId": "811272a3-db3d-4612-8a8a-05187a85ee99"
     },
     {
       "id": "fe90dbfa-f808-4385-86b0-7eb7a294843b",
@@ -963,7 +1010,8 @@
       "sheet_source": "Form Responses 1",
       "row_number": 20,
       "created_at": 1791112731125,
-      "updated_at": 1791112731125
+      "updated_at": 1791112731125,
+      "auctionId": "811272a3-db3d-4612-8a8a-05187a85ee99"
     },
     {
       "id": "fe3100fa-ca92-4668-b833-153c840d3f2b",
@@ -1011,7 +1059,8 @@
       "row_number": 21,
       "created_at": 1791112731125,
       "updated_at": 1791130851231,
-      "imageUrl": "/uploads/6a51f89d-6d2e-4598-a751-08cea33c3a07.jpeg"
+      "imageUrl": "/uploads/6a51f89d-6d2e-4598-a751-08cea33c3a07.jpeg",
+      "auctionId": "811272a3-db3d-4612-8a8a-05187a85ee99"
     },
     {
       "id": "1b3c6467-431d-44de-a111-e86a6eb5aa5f",
@@ -1059,7 +1108,8 @@
       "row_number": 22,
       "created_at": 1791112731125,
       "updated_at": 1791131493847,
-      "imageUrl": "/uploads/0cd19b36-d673-4eec-9896-9797fd318ac6.jpg"
+      "imageUrl": "/uploads/0cd19b36-d673-4eec-9896-9797fd318ac6.jpg",
+      "auctionId": "811272a3-db3d-4612-8a8a-05187a85ee99"
     },
     {
       "id": "082352d5-b075-445e-89f4-21e8d1486983",
@@ -1107,7 +1157,8 @@
       "row_number": 23,
       "created_at": 1791112731125,
       "updated_at": 1791130131367,
-      "imageUrl": "/uploads/2df8fbb7-d780-456e-ab92-ed6da53abea7.jpeg"
+      "imageUrl": "/uploads/2df8fbb7-d780-456e-ab92-ed6da53abea7.jpeg",
+      "auctionId": "811272a3-db3d-4612-8a8a-05187a85ee99"
     },
     {
       "id": "9efe5032-4afe-4614-8d70-ccb9efe556ab",
@@ -1155,7 +1206,8 @@
       "row_number": 24,
       "created_at": 1791112731125,
       "updated_at": 1791131470509,
-      "imageUrl": "/uploads/64743a48-c185-4417-bbdf-42e3d1b79060.jpg"
+      "imageUrl": "/uploads/64743a48-c185-4417-bbdf-42e3d1b79060.jpg",
+      "auctionId": "811272a3-db3d-4612-8a8a-05187a85ee99"
     },
     {
       "id": "317f4c6c-721c-43fe-9633-bc0b72464f3a",
@@ -1203,7 +1255,8 @@
       "row_number": 25,
       "created_at": 1791112731125,
       "updated_at": 1791129362846,
-      "imageUrl": "/uploads/11b7142f-7051-4858-86f0-9d672910c956.png"
+      "imageUrl": "/uploads/11b7142f-7051-4858-86f0-9d672910c956.png",
+      "auctionId": "811272a3-db3d-4612-8a8a-05187a85ee99"
     },
     {
       "id": "67797548-87aa-4533-8503-c5654fbf6a9f",
@@ -1251,7 +1304,8 @@
       "row_number": 26,
       "created_at": 1791112731125,
       "updated_at": 1791131611102,
-      "imageUrl": "/uploads/6bfc662d-ff15-49cf-92fe-62e0f9ddb0d9.png"
+      "imageUrl": "/uploads/6bfc662d-ff15-49cf-92fe-62e0f9ddb0d9.png",
+      "auctionId": "811272a3-db3d-4612-8a8a-05187a85ee99"
     },
     {
       "id": "d566b861-cff0-45b5-81b6-3f933f6b9a18",
@@ -1299,7 +1353,8 @@
       "row_number": 27,
       "created_at": 1791112731125,
       "updated_at": 1791131292006,
-      "imageUrl": "/uploads/050e12fe-2335-4a87-b861-c842da7a53df.png"
+      "imageUrl": "/uploads/050e12fe-2335-4a87-b861-c842da7a53df.png",
+      "auctionId": "811272a3-db3d-4612-8a8a-05187a85ee99"
     },
     {
       "id": "7c34104c-b119-4d01-81df-e5e3da5a20ef",
@@ -1347,7 +1402,8 @@
       "row_number": 28,
       "created_at": 1791112731125,
       "updated_at": 1791130719465,
-      "imageUrl": "/uploads/04491c49-e281-4bbf-b618-464d399eacf9.jpeg"
+      "imageUrl": "/uploads/04491c49-e281-4bbf-b618-464d399eacf9.jpeg",
+      "auctionId": "811272a3-db3d-4612-8a8a-05187a85ee99"
     },
     {
       "id": "13ff1e64-ff09-40f7-b578-a8b059834594",
@@ -1395,7 +1451,8 @@
       "row_number": 29,
       "created_at": 1791112731125,
       "updated_at": 1791131839914,
-      "imageUrl": "/uploads/3f0c9f00-4960-4b62-aad0-6733d809dd31.jpeg"
+      "imageUrl": "/uploads/3f0c9f00-4960-4b62-aad0-6733d809dd31.jpeg",
+      "auctionId": "811272a3-db3d-4612-8a8a-05187a85ee99"
     },
     {
       "id": "6f8a60d5-57ec-41a3-b6e9-c34bf6c54978",
@@ -1443,7 +1500,8 @@
       "row_number": 30,
       "created_at": 1791112731126,
       "updated_at": 1791129302482,
-      "imageUrl": "/uploads/a36dd841-200b-49a2-9d5b-624a011f91b0.png"
+      "imageUrl": "/uploads/a36dd841-200b-49a2-9d5b-624a011f91b0.png",
+      "auctionId": "811272a3-db3d-4612-8a8a-05187a85ee99"
     },
     {
       "id": "d2cce037-dee7-4509-80bd-9330a6bcc8c2",
@@ -1491,7 +1549,8 @@
       "row_number": 31,
       "created_at": 1791112731126,
       "updated_at": 1791129320675,
-      "imageUrl": "/uploads/f5cd12f7-1261-42c7-b404-a044d7b50113.png"
+      "imageUrl": "/uploads/f5cd12f7-1261-42c7-b404-a044d7b50113.png",
+      "auctionId": "811272a3-db3d-4612-8a8a-05187a85ee99"
     },
     {
       "id": "6b2487e9-b083-4b52-8c26-84fd83aeb972",
@@ -1539,7 +1598,8 @@
       "row_number": 32,
       "created_at": 1791112731126,
       "updated_at": 1791130149314,
-      "imageUrl": "/uploads/070a47dd-3e5d-4fe0-97b4-3ebea4ccef61.jpeg"
+      "imageUrl": "/uploads/070a47dd-3e5d-4fe0-97b4-3ebea4ccef61.jpeg",
+      "auctionId": "811272a3-db3d-4612-8a8a-05187a85ee99"
     },
     {
       "id": "918a417a-029a-4893-93dd-1429e3ed159d",
@@ -1587,7 +1647,8 @@
       "row_number": 33,
       "created_at": 1791112731126,
       "updated_at": 1791130668491,
-      "imageUrl": "/uploads/1978144d-dc64-413e-88de-7408d79e0cc7.jpeg"
+      "imageUrl": "/uploads/1978144d-dc64-413e-88de-7408d79e0cc7.jpeg",
+      "auctionId": "811272a3-db3d-4612-8a8a-05187a85ee99"
     },
     {
       "id": "cb791ab0-04b8-4fd4-b6b8-a22ca36c2240",
@@ -1635,7 +1696,8 @@
       "row_number": 34,
       "created_at": 1791112731126,
       "updated_at": 1791131264139,
-      "imageUrl": "/uploads/f6c62591-fce7-462c-aa57-becf79789da4.jpeg"
+      "imageUrl": "/uploads/f6c62591-fce7-462c-aa57-becf79789da4.jpeg",
+      "auctionId": "811272a3-db3d-4612-8a8a-05187a85ee99"
     },
     {
       "id": "98b0ccd9-d231-4fc4-9be5-098020ed5a22",
@@ -1683,7 +1745,8 @@
       "row_number": 35,
       "created_at": 1791112731126,
       "updated_at": 1791130324787,
-      "imageUrl": "/uploads/ea5f7fbd-d38d-40b6-a1bb-62cffef29930.jpeg"
+      "imageUrl": "/uploads/ea5f7fbd-d38d-40b6-a1bb-62cffef29930.jpeg",
+      "auctionId": "811272a3-db3d-4612-8a8a-05187a85ee99"
     },
     {
       "id": "eebad86d-e514-4ea5-97d9-ab1b32233ca4",
@@ -1730,7 +1793,8 @@
       "sheet_source": "Form Responses 1",
       "row_number": 36,
       "created_at": 1791112731126,
-      "updated_at": 1791112731126
+      "updated_at": 1791112731126,
+      "auctionId": "811272a3-db3d-4612-8a8a-05187a85ee99"
     },
     {
       "id": "d0d00318-fc97-464d-8bd5-f6325a2b12ba",
@@ -1784,7 +1848,8 @@
         "registration_id": "#NEW-19",
         "full_name": "Sudhanshu Kumar"
       },
-      "imageUrl": "/uploads/21f8a808-e9bc-4fe2-ab73-8177f184ea55.jpeg"
+      "imageUrl": "/uploads/21f8a808-e9bc-4fe2-ab73-8177f184ea55.jpeg",
+      "auctionId": "811272a3-db3d-4612-8a8a-05187a85ee99"
     },
     {
       "id": "955ed29b-1052-419e-bfa0-2e57af4e4c51",
@@ -1832,7 +1897,8 @@
       "row_number": 38,
       "created_at": 1791112731126,
       "updated_at": 1791131402573,
-      "imageUrl": "/uploads/09eb5372-c036-4ccf-93a4-ce2908dc1b6b.png"
+      "imageUrl": "/uploads/09eb5372-c036-4ccf-93a4-ce2908dc1b6b.png",
+      "auctionId": "811272a3-db3d-4612-8a8a-05187a85ee99"
     },
     {
       "id": "fb9b7edd-01a4-437f-ab6a-d85f42613678",
@@ -1880,7 +1946,8 @@
       "row_number": 39,
       "created_at": 1791112731126,
       "updated_at": 1791130362406,
-      "imageUrl": "/uploads/1051e314-3803-45fe-9297-332d5ad9ad8f.jpeg"
+      "imageUrl": "/uploads/1051e314-3803-45fe-9297-332d5ad9ad8f.jpeg",
+      "auctionId": "811272a3-db3d-4612-8a8a-05187a85ee99"
     },
     {
       "id": "23bd864f-dbc2-4e38-aa2a-e2f3b344a481",
@@ -1929,7 +1996,8 @@
       "row_number": 7,
       "created_at": 1791112731139,
       "updated_at": 1791128917870,
-      "imageUrl": "/uploads/834c85fc-24ab-4011-9e38-9531afaf4e31.jpg"
+      "imageUrl": "/uploads/834c85fc-24ab-4011-9e38-9531afaf4e31.jpg",
+      "auctionId": "811272a3-db3d-4612-8a8a-05187a85ee99"
     },
     {
       "id": "2a18e68e-8e42-4eb3-a903-2ef1052bd981",
@@ -1978,7 +2046,8 @@
       "row_number": 8,
       "created_at": 1791112731139,
       "updated_at": 1791128871356,
-      "imageUrl": "/uploads/2603b83f-69b8-4ecf-a910-7845c11403ef.jpg"
+      "imageUrl": "/uploads/2603b83f-69b8-4ecf-a910-7845c11403ef.jpg",
+      "auctionId": "811272a3-db3d-4612-8a8a-05187a85ee99"
     },
     {
       "id": "84430ee6-961c-49a4-a66e-3451d3868110",
@@ -2027,7 +2096,8 @@
       "row_number": 9,
       "created_at": 1791112731139,
       "updated_at": 1791128951339,
-      "imageUrl": "/uploads/14e84ed8-7530-4f28-9548-80fa27bc1771.jpg"
+      "imageUrl": "/uploads/14e84ed8-7530-4f28-9548-80fa27bc1771.jpg",
+      "auctionId": "811272a3-db3d-4612-8a8a-05187a85ee99"
     },
     {
       "id": "089d2875-bac9-4bc9-93ed-3aafdfd545db",
@@ -2076,7 +2146,8 @@
       "row_number": 10,
       "created_at": 1791112731139,
       "updated_at": 1791128821682,
-      "imageUrl": "/uploads/3b3b662a-70cf-408c-8141-57490b19f3fa.jpg"
+      "imageUrl": "/uploads/3b3b662a-70cf-408c-8141-57490b19f3fa.jpg",
+      "auctionId": "811272a3-db3d-4612-8a8a-05187a85ee99"
     },
     {
       "id": "7f9e913a-4c77-4592-9b91-2459dd3e46e4",
@@ -2125,7 +2196,8 @@
       "row_number": 14,
       "created_at": 1791112731139,
       "updated_at": 1791128888129,
-      "imageUrl": "/uploads/9389808e-9b75-4772-9a6d-b47387828ed2.jpg"
+      "imageUrl": "/uploads/9389808e-9b75-4772-9a6d-b47387828ed2.jpg",
+      "auctionId": "811272a3-db3d-4612-8a8a-05187a85ee99"
     },
     {
       "id": "a0142462-4f79-4292-b00a-17cf78b98587",
@@ -2174,7 +2246,8 @@
       "row_number": 15,
       "created_at": 1791112731139,
       "updated_at": 1791128966017,
-      "imageUrl": "/uploads/3c4a0ef6-fb2f-48cf-8f2c-df5aba804785.jpg"
+      "imageUrl": "/uploads/3c4a0ef6-fb2f-48cf-8f2c-df5aba804785.jpg",
+      "auctionId": "811272a3-db3d-4612-8a8a-05187a85ee99"
     },
     {
       "id": "9f0c8ad2-6151-4749-a557-dca9c5e93c61",
@@ -2223,7 +2296,8 @@
       "row_number": 18,
       "created_at": 1791112731139,
       "updated_at": 1791128901629,
-      "imageUrl": "/uploads/5855a37f-01d8-4023-8d0b-89503c267fdc.jpg"
+      "imageUrl": "/uploads/5855a37f-01d8-4023-8d0b-89503c267fdc.jpg",
+      "auctionId": "811272a3-db3d-4612-8a8a-05187a85ee99"
     },
     {
       "id": "0f69caa7-5ad5-4e69-8598-5dadc92cbee5",
@@ -2271,7 +2345,8 @@
       "sheet_source": "Sheet1",
       "row_number": 19,
       "created_at": 1791112731139,
-      "updated_at": 1791127836065
+      "updated_at": 1791127836065,
+      "auctionId": "811272a3-db3d-4612-8a8a-05187a85ee99"
     },
     {
       "id": "ba54bf72-58b6-45e2-b3c8-80eed0bdb5be",
@@ -2320,7 +2395,8 @@
       "row_number": 21,
       "created_at": 1791112731139,
       "updated_at": 1791128960910,
-      "imageUrl": "/uploads/054a90b3-afc3-474b-8be5-73541f68db43.jpg"
+      "imageUrl": "/uploads/054a90b3-afc3-474b-8be5-73541f68db43.jpg",
+      "auctionId": "811272a3-db3d-4612-8a8a-05187a85ee99"
     },
     {
       "id": "1a294472-e8ec-47ff-9d9c-2d9bf5f4d294",
@@ -2369,7 +2445,8 @@
       "row_number": 22,
       "created_at": 1791112731139,
       "updated_at": 1791128865249,
-      "imageUrl": "/uploads/9e555bd4-1ddf-4656-8bb4-525c5799d5c2.jpg"
+      "imageUrl": "/uploads/9e555bd4-1ddf-4656-8bb4-525c5799d5c2.jpg",
+      "auctionId": "811272a3-db3d-4612-8a8a-05187a85ee99"
     },
     {
       "id": "9a1d57d8-7eac-4db1-ab24-0912ca5a16c5",
@@ -2418,7 +2495,8 @@
       "row_number": 23,
       "created_at": 1791112731139,
       "updated_at": 1791128811632,
-      "imageUrl": "/uploads/ecfa6925-dd6c-4654-8857-5ff8d4e029b1.jpeg"
+      "imageUrl": "/uploads/ecfa6925-dd6c-4654-8857-5ff8d4e029b1.jpeg",
+      "auctionId": "811272a3-db3d-4612-8a8a-05187a85ee99"
     },
     {
       "id": "d05a75ed-9bb5-433f-8114-7a38a7879eb2",
@@ -2470,7 +2548,8 @@
       "status": "SOLD",
       "soldTo": "team-shadow-strikers",
       "soldPrice": 310,
-      "soldAt": "2026-10-04T11:28:51.403Z"
+      "soldAt": "2026-10-04T11:28:51.403Z",
+      "auctionId": "811272a3-db3d-4612-8a8a-05187a85ee99"
     },
     {
       "id": "f62e60ad-ead3-41a5-bd7f-0b2418f8130e",
@@ -2524,7 +2603,8 @@
         "id": "0f69caa7-5ad5-4e69-8598-5dadc92cbee5",
         "registration_id": "#RET-18",
         "full_name": "Abhishek Kumar"
-      }
+      },
+      "auctionId": "811272a3-db3d-4612-8a8a-05187a85ee99"
     },
     {
       "id": "2e993a5d-3cb1-432c-9594-8f0102619065",
@@ -2573,7 +2653,8 @@
       "row_number": 29,
       "created_at": 1791112731139,
       "updated_at": 1791128893360,
-      "imageUrl": "/uploads/f42d5691-14c2-481c-b484-680b7bd1edbc.jpg"
+      "imageUrl": "/uploads/f42d5691-14c2-481c-b484-680b7bd1edbc.jpg",
+      "auctionId": "811272a3-db3d-4612-8a8a-05187a85ee99"
     },
     {
       "id": "03331c7d-f89c-4853-ae3d-eb1fb2d523f2",
@@ -2622,7 +2703,8 @@
       "row_number": 30,
       "created_at": 1791112731139,
       "updated_at": 1791128940871,
-      "imageUrl": "/uploads/1e4f1a95-9f62-4754-a49c-312e7bc4a6ce.jpg"
+      "imageUrl": "/uploads/1e4f1a95-9f62-4754-a49c-312e7bc4a6ce.jpg",
+      "auctionId": "811272a3-db3d-4612-8a8a-05187a85ee99"
     },
     {
       "id": "4b5fe214-3eac-449a-a792-3a18e0d67a3d",
@@ -2671,7 +2753,8 @@
       "row_number": 32,
       "created_at": 1791112731139,
       "updated_at": 1791128732328,
-      "imageUrl": "/uploads/63476016-4559-44a7-9906-88f56f2f4e23.jpg"
+      "imageUrl": "/uploads/63476016-4559-44a7-9906-88f56f2f4e23.jpg",
+      "auctionId": "811272a3-db3d-4612-8a8a-05187a85ee99"
     },
     {
       "id": "d9340cf9-ccee-4dae-ad24-4c037fea7069",
@@ -2720,7 +2803,8 @@
       "row_number": 33,
       "created_at": 1791112731139,
       "updated_at": 1791128929358,
-      "imageUrl": "/uploads/920a66d3-8617-4be7-8eac-b325fce25438.jpg"
+      "imageUrl": "/uploads/920a66d3-8617-4be7-8eac-b325fce25438.jpg",
+      "auctionId": "811272a3-db3d-4612-8a8a-05187a85ee99"
     },
     {
       "id": "00e4a25d-3d6c-4190-b6b7-434689b1891a",
@@ -2769,7 +2853,8 @@
       "row_number": 35,
       "created_at": 1791112731139,
       "updated_at": 1791128728897,
-      "imageUrl": "/uploads/881a0543-fbd7-4bca-bc58-a023856f23b4.jpg"
+      "imageUrl": "/uploads/881a0543-fbd7-4bca-bc58-a023856f23b4.jpg",
+      "auctionId": "811272a3-db3d-4612-8a8a-05187a85ee99"
     },
     {
       "id": "10fd8084-fce8-4836-9092-29ae8f057da4",
@@ -2818,7 +2903,8 @@
       "row_number": 36,
       "created_at": 1791112731139,
       "updated_at": 1791128936959,
-      "imageUrl": "/uploads/e2176b4e-742f-40bc-8f8c-4855f3123442.jpg"
+      "imageUrl": "/uploads/e2176b4e-742f-40bc-8f8c-4855f3123442.jpg",
+      "auctionId": "811272a3-db3d-4612-8a8a-05187a85ee99"
     },
     {
       "id": "1ba89c38-0292-42a3-9f51-5c350ff6f309",
@@ -2867,7 +2953,8 @@
       "row_number": 37,
       "created_at": 1791112731139,
       "updated_at": 1791128875584,
-      "imageUrl": "/uploads/519a2402-fbe8-4f69-aa98-2088d084843b.jpg"
+      "imageUrl": "/uploads/519a2402-fbe8-4f69-aa98-2088d084843b.jpg",
+      "auctionId": "811272a3-db3d-4612-8a8a-05187a85ee99"
     },
     {
       "id": "5bffe316-b41a-43ed-9faf-1b70ec5dc06a",
@@ -2916,7 +3003,8 @@
       "row_number": 39,
       "created_at": 1791112731140,
       "updated_at": 1791128825725,
-      "imageUrl": "/uploads/79e58aa5-e091-4eb8-bcf4-4b3ad1e4517f.jpg"
+      "imageUrl": "/uploads/79e58aa5-e091-4eb8-bcf4-4b3ad1e4517f.jpg",
+      "auctionId": "811272a3-db3d-4612-8a8a-05187a85ee99"
     },
     {
       "id": "ac2f21bb-db78-4b7b-a36e-861dc10745c6",
@@ -2965,7 +3053,8 @@
       "row_number": 40,
       "created_at": 1791112731140,
       "updated_at": 1791128816663,
-      "imageUrl": "/uploads/f45edc5d-5a86-4950-aee5-087e0b6697df.jpg"
+      "imageUrl": "/uploads/f45edc5d-5a86-4950-aee5-087e0b6697df.jpg",
+      "auctionId": "811272a3-db3d-4612-8a8a-05187a85ee99"
     },
     {
       "id": "933d2f27-2aa5-4cd4-af9e-0d666a91ea7e",
@@ -3017,7 +3106,8 @@
       "status": "SOLD",
       "soldTo": "team-phoenix-blitz",
       "soldPrice": 340,
-      "soldAt": "2026-10-04T11:28:01.307Z"
+      "soldAt": "2026-10-04T11:28:01.307Z",
+      "auctionId": "811272a3-db3d-4612-8a8a-05187a85ee99"
     },
     {
       "id": "48ca864d-2758-4279-991e-60d7fb5a78a2",
@@ -3066,7 +3156,8 @@
       "row_number": 48,
       "created_at": 1791112731140,
       "updated_at": 1791128836459,
-      "imageUrl": "/uploads/98b48fbd-d520-453a-874e-58f4a6567fbb.jpg"
+      "imageUrl": "/uploads/98b48fbd-d520-453a-874e-58f4a6567fbb.jpg",
+      "auctionId": "811272a3-db3d-4612-8a8a-05187a85ee99"
     },
     {
       "id": "d850610b-06e7-4fb2-934e-7b441b8bdf33",
@@ -3115,7 +3206,8 @@
       "row_number": 49,
       "created_at": 1791112731140,
       "updated_at": 1791128956077,
-      "imageUrl": "/uploads/3b96a14f-ac08-4686-b0c7-676253acf209.jpg"
+      "imageUrl": "/uploads/3b96a14f-ac08-4686-b0c7-676253acf209.jpg",
+      "auctionId": "811272a3-db3d-4612-8a8a-05187a85ee99"
     }
   ],
   "auction_players": [
@@ -4048,6 +4140,906 @@
       "current_bid": 0,
       "created_at": 1791112731146,
       "updated_at": 1791112731146
+    },
+    {
+      "id": "988f6016-2f7b-46fe-88d5-b2fa4cd90778",
+      "auction_id": "4942b7ab-df88-44f4-a53f-d6617e65cfde",
+      "player_id": "73668537-ef31-489e-839b-29f5c0ecfd8e",
+      "auction_category": "Category B",
+      "auction_base_price": 60,
+      "auction_status": "WAITING",
+      "sold_price": null,
+      "sold_team_id": null,
+      "auction_order": 1,
+      "is_current_player": false,
+      "current_bid": 0,
+      "created_at": 1791142986499,
+      "updated_at": 1791142986499
+    },
+    {
+      "id": "ddacc30f-354a-48c7-b431-22a3ad8e588a",
+      "auction_id": "4942b7ab-df88-44f4-a53f-d6617e65cfde",
+      "player_id": "748da544-de59-41ea-8d7e-3c7adb377ca2",
+      "auction_category": "Category B",
+      "auction_base_price": 60,
+      "auction_status": "WAITING",
+      "sold_price": null,
+      "sold_team_id": null,
+      "auction_order": 2,
+      "is_current_player": false,
+      "current_bid": 0,
+      "created_at": 1791142986499,
+      "updated_at": 1791142986499
+    },
+    {
+      "id": "14ace1bb-7a93-43ef-b29c-f3772dbfd797",
+      "auction_id": "4942b7ab-df88-44f4-a53f-d6617e65cfde",
+      "player_id": "c022bd1f-93e4-4e23-81c9-36fae884d1eb",
+      "auction_category": "Category C",
+      "auction_base_price": 40,
+      "auction_status": "WAITING",
+      "sold_price": null,
+      "sold_team_id": null,
+      "auction_order": 3,
+      "is_current_player": false,
+      "current_bid": 0,
+      "created_at": 1791142986499,
+      "updated_at": 1791142986499
+    },
+    {
+      "id": "d4c2356d-0f21-4a84-a55c-bcfccd284f4a",
+      "auction_id": "4942b7ab-df88-44f4-a53f-d6617e65cfde",
+      "player_id": "1bf80c96-968f-408d-9250-4ebaca25ff6d",
+      "auction_category": "Category C",
+      "auction_base_price": 40,
+      "auction_status": "WAITING",
+      "sold_price": null,
+      "sold_team_id": null,
+      "auction_order": 4,
+      "is_current_player": false,
+      "current_bid": 0,
+      "created_at": 1791142986499,
+      "updated_at": 1791142986499
+    },
+    {
+      "id": "06f9a955-1512-4e78-905e-af1f62d88c9b",
+      "auction_id": "4942b7ab-df88-44f4-a53f-d6617e65cfde",
+      "player_id": "8772047b-abfb-4cfa-83a5-4c545dc72843",
+      "auction_category": "Category C",
+      "auction_base_price": 40,
+      "auction_status": "WAITING",
+      "sold_price": null,
+      "sold_team_id": null,
+      "auction_order": 5,
+      "is_current_player": false,
+      "current_bid": 0,
+      "created_at": 1791142986499,
+      "updated_at": 1791142986499
+    },
+    {
+      "id": "ed86d87e-c99b-4eb1-9c18-bdcbc7993b76",
+      "auction_id": "4942b7ab-df88-44f4-a53f-d6617e65cfde",
+      "player_id": "8312ec69-ede8-4194-8a68-2969a8146f4d",
+      "auction_category": "Category A",
+      "auction_base_price": 100,
+      "auction_status": "WAITING",
+      "sold_price": null,
+      "sold_team_id": null,
+      "auction_order": 6,
+      "is_current_player": false,
+      "current_bid": 0,
+      "created_at": 1791142986499,
+      "updated_at": 1791142986499
+    },
+    {
+      "id": "06f8ceb0-cb3c-4654-9c21-dbe79802c47a",
+      "auction_id": "4942b7ab-df88-44f4-a53f-d6617e65cfde",
+      "player_id": "b4923ba1-563d-46ed-b103-6524375f33ec",
+      "auction_category": "Category C",
+      "auction_base_price": 40,
+      "auction_status": "WAITING",
+      "sold_price": null,
+      "sold_team_id": null,
+      "auction_order": 7,
+      "is_current_player": false,
+      "current_bid": 0,
+      "created_at": 1791142986499,
+      "updated_at": 1791142986499
+    },
+    {
+      "id": "c3ba6463-6fc3-41ae-a792-0e29b372baa2",
+      "auction_id": "4942b7ab-df88-44f4-a53f-d6617e65cfde",
+      "player_id": "40da8c16-44d2-497c-89af-82a39d1b35bf",
+      "auction_category": "Category C",
+      "auction_base_price": 40,
+      "auction_status": "WAITING",
+      "sold_price": null,
+      "sold_team_id": null,
+      "auction_order": 8,
+      "is_current_player": false,
+      "current_bid": 0,
+      "created_at": 1791142986499,
+      "updated_at": 1791142986499
+    },
+    {
+      "id": "b2424f09-3824-40ff-9ea5-6217c6fcaf3b",
+      "auction_id": "4942b7ab-df88-44f4-a53f-d6617e65cfde",
+      "player_id": "4a38b6b2-d41b-401c-9dc5-bd2dc9fbf1e6",
+      "auction_category": "Category B",
+      "auction_base_price": 60,
+      "auction_status": "WAITING",
+      "sold_price": null,
+      "sold_team_id": null,
+      "auction_order": 9,
+      "is_current_player": false,
+      "current_bid": 0,
+      "created_at": 1791142986499,
+      "updated_at": 1791142986499
+    },
+    {
+      "id": "908a4304-d350-403a-b462-f934b9b71455",
+      "auction_id": "4942b7ab-df88-44f4-a53f-d6617e65cfde",
+      "player_id": "ea42352a-d853-4c38-bcb4-db8712193cfd",
+      "auction_category": "Category A",
+      "auction_base_price": 100,
+      "auction_status": "WAITING",
+      "sold_price": null,
+      "sold_team_id": null,
+      "auction_order": 10,
+      "is_current_player": false,
+      "current_bid": 0,
+      "created_at": 1791142986499,
+      "updated_at": 1791142986499
+    },
+    {
+      "id": "48b0c203-5e82-4f33-a1fb-596a9c306489",
+      "auction_id": "4942b7ab-df88-44f4-a53f-d6617e65cfde",
+      "player_id": "f26700c8-5f6e-4876-a5ef-66982703d2e5",
+      "auction_category": "Category A",
+      "auction_base_price": 100,
+      "auction_status": "WAITING",
+      "sold_price": null,
+      "sold_team_id": null,
+      "auction_order": 11,
+      "is_current_player": false,
+      "current_bid": 0,
+      "created_at": 1791142986499,
+      "updated_at": 1791142986499
+    },
+    {
+      "id": "835a7e00-fccf-4fe8-916b-44dfbfde9cd7",
+      "auction_id": "4942b7ab-df88-44f4-a53f-d6617e65cfde",
+      "player_id": "691d80e6-0945-49b4-b760-5f75051d33c2",
+      "auction_category": "Category C",
+      "auction_base_price": 40,
+      "auction_status": "WAITING",
+      "sold_price": null,
+      "sold_team_id": null,
+      "auction_order": 12,
+      "is_current_player": false,
+      "current_bid": 0,
+      "created_at": 1791142986499,
+      "updated_at": 1791142986499
+    },
+    {
+      "id": "12fac366-f450-42b6-9c5d-bdef9f1cc655",
+      "auction_id": "4942b7ab-df88-44f4-a53f-d6617e65cfde",
+      "player_id": "e472c336-c28e-4396-948a-7ff74ae44094",
+      "auction_category": "Category C",
+      "auction_base_price": 40,
+      "auction_status": "WAITING",
+      "sold_price": null,
+      "sold_team_id": null,
+      "auction_order": 13,
+      "is_current_player": false,
+      "current_bid": 0,
+      "created_at": 1791142986499,
+      "updated_at": 1791142986499
+    },
+    {
+      "id": "cf943516-5c6e-4209-820d-a0c5cbfc85ee",
+      "auction_id": "4942b7ab-df88-44f4-a53f-d6617e65cfde",
+      "player_id": "44590a02-be67-4d09-895f-0ad197b0715a",
+      "auction_category": "Category C",
+      "auction_base_price": 40,
+      "auction_status": "WAITING",
+      "sold_price": null,
+      "sold_team_id": null,
+      "auction_order": 14,
+      "is_current_player": false,
+      "current_bid": 0,
+      "created_at": 1791142986499,
+      "updated_at": 1791142986499
+    },
+    {
+      "id": "c1c41929-6293-49ec-86d0-eb9c40234ca9",
+      "auction_id": "4942b7ab-df88-44f4-a53f-d6617e65cfde",
+      "player_id": "7e568a79-1c0d-443f-80c9-fd7a78972593",
+      "auction_category": "Category D",
+      "auction_base_price": 200,
+      "auction_status": "WAITING",
+      "sold_price": null,
+      "sold_team_id": null,
+      "auction_order": 15,
+      "is_current_player": false,
+      "current_bid": 0,
+      "created_at": 1791142986499,
+      "updated_at": 1791142986499
+    },
+    {
+      "id": "61f09eca-1da7-49f0-9afb-a66d0e4a8425",
+      "auction_id": "4942b7ab-df88-44f4-a53f-d6617e65cfde",
+      "player_id": "2d23d440-4380-474b-a2fd-a1a29f377732",
+      "auction_category": "Category C",
+      "auction_base_price": 40,
+      "auction_status": "WAITING",
+      "sold_price": null,
+      "sold_team_id": null,
+      "auction_order": 16,
+      "is_current_player": false,
+      "current_bid": 0,
+      "created_at": 1791142986499,
+      "updated_at": 1791142986499
+    },
+    {
+      "id": "7d646331-87d5-42e7-96fd-abe71f27cdb4",
+      "auction_id": "4942b7ab-df88-44f4-a53f-d6617e65cfde",
+      "player_id": "8dc337ba-aa60-4538-9483-e3e6f08ada42",
+      "auction_category": "Category C",
+      "auction_base_price": 40,
+      "auction_status": "WAITING",
+      "sold_price": null,
+      "sold_team_id": null,
+      "auction_order": 17,
+      "is_current_player": false,
+      "current_bid": 0,
+      "created_at": 1791142986499,
+      "updated_at": 1791142986499
+    },
+    {
+      "id": "62701153-ea75-45a6-b5c1-892d9ed1b9ee",
+      "auction_id": "4942b7ab-df88-44f4-a53f-d6617e65cfde",
+      "player_id": "fe90dbfa-f808-4385-86b0-7eb7a294843b",
+      "auction_category": "Category C",
+      "auction_base_price": 40,
+      "auction_status": "WAITING",
+      "sold_price": null,
+      "sold_team_id": null,
+      "auction_order": 18,
+      "is_current_player": false,
+      "current_bid": 0,
+      "created_at": 1791142986499,
+      "updated_at": 1791142986499
+    },
+    {
+      "id": "69bcb171-c8d4-4089-85bf-7cf544b73824",
+      "auction_id": "4942b7ab-df88-44f4-a53f-d6617e65cfde",
+      "player_id": "fe3100fa-ca92-4668-b833-153c840d3f2b",
+      "auction_category": "Category C",
+      "auction_base_price": 40,
+      "auction_status": "WAITING",
+      "sold_price": null,
+      "sold_team_id": null,
+      "auction_order": 19,
+      "is_current_player": false,
+      "current_bid": 0,
+      "created_at": 1791142986499,
+      "updated_at": 1791142986499
+    },
+    {
+      "id": "2308145b-ce3b-4df9-99cf-37c203e10622",
+      "auction_id": "4942b7ab-df88-44f4-a53f-d6617e65cfde",
+      "player_id": "1b3c6467-431d-44de-a111-e86a6eb5aa5f",
+      "auction_category": "Category B",
+      "auction_base_price": 60,
+      "auction_status": "WAITING",
+      "sold_price": null,
+      "sold_team_id": null,
+      "auction_order": 20,
+      "is_current_player": false,
+      "current_bid": 0,
+      "created_at": 1791142986499,
+      "updated_at": 1791142986499
+    },
+    {
+      "id": "2a419100-2ef1-4119-9c51-ee6fef5fae4d",
+      "auction_id": "4942b7ab-df88-44f4-a53f-d6617e65cfde",
+      "player_id": "082352d5-b075-445e-89f4-21e8d1486983",
+      "auction_category": "Category A",
+      "auction_base_price": 100,
+      "auction_status": "WAITING",
+      "sold_price": null,
+      "sold_team_id": null,
+      "auction_order": 21,
+      "is_current_player": false,
+      "current_bid": 0,
+      "created_at": 1791142986499,
+      "updated_at": 1791142986499
+    },
+    {
+      "id": "e81eeb34-2349-42a7-98bc-421f000b3845",
+      "auction_id": "4942b7ab-df88-44f4-a53f-d6617e65cfde",
+      "player_id": "9efe5032-4afe-4614-8d70-ccb9efe556ab",
+      "auction_category": "Category D",
+      "auction_base_price": 200,
+      "auction_status": "WAITING",
+      "sold_price": null,
+      "sold_team_id": null,
+      "auction_order": 22,
+      "is_current_player": false,
+      "current_bid": 0,
+      "created_at": 1791142986499,
+      "updated_at": 1791142986499
+    },
+    {
+      "id": "7699bd67-94c3-4c4c-988e-52d05914f371",
+      "auction_id": "4942b7ab-df88-44f4-a53f-d6617e65cfde",
+      "player_id": "317f4c6c-721c-43fe-9633-bc0b72464f3a",
+      "auction_category": "Category B",
+      "auction_base_price": 60,
+      "auction_status": "WAITING",
+      "sold_price": null,
+      "sold_team_id": null,
+      "auction_order": 23,
+      "is_current_player": false,
+      "current_bid": 0,
+      "created_at": 1791142986499,
+      "updated_at": 1791142986499
+    },
+    {
+      "id": "88d15e4d-9005-42fd-ad5f-6819a1079652",
+      "auction_id": "4942b7ab-df88-44f4-a53f-d6617e65cfde",
+      "player_id": "67797548-87aa-4533-8503-c5654fbf6a9f",
+      "auction_category": "Category C",
+      "auction_base_price": 40,
+      "auction_status": "WAITING",
+      "sold_price": null,
+      "sold_team_id": null,
+      "auction_order": 24,
+      "is_current_player": false,
+      "current_bid": 0,
+      "created_at": 1791142986499,
+      "updated_at": 1791142986499
+    },
+    {
+      "id": "980ae070-c26a-4fc2-a8fa-94e0d6b063fd",
+      "auction_id": "4942b7ab-df88-44f4-a53f-d6617e65cfde",
+      "player_id": "d566b861-cff0-45b5-81b6-3f933f6b9a18",
+      "auction_category": "Category B",
+      "auction_base_price": 60,
+      "auction_status": "WAITING",
+      "sold_price": null,
+      "sold_team_id": null,
+      "auction_order": 25,
+      "is_current_player": false,
+      "current_bid": 0,
+      "created_at": 1791142986499,
+      "updated_at": 1791142986499
+    },
+    {
+      "id": "1c3f0889-4669-49b4-9678-8408751382d3",
+      "auction_id": "4942b7ab-df88-44f4-a53f-d6617e65cfde",
+      "player_id": "7c34104c-b119-4d01-81df-e5e3da5a20ef",
+      "auction_category": "Category B",
+      "auction_base_price": 60,
+      "auction_status": "WAITING",
+      "sold_price": null,
+      "sold_team_id": null,
+      "auction_order": 26,
+      "is_current_player": false,
+      "current_bid": 0,
+      "created_at": 1791142986499,
+      "updated_at": 1791142986499
+    },
+    {
+      "id": "c867de47-13d1-4a0d-ab6d-ee05d9062554",
+      "auction_id": "4942b7ab-df88-44f4-a53f-d6617e65cfde",
+      "player_id": "13ff1e64-ff09-40f7-b578-a8b059834594",
+      "auction_category": "Category C",
+      "auction_base_price": 40,
+      "auction_status": "WAITING",
+      "sold_price": null,
+      "sold_team_id": null,
+      "auction_order": 27,
+      "is_current_player": false,
+      "current_bid": 0,
+      "created_at": 1791142986499,
+      "updated_at": 1791142986499
+    },
+    {
+      "id": "812db9ac-5a7c-4d3f-a88d-5ae677e6d1a1",
+      "auction_id": "4942b7ab-df88-44f4-a53f-d6617e65cfde",
+      "player_id": "6f8a60d5-57ec-41a3-b6e9-c34bf6c54978",
+      "auction_category": "Category C",
+      "auction_base_price": 40,
+      "auction_status": "WAITING",
+      "sold_price": null,
+      "sold_team_id": null,
+      "auction_order": 28,
+      "is_current_player": false,
+      "current_bid": 0,
+      "created_at": 1791142986499,
+      "updated_at": 1791142986499
+    },
+    {
+      "id": "03ad5aa5-c5fb-4fbd-939c-e266001a05a2",
+      "auction_id": "4942b7ab-df88-44f4-a53f-d6617e65cfde",
+      "player_id": "d2cce037-dee7-4509-80bd-9330a6bcc8c2",
+      "auction_category": "Category D",
+      "auction_base_price": 200,
+      "auction_status": "WAITING",
+      "sold_price": null,
+      "sold_team_id": null,
+      "auction_order": 29,
+      "is_current_player": false,
+      "current_bid": 0,
+      "created_at": 1791142986499,
+      "updated_at": 1791142986499
+    },
+    {
+      "id": "3c2857f3-f33e-4fff-b840-c63641b4fb8c",
+      "auction_id": "4942b7ab-df88-44f4-a53f-d6617e65cfde",
+      "player_id": "6b2487e9-b083-4b52-8c26-84fd83aeb972",
+      "auction_category": "Category D",
+      "auction_base_price": 200,
+      "auction_status": "WAITING",
+      "sold_price": null,
+      "sold_team_id": null,
+      "auction_order": 30,
+      "is_current_player": false,
+      "current_bid": 0,
+      "created_at": 1791142986499,
+      "updated_at": 1791142986499
+    },
+    {
+      "id": "daacf647-4dd3-40dd-a2de-942903859425",
+      "auction_id": "4942b7ab-df88-44f4-a53f-d6617e65cfde",
+      "player_id": "918a417a-029a-4893-93dd-1429e3ed159d",
+      "auction_category": "Category C",
+      "auction_base_price": 40,
+      "auction_status": "WAITING",
+      "sold_price": null,
+      "sold_team_id": null,
+      "auction_order": 31,
+      "is_current_player": false,
+      "current_bid": 0,
+      "created_at": 1791142986499,
+      "updated_at": 1791142986499
+    },
+    {
+      "id": "b9549e7f-632b-4cf0-a3cf-62cb64c681e2",
+      "auction_id": "4942b7ab-df88-44f4-a53f-d6617e65cfde",
+      "player_id": "cb791ab0-04b8-4fd4-b6b8-a22ca36c2240",
+      "auction_category": "Category D",
+      "auction_base_price": 200,
+      "auction_status": "WAITING",
+      "sold_price": null,
+      "sold_team_id": null,
+      "auction_order": 32,
+      "is_current_player": false,
+      "current_bid": 0,
+      "created_at": 1791142986499,
+      "updated_at": 1791142986499
+    },
+    {
+      "id": "55735ab6-1033-46e9-bb56-009ab8133861",
+      "auction_id": "4942b7ab-df88-44f4-a53f-d6617e65cfde",
+      "player_id": "98b0ccd9-d231-4fc4-9be5-098020ed5a22",
+      "auction_category": "Category D",
+      "auction_base_price": 200,
+      "auction_status": "WAITING",
+      "sold_price": null,
+      "sold_team_id": null,
+      "auction_order": 33,
+      "is_current_player": false,
+      "current_bid": 0,
+      "created_at": 1791142986499,
+      "updated_at": 1791142986499
+    },
+    {
+      "id": "cd7ef72a-98cf-4e18-8b68-ee32a2997e3a",
+      "auction_id": "4942b7ab-df88-44f4-a53f-d6617e65cfde",
+      "player_id": "eebad86d-e514-4ea5-97d9-ab1b32233ca4",
+      "auction_category": "Category C",
+      "auction_base_price": 40,
+      "auction_status": "WAITING",
+      "sold_price": null,
+      "sold_team_id": null,
+      "auction_order": 34,
+      "is_current_player": false,
+      "current_bid": 0,
+      "created_at": 1791142986499,
+      "updated_at": 1791142986499
+    },
+    {
+      "id": "4dc804f6-5c5e-4d51-a13b-d1e52eb71741",
+      "auction_id": "4942b7ab-df88-44f4-a53f-d6617e65cfde",
+      "player_id": "d0d00318-fc97-464d-8bd5-f6325a2b12ba",
+      "auction_category": "Category C",
+      "auction_base_price": 40,
+      "auction_status": "WAITING",
+      "sold_price": null,
+      "sold_team_id": null,
+      "auction_order": 35,
+      "is_current_player": false,
+      "current_bid": 0,
+      "created_at": 1791142986499,
+      "updated_at": 1791142986499
+    },
+    {
+      "id": "90305759-3754-4b4f-9120-7316751b63a5",
+      "auction_id": "4942b7ab-df88-44f4-a53f-d6617e65cfde",
+      "player_id": "955ed29b-1052-419e-bfa0-2e57af4e4c51",
+      "auction_category": "Category B",
+      "auction_base_price": 60,
+      "auction_status": "WAITING",
+      "sold_price": null,
+      "sold_team_id": null,
+      "auction_order": 36,
+      "is_current_player": false,
+      "current_bid": 0,
+      "created_at": 1791142986499,
+      "updated_at": 1791142986499
+    },
+    {
+      "id": "41bca140-abe4-4b87-81b5-321dfceb4211",
+      "auction_id": "4942b7ab-df88-44f4-a53f-d6617e65cfde",
+      "player_id": "fb9b7edd-01a4-437f-ab6a-d85f42613678",
+      "auction_category": "Category C",
+      "auction_base_price": 40,
+      "auction_status": "WAITING",
+      "sold_price": null,
+      "sold_team_id": null,
+      "auction_order": 37,
+      "is_current_player": false,
+      "current_bid": 0,
+      "created_at": 1791142986499,
+      "updated_at": 1791142986499
+    },
+    {
+      "id": "d5bc4b2b-a5a2-41a8-82b3-2c0c6a379e20",
+      "auction_id": "4942b7ab-df88-44f4-a53f-d6617e65cfde",
+      "player_id": "23bd864f-dbc2-4e38-aa2a-e2f3b344a481",
+      "auction_category": "Category A",
+      "auction_base_price": 100,
+      "auction_status": "WAITING",
+      "sold_price": null,
+      "sold_team_id": null,
+      "auction_order": 38,
+      "is_current_player": false,
+      "current_bid": 0,
+      "created_at": 1791142986499,
+      "updated_at": 1791142986499
+    },
+    {
+      "id": "93a1a4ed-79b7-4643-a0a0-722d31549792",
+      "auction_id": "4942b7ab-df88-44f4-a53f-d6617e65cfde",
+      "player_id": "2a18e68e-8e42-4eb3-a903-2ef1052bd981",
+      "auction_category": "Category A",
+      "auction_base_price": 100,
+      "auction_status": "WAITING",
+      "sold_price": null,
+      "sold_team_id": null,
+      "auction_order": 39,
+      "is_current_player": false,
+      "current_bid": 0,
+      "created_at": 1791142986499,
+      "updated_at": 1791142986499
+    },
+    {
+      "id": "81a1c0d8-d12d-4486-898b-147b8a59d0b7",
+      "auction_id": "4942b7ab-df88-44f4-a53f-d6617e65cfde",
+      "player_id": "84430ee6-961c-49a4-a66e-3451d3868110",
+      "auction_category": "Category A",
+      "auction_base_price": 100,
+      "auction_status": "WAITING",
+      "sold_price": null,
+      "sold_team_id": null,
+      "auction_order": 40,
+      "is_current_player": false,
+      "current_bid": 0,
+      "created_at": 1791142986499,
+      "updated_at": 1791142986499
+    },
+    {
+      "id": "5ff99c43-a74a-49be-8379-7ceb5e2c9c3d",
+      "auction_id": "4942b7ab-df88-44f4-a53f-d6617e65cfde",
+      "player_id": "089d2875-bac9-4bc9-93ed-3aafdfd545db",
+      "auction_category": "Category A",
+      "auction_base_price": 100,
+      "auction_status": "WAITING",
+      "sold_price": null,
+      "sold_team_id": null,
+      "auction_order": 41,
+      "is_current_player": false,
+      "current_bid": 0,
+      "created_at": 1791142986499,
+      "updated_at": 1791142986499
+    },
+    {
+      "id": "fbd4ce0c-a084-4b06-bcb3-2d9745b8269b",
+      "auction_id": "4942b7ab-df88-44f4-a53f-d6617e65cfde",
+      "player_id": "7f9e913a-4c77-4592-9b91-2459dd3e46e4",
+      "auction_category": "Category B",
+      "auction_base_price": 60,
+      "auction_status": "WAITING",
+      "sold_price": null,
+      "sold_team_id": null,
+      "auction_order": 42,
+      "is_current_player": false,
+      "current_bid": 0,
+      "created_at": 1791142986499,
+      "updated_at": 1791142986499
+    },
+    {
+      "id": "3f9be296-ad32-407c-b8d5-0c0db6e9e0c2",
+      "auction_id": "4942b7ab-df88-44f4-a53f-d6617e65cfde",
+      "player_id": "a0142462-4f79-4292-b00a-17cf78b98587",
+      "auction_category": "Category B",
+      "auction_base_price": 60,
+      "auction_status": "WAITING",
+      "sold_price": null,
+      "sold_team_id": null,
+      "auction_order": 43,
+      "is_current_player": false,
+      "current_bid": 0,
+      "created_at": 1791142986499,
+      "updated_at": 1791142986499
+    },
+    {
+      "id": "59564599-d05e-40ad-b340-8e2e11913116",
+      "auction_id": "4942b7ab-df88-44f4-a53f-d6617e65cfde",
+      "player_id": "9f0c8ad2-6151-4749-a557-dca9c5e93c61",
+      "auction_category": "Category B",
+      "auction_base_price": 60,
+      "auction_status": "WAITING",
+      "sold_price": null,
+      "sold_team_id": null,
+      "auction_order": 44,
+      "is_current_player": false,
+      "current_bid": 0,
+      "created_at": 1791142986499,
+      "updated_at": 1791142986499
+    },
+    {
+      "id": "6a917aa0-424a-496b-a585-00c3b94f4d70",
+      "auction_id": "4942b7ab-df88-44f4-a53f-d6617e65cfde",
+      "player_id": "0f69caa7-5ad5-4e69-8598-5dadc92cbee5",
+      "auction_category": "Category B",
+      "auction_base_price": 60,
+      "auction_status": "WAITING",
+      "sold_price": null,
+      "sold_team_id": null,
+      "auction_order": 45,
+      "is_current_player": false,
+      "current_bid": 0,
+      "created_at": 1791142986499,
+      "updated_at": 1791142986499
+    },
+    {
+      "id": "ce72c0e8-1015-467a-9ba7-48d520050283",
+      "auction_id": "4942b7ab-df88-44f4-a53f-d6617e65cfde",
+      "player_id": "ba54bf72-58b6-45e2-b3c8-80eed0bdb5be",
+      "auction_category": "Category B",
+      "auction_base_price": 60,
+      "auction_status": "WAITING",
+      "sold_price": null,
+      "sold_team_id": null,
+      "auction_order": 46,
+      "is_current_player": false,
+      "current_bid": 0,
+      "created_at": 1791142986499,
+      "updated_at": 1791142986499
+    },
+    {
+      "id": "39bb6f28-ede4-4754-b44d-b1dca29813a1",
+      "auction_id": "4942b7ab-df88-44f4-a53f-d6617e65cfde",
+      "player_id": "1a294472-e8ec-47ff-9d9c-2d9bf5f4d294",
+      "auction_category": "Category B",
+      "auction_base_price": 60,
+      "auction_status": "WAITING",
+      "sold_price": null,
+      "sold_team_id": null,
+      "auction_order": 47,
+      "is_current_player": false,
+      "current_bid": 0,
+      "created_at": 1791142986499,
+      "updated_at": 1791142986499
+    },
+    {
+      "id": "dd20e355-d5a6-4db6-990d-7763fc515be5",
+      "auction_id": "4942b7ab-df88-44f4-a53f-d6617e65cfde",
+      "player_id": "9a1d57d8-7eac-4db1-ab24-0912ca5a16c5",
+      "auction_category": "Category B",
+      "auction_base_price": 60,
+      "auction_status": "WAITING",
+      "sold_price": null,
+      "sold_team_id": null,
+      "auction_order": 48,
+      "is_current_player": false,
+      "current_bid": 0,
+      "created_at": 1791142986499,
+      "updated_at": 1791142986499
+    },
+    {
+      "id": "1f8d4520-9019-43d3-8fa5-d5ba2c92309d",
+      "auction_id": "4942b7ab-df88-44f4-a53f-d6617e65cfde",
+      "player_id": "f62e60ad-ead3-41a5-bd7f-0b2418f8130e",
+      "auction_category": "Category B",
+      "auction_base_price": 60,
+      "auction_status": "WAITING",
+      "sold_price": null,
+      "sold_team_id": null,
+      "auction_order": 49,
+      "is_current_player": false,
+      "current_bid": 0,
+      "created_at": 1791142986499,
+      "updated_at": 1791142986499
+    },
+    {
+      "id": "99aebae3-4c27-4d6f-af6d-e8567bc29f2a",
+      "auction_id": "4942b7ab-df88-44f4-a53f-d6617e65cfde",
+      "player_id": "2e993a5d-3cb1-432c-9594-8f0102619065",
+      "auction_category": "Category B",
+      "auction_base_price": 60,
+      "auction_status": "WAITING",
+      "sold_price": null,
+      "sold_team_id": null,
+      "auction_order": 50,
+      "is_current_player": false,
+      "current_bid": 0,
+      "created_at": 1791142986499,
+      "updated_at": 1791142986499
+    },
+    {
+      "id": "31c7d9a5-e3ab-4154-a3ee-7aaebc214123",
+      "auction_id": "4942b7ab-df88-44f4-a53f-d6617e65cfde",
+      "player_id": "03331c7d-f89c-4853-ae3d-eb1fb2d523f2",
+      "auction_category": "Category B",
+      "auction_base_price": 60,
+      "auction_status": "WAITING",
+      "sold_price": null,
+      "sold_team_id": null,
+      "auction_order": 51,
+      "is_current_player": false,
+      "current_bid": 0,
+      "created_at": 1791142986499,
+      "updated_at": 1791142986499
+    },
+    {
+      "id": "10352033-4250-424a-b96a-25386f8c4b49",
+      "auction_id": "4942b7ab-df88-44f4-a53f-d6617e65cfde",
+      "player_id": "4b5fe214-3eac-449a-a792-3a18e0d67a3d",
+      "auction_category": "Category B",
+      "auction_base_price": 60,
+      "auction_status": "WAITING",
+      "sold_price": null,
+      "sold_team_id": null,
+      "auction_order": 52,
+      "is_current_player": false,
+      "current_bid": 0,
+      "created_at": 1791142986499,
+      "updated_at": 1791142986499
+    },
+    {
+      "id": "5c52bb83-dd61-48de-953f-4c7476fee980",
+      "auction_id": "4942b7ab-df88-44f4-a53f-d6617e65cfde",
+      "player_id": "d9340cf9-ccee-4dae-ad24-4c037fea7069",
+      "auction_category": "Category B",
+      "auction_base_price": 60,
+      "auction_status": "WAITING",
+      "sold_price": null,
+      "sold_team_id": null,
+      "auction_order": 53,
+      "is_current_player": false,
+      "current_bid": 0,
+      "created_at": 1791142986499,
+      "updated_at": 1791142986499
+    },
+    {
+      "id": "c514f560-0e54-4e2d-be5b-e7741aebc5e2",
+      "auction_id": "4942b7ab-df88-44f4-a53f-d6617e65cfde",
+      "player_id": "00e4a25d-3d6c-4190-b6b7-434689b1891a",
+      "auction_category": "Category C",
+      "auction_base_price": 40,
+      "auction_status": "WAITING",
+      "sold_price": null,
+      "sold_team_id": null,
+      "auction_order": 54,
+      "is_current_player": false,
+      "current_bid": 0,
+      "created_at": 1791142986499,
+      "updated_at": 1791142986499
+    },
+    {
+      "id": "b905dd74-82cf-4d4f-9dbd-ee6ae547a4e6",
+      "auction_id": "4942b7ab-df88-44f4-a53f-d6617e65cfde",
+      "player_id": "10fd8084-fce8-4836-9092-29ae8f057da4",
+      "auction_category": "Category C",
+      "auction_base_price": 40,
+      "auction_status": "WAITING",
+      "sold_price": null,
+      "sold_team_id": null,
+      "auction_order": 55,
+      "is_current_player": false,
+      "current_bid": 0,
+      "created_at": 1791142986499,
+      "updated_at": 1791142986499
+    },
+    {
+      "id": "196f83d5-7edb-4152-af31-c5c39a5d7a13",
+      "auction_id": "4942b7ab-df88-44f4-a53f-d6617e65cfde",
+      "player_id": "1ba89c38-0292-42a3-9f51-5c350ff6f309",
+      "auction_category": "Category C",
+      "auction_base_price": 40,
+      "auction_status": "WAITING",
+      "sold_price": null,
+      "sold_team_id": null,
+      "auction_order": 56,
+      "is_current_player": false,
+      "current_bid": 0,
+      "created_at": 1791142986499,
+      "updated_at": 1791142986499
+    },
+    {
+      "id": "a5dd5d51-bc70-40a8-8fef-604da5dccd6f",
+      "auction_id": "4942b7ab-df88-44f4-a53f-d6617e65cfde",
+      "player_id": "5bffe316-b41a-43ed-9faf-1b70ec5dc06a",
+      "auction_category": "Category C",
+      "auction_base_price": 40,
+      "auction_status": "WAITING",
+      "sold_price": null,
+      "sold_team_id": null,
+      "auction_order": 57,
+      "is_current_player": false,
+      "current_bid": 0,
+      "created_at": 1791142986499,
+      "updated_at": 1791142986499
+    },
+    {
+      "id": "6ab2f6f5-6ebf-4d9f-baf6-f8f1a0989630",
+      "auction_id": "4942b7ab-df88-44f4-a53f-d6617e65cfde",
+      "player_id": "ac2f21bb-db78-4b7b-a36e-861dc10745c6",
+      "auction_category": "Category C",
+      "auction_base_price": 40,
+      "auction_status": "WAITING",
+      "sold_price": null,
+      "sold_team_id": null,
+      "auction_order": 58,
+      "is_current_player": false,
+      "current_bid": 0,
+      "created_at": 1791142986499,
+      "updated_at": 1791142986499
+    },
+    {
+      "id": "c249abca-c102-4cea-8620-c31a7b0557e8",
+      "auction_id": "4942b7ab-df88-44f4-a53f-d6617e65cfde",
+      "player_id": "48ca864d-2758-4279-991e-60d7fb5a78a2",
+      "auction_category": "Category D",
+      "auction_base_price": 200,
+      "auction_status": "WAITING",
+      "sold_price": null,
+      "sold_team_id": null,
+      "auction_order": 59,
+      "is_current_player": false,
+      "current_bid": 0,
+      "created_at": 1791142986499,
+      "updated_at": 1791142986499
+    },
+    {
+      "id": "30f5342e-93ec-4e6c-8845-7c0dee3c06c0",
+      "auction_id": "4942b7ab-df88-44f4-a53f-d6617e65cfde",
+      "player_id": "d850610b-06e7-4fb2-934e-7b441b8bdf33",
+      "auction_category": "Category D",
+      "auction_base_price": 200,
+      "auction_status": "WAITING",
+      "sold_price": null,
+      "sold_team_id": null,
+      "auction_order": 60,
+      "is_current_player": false,
+      "current_bid": 0,
+      "created_at": 1791142986499,
+      "updated_at": 1791142986499
     }
   ],
   "bids": [
@@ -14484,6 +15476,21 @@
       "sequence": 166,
       "createdAt": 1791132056048,
       "serverTimestamp": "2026-10-04T16:40:56.048Z"
+    },
+    {
+      "id": "051b64db-8633-4ab7-a93c-22808e8a32d8",
+      "auctionId": "811272a3-db3d-4612-8a8a-05187a85ee99",
+      "type": "AUCTION_DELETED",
+      "payload": {
+        "auctionId": "811272a3-db3d-4612-8a8a-05187a85ee99",
+        "sequence": 1,
+        "timestamp": 1791142986557,
+        "serverTime": "2026-10-04T19:43:06.557Z",
+        "serverTimeMs": 1791142986557
+      },
+      "sequence": 1,
+      "createdAt": 1791142986557,
+      "serverTimestamp": "2026-10-04T19:43:06.557Z"
     }
   ]
 }

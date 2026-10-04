@@ -34,6 +34,59 @@ export const formatCountdown = (ms) => {
   return `${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
 };
 
+export const formatScheduledCountdown = (ms) => {
+  if (!ms || ms <= 0) return { expired: true, text: 'READY TO START', days: 0, hours: 0, mins: 0, secs: 0 };
+  const totalSec = Math.floor(ms / 1000);
+  const days = Math.floor(totalSec / 86400);
+  const hours = Math.floor((totalSec % 86400) / 3600);
+  const mins = Math.floor((totalSec % 3600) / 60);
+  const secs = totalSec % 60;
+  let text = '';
+  if (days > 0) text += `${days}d `;
+  text += `${String(hours).padStart(2, '0')}h ${String(mins).padStart(2, '0')}m ${String(secs).padStart(2, '0')}s`;
+  return { expired: false, text, days, hours, mins, secs };
+};
+
+export const pickPrimaryAuction = (auctions, paramAuctionId) => {
+  if (!Array.isArray(auctions) || auctions.length === 0) return null;
+  if (paramAuctionId) {
+    return auctions.find(a => a.id === paramAuctionId) || null;
+  }
+  // 1. LIVE auction actively underway
+  const live = auctions.find(a => a.status === 'LIVE');
+  if (live) return live;
+
+  // 2. READY auction
+  const ready = auctions.find(a => a.status === 'READY');
+  if (ready) return ready;
+
+  // 3. SCHEDULED auctions - pick earliest upcoming or latest created
+  const scheduled = auctions.filter(a => a.status === 'SCHEDULED');
+  if (scheduled.length > 0) {
+    scheduled.sort((a, b) => {
+      const timeA = a.scheduledAt ? new Date(a.scheduledAt).getTime() : 0;
+      const timeB = b.scheduledAt ? new Date(b.scheduledAt).getTime() : 0;
+      const now = Date.now();
+      const diffA = timeA - now;
+      const diffB = timeB - now;
+      if (diffA > 0 && diffB > 0) return diffA - diffB;
+      if (diffA > 0) return -1;
+      if (diffB > 0) return 1;
+      return (b.createdAt || 0) - (a.createdAt || 0);
+    });
+    return scheduled[0];
+  }
+
+  // 4. Non-completed auctions
+  const active = auctions.filter(a => a.status !== 'COMPLETED');
+  if (active.length > 0) {
+    return active[active.length - 1];
+  }
+
+  // 5. Newest auction overall
+  return [...auctions].sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0))[0] || auctions[0];
+};
+
 export const formatDateTimeIST = (dateStringOrTs) => {
   if (!dateStringOrTs) return '—';
   try {

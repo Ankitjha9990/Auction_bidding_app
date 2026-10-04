@@ -46,6 +46,8 @@ const upload = multer({
 
 // ─── Permanent Database Store (db.json) ─────────────────────────────────────
 const dbFilePath = process.env.AUCTION_DB_PATH || path.join(__dirname, 'db.json');
+const dbBackupPath = process.env.AUCTION_DB_PATH ? `${process.env.AUCTION_DB_PATH}.bak` : path.join(__dirname, 'db.json.bak');
+const dbTempPath = process.env.AUCTION_DB_PATH ? `${process.env.AUCTION_DB_PATH}.tmp` : path.join(__dirname, 'db.json.tmp');
 const defaultPlayersPath = path.join(__dirname, 'default_players.json');
 
 let db = {
@@ -286,15 +288,54 @@ function syncTeamCaptainAccount(team, { captainName, captainEmail, captainPasswo
 }
 
 function loadDb() {
+  let loaded = false;
+  const tryLoadFrom = (filePath) => {
+    if (fs.existsSync(filePath)) {
+      const data = fs.readFileSync(filePath, 'utf-8');
+      if (data && data.trim()) {
+        const parsed = JSON.parse(data);
+        if (parsed && typeof parsed === 'object') {
+          db = parsed;
+          if (!Array.isArray(db.auctions)) db.auctions = [];
+          if (!Array.isArray(db.teams)) db.teams = [];
+          if (!Array.isArray(db.players)) db.players = [];
+          if (!Array.isArray(db.users)) db.users = [];
+          if (!Array.isArray(db.bids)) db.bids = [];
+          if (!Array.isArray(db.purchases)) db.purchases = [];
+          if (!Array.isArray(db.events)) db.events = [];
+          if (!Array.isArray(db.auction_players)) db.auction_players = [];
+          normalizeStoredCategories();
+          normalizeAuctionTimers();
+          normalizeTeamFinancials();
+          console.log(`Loaded ${db.players.length} players and ${db.auctions.length} auctions from ${filePath}`);
+          return true;
+        }
+      }
+    }
+    return false;
+  };
+
   try {
-    if (fs.existsSync(dbFilePath)) {
-      const data = fs.readFileSync(dbFilePath, 'utf-8');
-      db = JSON.parse(data);
-      normalizeStoredCategories();
-      normalizeAuctionTimers();
-      normalizeTeamFinancials();
-      console.log(`Loaded ${db.players?.length || 0} players and ${db.auctions?.length || 0} auctions from ${dbFilePath}`);
-    } else if (fs.existsSync(defaultPlayersPath)) {
+    loaded = tryLoadFrom(dbFilePath);
+    if (!loaded) {
+      console.warn(`Primary db file ${dbFilePath} failed to load, attempting backup ${dbBackupPath}...`);
+      loaded = tryLoadFrom(dbBackupPath);
+      if (loaded) {
+        saveDb();
+      }
+    }
+  } catch (err) {
+    console.error('Failed reading primary db.json:', err);
+    try {
+      loaded = tryLoadFrom(dbBackupPath);
+      if (loaded) saveDb();
+    } catch (bakErr) {
+      console.error('Failed reading backup db.json.bak:', bakErr);
+    }
+  }
+
+  if (!loaded && fs.existsSync(defaultPlayersPath)) {
+    try {
       const defaultPlayers = JSON.parse(fs.readFileSync(defaultPlayersPath, 'utf-8'));
       const defaultAuction = {
         id: 'auction-spectra-2026',
@@ -322,15 +363,28 @@ function loadDb() {
       db.players = defaultPlayers;
       normalizeStoredCategories();
       saveDb();
+    } catch (defErr) {
+      console.error('Failed loading default players:', defErr);
     }
-  } catch (err) {
-    console.error('Failed to load db.json, using default state:', err);
   }
 }
 
 function saveDb() {
   try {
-    fs.writeFileSync(dbFilePath, JSON.stringify(db, null, 2), 'utf-8');
+    const jsonStr = JSON.stringify(db, null, 2);
+    // 1. Write atomically to temporary file
+    fs.writeFileSync(dbTempPath, jsonStr, 'utf-8');
+    // 2. Safely swap temp file to primary file
+    try {
+      fs.renameSync(dbTempPath, dbFilePath);
+    } catch (renameErr) {
+      fs.copyFileSync(dbTempPath, dbFilePath);
+      try { fs.unlinkSync(dbTempPath); } catch {}
+    }
+    // 3. Keep verified backup copy
+    try {
+      fs.copyFileSync(dbFilePath, dbBackupPath);
+    } catch {}
   } catch (err) {
     console.error('Failed to persist db.json:', err);
   }
@@ -365,10 +419,15 @@ function ensureEngineActive(targetAuctionId) {
 
 loadDb();
 
-// Auto-attach engine to active or first auction
-const initialActiveAuction = db.auctions?.find(a => a.currentPlayerId && a.status !== 'COMPLETED') ||
-  db.auctions?.find(a => a.status === 'LIVE' || a.status === 'READY') ||
+// Auto-attach engine to active, upcoming scheduled, or primary auction
+const initialActiveAuction =
+  db.auctions?.find(a => a.currentPlayerId && a.status === 'LIVE') ||
+  db.auctions?.find(a => a.status === 'LIVE') ||
+  db.auctions?.find(a => a.status === 'READY') ||
+  db.auctions?.find(a => a.status === 'SCHEDULED') ||
+  db.auctions?.find(a => a.status !== 'COMPLETED') ||
   db.auctions?.[0];
+
 if (initialActiveAuction) {
   ensureEngineActive(initialActiveAuction.id);
 }
@@ -836,11 +895,18 @@ router.post('/auctions', authenticateToken, requireRole(['admin']), (req, res) =
   const now = Date.now();
   const auctionSettings = { ...req.body };
   delete auctionSettings.bidIncrement;
-  let scheduledAt = req.body.scheduledAt || null;
+  let scheduledAt = req.body.scheduledAt || req.body.scheduledDateTime || null;
   
   if (!scheduledAt && req.body.auctionDate) {
     try {
       const parsed = new Date(req.body.auctionDate);
+      if (!isNaN(parsed.getTime())) scheduledAt = parsed.toISOString();
+    } catch {
+      scheduledAt = null;
+    }
+  } else if (scheduledAt) {
+    try {
+      const parsed = new Date(scheduledAt);
       if (!isNaN(parsed.getTime())) scheduledAt = parsed.toISOString();
     } catch {
       scheduledAt = null;
@@ -865,18 +931,12 @@ router.post('/auctions', authenticateToken, requireRole(['admin']), (req, res) =
   };
   db.auctions.push(auction);
 
-  // If there are master players, clone/attach to this new auction if needed
-  if (db.players && db.players.length > 0) {
-    const existingForAuction = db.players.filter(p => p.auctionId === auction.id);
-    if (existingForAuction.length === 0) {
-      // Duplicate master players template for this new auction
-      db.players.forEach(p => {
-        if (!p.auctionId) p.auctionId = auction.id;
-      });
-    }
-  }
+  // Auto-initialize auction players from active master players
+  getEnrichedAuctionPlayers(auction.id);
 
   saveDb();
+  io.emit('AUCTION_CREATED', { auction, auctions: db.auctions });
+  io.emit('AUCTIONS_UPDATED', { auctions: db.auctions });
   res.json(auction);
 });
 
@@ -891,9 +951,16 @@ router.patch('/auctions/:id', authenticateToken, requireRole(['admin']), (req, r
   if (idx === -1) return res.status(404).json({ error: 'Auction not found' });
   
   const updates = { ...req.body };
-  if (updates.scheduledAt) {
+  if (updates.scheduledAt || updates.scheduledDateTime) {
     try {
-      updates.scheduledAt = new Date(updates.scheduledAt).toISOString();
+      const rawDate = updates.scheduledAt || updates.scheduledDateTime;
+      const parsed = new Date(rawDate);
+      if (!isNaN(parsed.getTime())) {
+        updates.scheduledAt = parsed.toISOString();
+        if (parsed.getTime() > Date.now() && db.auctions[idx].status !== 'LIVE' && db.auctions[idx].status !== 'COMPLETED') {
+          updates.status = 'SCHEDULED';
+        }
+      }
     } catch {
       // keep
     }
@@ -901,6 +968,8 @@ router.patch('/auctions/:id', authenticateToken, requireRole(['admin']), (req, r
 
   db.auctions[idx] = { ...db.auctions[idx], ...updates };
   saveDb();
+  io.emit('AUCTION_UPDATED', { auction: db.auctions[idx], auctions: db.auctions });
+  io.emit('AUCTIONS_UPDATED', { auctions: db.auctions });
   res.json(db.auctions[idx]);
 });
 
@@ -937,6 +1006,8 @@ router.delete('/auctions/:id', authenticateToken, requireRole(['admin']), (req, 
   }
 
   saveDb();
+  io.emit('AUCTION_DELETED', { auctionId: req.params.id, auctions: db.auctions });
+  io.emit('AUCTIONS_UPDATED', { auctions: db.auctions });
   broadcast('AUCTION_DELETED', { auctionId: req.params.id });
   res.json({ success: true, message: 'Auction deleted successfully', auction: deletedAuction });
 });
@@ -2108,7 +2179,7 @@ io.on('connection', (socket) => {
     sequence: auctionEngine.sequence
   });
 
-  if (auctionEngine.auctionId) {
+  if (auctionEngine.auctionId && (auctionEngine.status === 'LIVE' || auctionEngine.status === 'READY')) {
     socket.emit('AUCTION_STATE', getSnapshot());
   }
 
@@ -2127,6 +2198,7 @@ io.on('connection', (socket) => {
   });
 
   socket.on('JOIN_AUCTION', ({ auctionId }) => {
+    if (!auctionId) return;
     socket.join(`auction-${auctionId}`);
     socket.emit('AUCTION_STATE', getSnapshot(auctionId));
   });

@@ -1,7 +1,7 @@
 import React from 'react';
-import { getImageUrl, formatTime } from '../utils/api';
+import { getImageUrl, formatTime, formatDateTimeIST, formatScheduledCountdown, formatCurrency } from '../utils/api';
 import PlayerAvatar from './PlayerAvatar';
-import { Clock, Radio, Activity, Award, Star } from 'lucide-react';
+import { Clock, Radio, Activity, Award, Star, Calendar, Shield, Trophy } from 'lucide-react';
 
 export function TeamLogoBadge({ logoUrl, name, size = 22 }) {
   const src = logoUrl ? getImageUrl(logoUrl) : null;
@@ -412,6 +412,79 @@ export default function MobileLiveCard({
             </div>
           )}
         </>
+      ) : auctionStatus === 'SCHEDULED' ? (
+        /* SCHEDULED STATE WHEN AUCTION IS SCHEDULED FOR LATER */
+        <div style={{
+          padding: '32px 20px',
+          textAlign: 'center',
+          background: 'linear-gradient(135deg, #1E293B, #0F172A)',
+          color: '#FFFFFF',
+          borderBottom: '1px solid #E2E8F0'
+        }}>
+          <div style={{
+            display: 'inline-flex',
+            alignItems: 'center',
+            gap: 6,
+            background: 'rgba(245,158,11,0.2)',
+            border: '1px solid rgba(245,158,11,0.5)',
+            padding: '4px 10px',
+            borderRadius: 4,
+            fontSize: 12,
+            fontWeight: 900,
+            color: '#FCD34D',
+            letterSpacing: 1.5,
+            textTransform: 'uppercase',
+            marginBottom: 12
+          }}>
+            <Calendar size={13} color="#FCD34D" />
+            UPCOMING TOURNAMENT
+          </div>
+
+          <div style={{
+            fontSize: 22,
+            fontWeight: 900,
+            color: '#FFFFFF',
+            textTransform: 'uppercase',
+            letterSpacing: 1,
+            marginBottom: 4
+          }}>
+            {snapshot?.auction?.name || snapshot?.auction?.tournamentName}
+          </div>
+
+          <div style={{ fontSize: 13, color: '#94A3B8', marginBottom: 16 }}>
+            {snapshot?.auction?.seriesName || 'Valor Cup Season 2'} · {snapshot?.auction?.organizerName || 'Medhavi Skills University'}
+          </div>
+
+          <div style={{
+            background: 'rgba(255,255,255,0.06)',
+            borderRadius: 8,
+            padding: '14px',
+            border: '1px solid rgba(255,255,255,0.1)',
+            marginBottom: 16
+          }}>
+            <div style={{ fontSize: 11, fontWeight: 800, color: '#FCD34D', letterSpacing: 2, textTransform: 'uppercase', marginBottom: 4 }}>
+              SCHEDULED DATE & TIME (IST)
+            </div>
+            <div style={{ fontSize: 16, fontWeight: 900, color: '#FFFFFF' }}>
+              {formatDateTimeIST(snapshot?.auction?.scheduledAt || snapshot?.auction?.auctionDate)}
+            </div>
+          </div>
+
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8, textAlign: 'left' }}>
+            <div style={{ background: 'rgba(255,255,255,0.04)', padding: '10px', borderRadius: 6 }}>
+              <div style={{ fontSize: 10, color: '#94A3B8', fontWeight: 800, letterSpacing: 1 }}>SQUAD PURSE</div>
+              <div style={{ fontSize: 14, fontWeight: 900, color: '#818CF8' }}>
+                {formatCurrency(snapshot?.auction?.startingBudget || 100000)}
+              </div>
+            </div>
+            <div style={{ background: 'rgba(255,255,255,0.04)', padding: '10px', borderRadius: 6 }}>
+              <div style={{ fontSize: 10, color: '#94A3B8', fontWeight: 800, letterSpacing: 1 }}>TEAMS / POOL</div>
+              <div style={{ fontSize: 14, fontWeight: 900, color: '#34D399' }}>
+                {teams.length} Teams · {players.length} Players
+              </div>
+            </div>
+          </div>
+        </div>
       ) : (
         /* STANDBY STATE WHEN NO ACTIVE PLAYER */
         <div style={{

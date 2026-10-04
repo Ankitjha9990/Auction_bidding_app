@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import '../landing-theme.css';
-import { api, formatCurrency } from '../utils/api';
+import { api, formatCurrency, formatDateTimeIST, pickPrimaryAuction } from '../utils/api';
 import {
   Trophy,
   Zap,
@@ -14,7 +14,8 @@ import {
   Sparkles,
   Activity,
   Layers,
-  Radio
+  Radio,
+  Calendar
 } from 'lucide-react';
 
 const featuresList = [
@@ -90,7 +91,9 @@ export default function LandingPage() {
       .finally(() => setLoading(false));
   }, []);
 
+  const primaryAuction = pickPrimaryAuction(auctions);
   const liveAuction = auctions.find(a => a.status === 'LIVE');
+  const scheduledAuction = !liveAuction ? auctions.find(a => a.status === 'SCHEDULED') : null;
 
   return (
     <div className="spectra-landing-page">
@@ -115,7 +118,7 @@ export default function LandingPage() {
           </nav>
 
           <div className="spectra-header-ctas">
-            <Link to="/viewer" className="sp-btn sp-btn-ghost">
+            <Link to={primaryAuction ? `/live/${primaryAuction.id}` : '/viewer'} className="sp-btn sp-btn-ghost">
               <Eye size={15} />
               <span>Live Viewer</span>
             </Link>
@@ -154,7 +157,7 @@ export default function LandingPage() {
 
               {/* Action Buttons */}
               <div className="spectra-hero-ctas">
-                <Link to="/viewer" className="sp-btn sp-btn-primary sp-btn-lg">
+                <Link to={primaryAuction ? `/live/${primaryAuction.id}` : '/viewer'} className="sp-btn sp-btn-primary sp-btn-lg">
                   <Eye size={17} />
                   <span>Open Live Viewer Screen</span>
                 </Link>
@@ -208,8 +211,8 @@ export default function LandingPage() {
           </div>
         </section>
 
-        {/* ── LIVE AUCTION BANNER (If Active) ── */}
-        {liveAuction && (
+        {/* ── LIVE OR UPCOMING AUCTION BANNER ── */}
+        {liveAuction ? (
           <section id="auctions" className="spectra-live-banner">
             <div className="spectra-live-banner-content">
               <div className="spectra-live-banner-tag">
@@ -221,12 +224,29 @@ export default function LandingPage() {
                 {liveAuction.seriesName || liveAuction.tournamentName || 'Valor Cup 2026'} · Starting Purse: {formatCurrency(liveAuction.startingBudget)}
               </p>
             </div>
-            <Link to="/viewer" className="sp-btn sp-btn-primary sp-btn-lg">
+            <Link to={`/live/${liveAuction.id}`} className="sp-btn sp-btn-primary sp-btn-lg">
               <span>Watch Live Broadcast</span>
               <ArrowUpRight size={16} />
             </Link>
           </section>
-        )}
+        ) : scheduledAuction ? (
+          <section id="auctions" className="spectra-live-banner" style={{ background: 'linear-gradient(135deg, #1E293B, #0F172A)', border: '1px solid rgba(245,158,11,0.4)' }}>
+            <div className="spectra-live-banner-content">
+              <div className="spectra-live-banner-tag" style={{ background: 'rgba(245,158,11,0.2)', borderColor: 'rgba(245,158,11,0.5)', color: '#FCD34D' }}>
+                <Calendar size={13} color="#FCD34D" />
+                <span>Upcoming Scheduled Tournament</span>
+              </div>
+              <h3 style={{ color: '#FFFFFF' }}>{scheduledAuction.name}</h3>
+              <p style={{ color: 'rgba(255,255,255,0.8)' }}>
+                {scheduledAuction.seriesName || scheduledAuction.tournamentName} · Schedule (IST): <strong style={{ color: '#FCD34D' }}>{formatDateTimeIST(scheduledAuction.scheduledAt || scheduledAuction.auctionDate)}</strong> · Purse: {formatCurrency(scheduledAuction.startingBudget)}
+              </p>
+            </div>
+            <Link to={`/live/${scheduledAuction.id}`} className="sp-btn sp-btn-primary sp-btn-lg" style={{ background: '#D97706', borderColor: '#B45309' }}>
+              <span>Preview Tournament Hub</span>
+              <ArrowUpRight size={16} />
+            </Link>
+          </section>
+        ) : null}
 
         {/* ── STATEMENT SECTION & HORIZONTAL STRIP ── */}
         <section className="spectra-statement-section">

@@ -1,20 +1,36 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { api, formatCurrency } from '../../utils/api';
-import { Trophy, Radio, CheckCircle2, FileText, Plus, Settings, Users, ArrowRight, Trash2 } from 'lucide-react';
+import { useSocket } from '../../context/SocketContext';
+import { api, formatCurrency, formatDateTimeIST } from '../../utils/api';
+import { Trophy, Radio, CheckCircle2, FileText, Plus, Settings, Users, ArrowRight, Trash2, Calendar, Clock } from 'lucide-react';
 
 export default function AdminDashboard() {
   const [auctions, setAuctions] = useState([]);
   const [loading, setLoading] = useState(true);
+  const { socket } = useSocket();
 
   const load = () => {
     setLoading(true);
-    api.get('/auctions').then(res => setAuctions(res.data)).finally(() => setLoading(false));
+    api.get('/auctions').then(res => setAuctions(res.data || [])).finally(() => setLoading(false));
   };
 
   useEffect(() => {
     load();
-  }, []);
+    if (!socket) return;
+    const handleUpdate = () => load();
+    socket.on('AUCTION_CREATED', handleUpdate);
+    socket.on('AUCTION_UPDATED', handleUpdate);
+    socket.on('AUCTION_DELETED', handleUpdate);
+    socket.on('AUCTIONS_UPDATED', handleUpdate);
+    socket.on('AUCTION_STARTED', handleUpdate);
+    return () => {
+      socket.off('AUCTION_CREATED', handleUpdate);
+      socket.off('AUCTION_UPDATED', handleUpdate);
+      socket.off('AUCTION_DELETED', handleUpdate);
+      socket.off('AUCTIONS_UPDATED', handleUpdate);
+      socket.off('AUCTION_STARTED', handleUpdate);
+    };
+  }, [socket]);
 
   const handleDeleteAuction = async (auction) => {
     if (!confirm(`Are you sure you want to delete auction "${auction.name}"? This cannot be undone.`)) return;
@@ -26,10 +42,19 @@ export default function AdminDashboard() {
     }
   };
 
-
   const liveAuction = auctions.find(a => a.status === 'LIVE');
+  const scheduledAuctions = auctions
+    .filter(a => a.status === 'SCHEDULED')
+    .sort((a, b) => {
+      const timeA = a.scheduledAt ? new Date(a.scheduledAt).getTime() : 0;
+      const timeB = b.scheduledAt ? new Date(b.scheduledAt).getTime() : 0;
+      return timeA - timeB;
+    });
+  const upcomingScheduled = scheduledAuctions[0];
+
   const totalAuctions = auctions.length;
   const liveCount = auctions.filter(a => a.status === 'LIVE').length;
+  const scheduledCount = auctions.filter(a => a.status === 'SCHEDULED').length;
   const completedCount = auctions.filter(a => a.status === 'COMPLETED').length;
   const draftCount = auctions.filter(a => a.status === 'DRAFT').length;
 
@@ -38,15 +63,16 @@ export default function AdminDashboard() {
       <div style={{ marginBottom: 28 }}>
         <h2 className="page-title" style={{ marginBottom: 4 }}>Auction Dashboard</h2>
         <p style={{ color: 'var(--text-secondary)', fontSize: 15 }}>
-          Welcome back! Manage your auctions, teams, and players.
+          Welcome back! Manage your tournaments, scheduled auctions, squads, and players.
         </p>
       </div>
 
-      {/* Stats */}
-      <div className="grid grid-4 gap-4" style={{ marginBottom: 28 }}>
+      {/* Stats Cards */}
+      <div className="grid grid-4 gap-4" style={{ marginBottom: 28, gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))' }}>
         {[
           { label: 'Total Auctions', value: totalAuctions, icon: Trophy, color: 'var(--navy)', bg: 'rgba(18,49,91,0.08)' },
           { label: 'Live Now', value: liveCount, icon: Radio, color: '#EF4444', bg: '#FEE2E2' },
+          { label: 'Scheduled', value: scheduledCount, icon: Calendar, color: '#D97706', bg: '#FEF3C7' },
           { label: 'Completed', value: completedCount, icon: CheckCircle2, color: '#10B981', bg: '#D1FAE5' },
           { label: 'Draft', value: draftCount, icon: FileText, color: 'var(--text-secondary)', bg: '#F1F5F9' },
         ].map(stat => {
@@ -65,7 +91,7 @@ export default function AdminDashboard() {
         })}
       </div>
 
-      {/* Live auction banner */}
+      {/* Live Auction Banner */}
       {liveAuction && (
         <div style={{
           background: 'linear-gradient(135deg, var(--navy-dark), var(--navy))',
@@ -101,7 +127,49 @@ export default function AdminDashboard() {
         </div>
       )}
 
-      {/* Auction list */}
+      {/* Upcoming Scheduled Auction Banner (if no live auction) */}
+      {!liveAuction && upcomingScheduled && (
+        <div style={{
+          background: 'linear-gradient(135deg, #1E293B, #0F172A)',
+          borderRadius: 16,
+          padding: '24px 28px',
+          marginBottom: 28,
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+          gap: 20,
+          border: '1px solid rgba(245,158,11,0.4)',
+          boxShadow: '0 8px 24px rgba(15,23,42,0.15)',
+          flexWrap: 'wrap'
+        }}>
+          <div>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 8 }}>
+              <div style={{ background: 'rgba(245,158,11,0.2)', border: '1px solid rgba(245,158,11,0.5)', padding: '3px 8px', borderRadius: 4, display: 'inline-flex', alignItems: 'center', gap: 6 }}>
+                <Calendar size={13} color="#FCD34D" />
+                <span style={{ color: '#FCD34D', fontWeight: 900, fontSize: 12, letterSpacing: 1.5, textTransform: 'uppercase' }}>
+                  UPCOMING SCHEDULED TOURNAMENT
+                </span>
+              </div>
+            </div>
+            <h3 style={{ fontSize: 22, fontWeight: 900, color: '#FFFFFF', marginBottom: 4, fontFamily: "'Barlow Condensed', sans-serif", letterSpacing: 1, textTransform: 'uppercase' }}>
+              {upcomingScheduled.name}
+            </h3>
+            <p style={{ color: 'rgba(255,255,255,0.75)', fontSize: 14 }}>
+              {upcomingScheduled.seriesName || upcomingScheduled.tournamentName} · Schedule (IST): <strong style={{ color: '#FCD34D' }}>{formatDateTimeIST(upcomingScheduled.scheduledAt || upcomingScheduled.auctionDate)}</strong> · Budget: {formatCurrency(upcomingScheduled.startingBudget)}
+            </p>
+          </div>
+          <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap' }}>
+            <Link to={`/admin/auctions/${upcomingScheduled.id}/live`} className="btn btn-primary" style={{ borderRadius: 8, gap: 6 }}>
+              <Settings size={16} /> Open Control Room
+            </Link>
+            <Link to={`/admin/auctions/${upcomingScheduled.id}/teams`} className="btn btn-outline-white btn-sm" style={{ borderRadius: 8, gap: 6 }}>
+              <Users size={15} /> Teams
+            </Link>
+          </div>
+        </div>
+      )}
+
+      {/* Auction List Table */}
       <div className="card" style={{ padding: 0, overflow: 'hidden', width: '100%' }}>
         <div style={{ padding: '20px 24px', borderBottom: '1px solid var(--border)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
           <h3 style={{ fontSize: 16, fontWeight: 700, display: 'flex', alignItems: 'center', gap: 8 }}>
@@ -135,7 +203,7 @@ export default function AdminDashboard() {
                 <th>Status</th>
                 <th>Budget (QC)</th>
                 <th>Teams</th>
-                <th>Date</th>
+                <th>Schedule (IST)</th>
                 <th>Actions</th>
               </tr>
             </thead>
@@ -154,7 +222,7 @@ export default function AdminDashboard() {
                   <td style={{ fontWeight: 700, color: 'var(--navy)' }}>{formatCurrency(auction.startingBudget)}</td>
                   <td>{auction.numTeams || '—'}</td>
                   <td style={{ fontSize: 13, color: 'var(--text-secondary)' }}>
-                    {auction.auctionDate ? new Date(auction.auctionDate).toLocaleDateString('en-IN') : '—'}
+                    {auction.scheduledAt ? formatDateTimeIST(auction.scheduledAt) : (auction.auctionDate ? new Date(auction.auctionDate).toLocaleDateString('en-IN') : '—')}
                   </td>
                   <td>
                     <div style={{ display: 'flex', gap: 6 }}>

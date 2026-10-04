@@ -1,7 +1,7 @@
 import { useEffect, useState, useRef, useCallback } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { useSocket } from '../../context/SocketContext';
-import { api } from '../../utils/api';
+import { api, pickPrimaryAuction } from '../../utils/api';
 import MobileLiveCard from '../../components/MobileLiveCard';
 import TeamSquadModal from '../../components/TeamSquadModal';
 import { ArrowLeft, RefreshCw } from 'lucide-react';
@@ -31,10 +31,8 @@ export default function MobileLiveView() {
   const loadAndJoin = useCallback(async () => {
     try {
       const aRes = await api.get('/auctions');
-      const auctions = aRes.data;
-      const auction = paramAuctionId
-        ? auctions.find(a => a.id === paramAuctionId)
-        : auctions.find(a => a.status === 'LIVE' || a.status === 'SCHEDULED' || a.status === 'READY') || auctions[0];
+      const auctions = aRes.data || [];
+      const auction = pickPrimaryAuction(auctions, paramAuctionId);
 
       if (!auction) {
         setSnapshot(null);
@@ -165,6 +163,16 @@ export default function MobileLiveView() {
       }
     };
 
+    const handleAuctionStarted = (data) => {
+      if (data?.auction?.id === snapshot?.auction?.id || !paramAuctionId) {
+        loadAndJoin();
+      }
+    };
+
+    const handleAuctionsListChanged = () => {
+      loadAndJoin();
+    };
+
     socket.on('AUCTION_STATE', handleState);
     socket.on('BID_PLACED', handleBid);
     socket.on('PLAYER_STARTED', handlePlayerStarted);
@@ -175,6 +183,11 @@ export default function MobileLiveView() {
     socket.on('AUCTION_RESUMED', handleResumed);
     socket.on('AUCTION_COMPLETED', handleCompleted);
     socket.on('TEAM_UPDATED', handleTeamUpdated);
+    socket.on('AUCTION_STARTED', handleAuctionStarted);
+    socket.on('AUCTION_CREATED', handleAuctionsListChanged);
+    socket.on('AUCTION_UPDATED', handleAuctionsListChanged);
+    socket.on('AUCTION_DELETED', handleAuctionsListChanged);
+    socket.on('AUCTIONS_UPDATED', handleAuctionsListChanged);
 
     return () => {
       socket.off('AUCTION_STATE', handleState);
@@ -187,8 +200,13 @@ export default function MobileLiveView() {
       socket.off('AUCTION_RESUMED', handleResumed);
       socket.off('AUCTION_COMPLETED', handleCompleted);
       socket.off('TEAM_UPDATED', handleTeamUpdated);
+      socket.off('AUCTION_STARTED', handleAuctionStarted);
+      socket.off('AUCTION_CREATED', handleAuctionsListChanged);
+      socket.off('AUCTION_UPDATED', handleAuctionsListChanged);
+      socket.off('AUCTION_DELETED', handleAuctionsListChanged);
+      socket.off('AUCTIONS_UPDATED', handleAuctionsListChanged);
     };
-  }, [socket, snapshot?.auction?.id, triggerBidToast]);
+  }, [socket, snapshot?.auction?.id, paramAuctionId, loadAndJoin, triggerBidToast]);
 
   useEffect(() => {
     if (timerRef.current) clearInterval(timerRef.current);
