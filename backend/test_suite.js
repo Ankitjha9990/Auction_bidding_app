@@ -567,6 +567,182 @@ async function runTests() {
 
     viewerSocket.disconnect();
 
+    // =========================================================================
+    // REGRESSION TESTS: Master List Persistence, Sync & Lifecycle
+    // =========================================================================
+    console.log('\n--- REGRESSION TESTS: Master List Persistence & Lifecycle ---');
+
+    // TEST 1: Create/Update Player -> Verify API response -> Verify Backend State -> Verify Disk JSON
+    const createPlayerRes = await request('POST', '/api/players', {
+      full_name: 'Rahul Kumar',
+      category: 'Category B',
+      base_price: 60,
+      player_type: 'NEW'
+    }, adminHeaders);
+
+    assert(
+      createPlayerRes.status === 201 &&
+      createPlayerRes.body.full_name === 'Rahul Kumar' &&
+      createPlayerRes.body.category === 'Category B',
+      'ML TEST 1a: Admin creates Master Player Rahul Kumar (Category B) via API'
+    );
+
+    const rahulId = createPlayerRes.body.id;
+    let diskDb = JSON.parse(fs.readFileSync(testDbPath, 'utf8'));
+    let diskRahul = diskDb.players.find(p => p.id === rahulId);
+    let memRahul = db.players.find(p => p.id === rahulId);
+
+    assert(
+      memRahul?.category === 'Category B' && diskRahul?.category === 'Category B',
+      'ML TEST 1b: Created player immediately exists in both memory and persistent disk db.json'
+    );
+
+    // Update Player: Category B -> Category A
+    const updatePlayerRes = await request('PATCH', `/api/players/${rahulId}`, {
+      category: 'Category A',
+      base_price: 100
+    }, adminHeaders);
+
+    assert(
+      updatePlayerRes.status === 200 &&
+      updatePlayerRes.body.category === 'Category A' &&
+      updatePlayerRes.body.base_price === 100,
+      'ML TEST 1c: Admin updates Rahul Kumar Category B -> Category A'
+    );
+
+    diskDb = JSON.parse(fs.readFileSync(testDbPath, 'utf8'));
+    diskRahul = diskDb.players.find(p => p.id === rahulId);
+    memRahul = db.players.find(p => p.id === rahulId);
+
+    assert(
+      memRahul?.category === 'Category A' && diskRahul?.category === 'Category A',
+      'ML TEST 1d: Category update is immediately persisted to both memory and disk db.json'
+    );
+
+    // TEST 2: Update Master List -> Call loadDb() -> Verify update remains
+    const { loadDb } = require('./server');
+    loadDb();
+    const rahulAfterLoadDb = db.players.find(p => p.id === rahulId);
+    assert(
+      rahulAfterLoadDb?.category === 'Category A' && rahulAfterLoadDb?.full_name === 'Rahul Kumar',
+      'ML TEST 2: loadDb() reload does NOT overwrite updated player (retains Category A)'
+    );
+
+    // TEST 3: Update Master List -> Connect & Disconnect Admin Socket -> Verify update remains
+    const mlAdminSocket = ioClient(baseUrl, { transports: ['websocket'], forceNew: true });
+    await new Promise(resolve => mlAdminSocket.on('connect', resolve));
+    mlAdminSocket.disconnect();
+
+    const getPlayersAfterSocketDisc = await request('GET', '/api/players?includeArchived=true', null, adminHeaders);
+    const rahulAfterSocket = getPlayersAfterSocketDisc.body.find(p => p.id === rahulId);
+    assert(
+      rahulAfterSocket?.category === 'Category A',
+      'ML TEST 3: Admin socket disconnect / tab close does not revert Master List update'
+    );
+
+    // TEST 4: Update Master List -> Simulate Admin Logout / Login -> Verify update remains
+    const adminLoginRes = await request('POST', '/api/auth/login', {
+      email: 'admin@spectra.com',
+      password: 'test'
+    });
+    const freshToken = adminLoginRes.body?.token;
+    const freshAdminHeaders = { Authorization: `Bearer ${freshToken}` };
+
+    const getPlayersAfterLogin = await request('GET', '/api/players?includeArchived=true', null, freshAdminHeaders);
+    const rahulAfterLogin = getPlayersAfterLogin.body.find(p => p.id === rahulId);
+    assert(
+      rahulAfterLogin?.category === 'Category A',
+      'ML TEST 4: Fresh Admin login retrieves intact Category A player from Master List'
+    );
+
+    // TEST 5: Update Master List -> Restart Backend Process -> Verify update remains
+    const mlRestartProbe = require('child_process').spawnSync(process.execPath, [
+      '-e',
+      `const { db, auctionEngine } = require(${JSON.stringify(path.join(__dirname, 'server.js'))});
+       const target = db.players.find(p => p.id === ${JSON.stringify(rahulId)});
+       process.stdout.write(JSON.stringify({ found: !!target, fullName: target?.full_name || target?.name, category: target?.category, basePrice: target?.base_price }));
+       if (auctionEngine.timerInterval) clearInterval(auctionEngine.timerInterval);`
+    ], {
+      encoding: 'utf8',
+      env: { ...process.env, AUCTION_DB_PATH: testDbPath }
+    });
+
+    let mlRestartData;
+    try {
+      mlRestartData = JSON.parse(mlRestartProbe.stdout.trim().split(/\r?\n/).at(-1));
+    } catch {
+      mlRestartData = null;
+    }
+
+    assert(
+      mlRestartData?.found === true &&
+      mlRestartData?.category === 'Category A' &&
+      mlRestartData?.basePrice === 100,
+      'ML TEST 5: Master List update (Rahul Kumar -> Category A) survives complete backend restart',
+      `stdout=${mlRestartProbe.stdout} stderr=${mlRestartProbe.stderr}`
+    );
+
+    // TEST 6: Explicit Delete / Archive -> Verify deletion persists
+    const deletePlayerRes = await request('DELETE', `/api/players/${rahulId}?permanent=true`, null, freshAdminHeaders);
+    diskDb = JSON.parse(fs.readFileSync(testDbPath, 'utf8'));
+    const diskRahulAfterDel = diskDb.players.find(p => p.id === rahulId);
+    const memRahulAfterDel = db.players.find(p => p.id === rahulId);
+
+    assert(
+      deletePlayerRes.status === 200 && !diskRahulAfterDel && !memRahulAfterDel,
+      'ML TEST 6: Explicit player deletion immediately removes player from memory and disk'
+    );
+
+    // TEST 7: Bulk / Excel Import -> Verify imported records survive restart
+    const bulkImportRes = await request('POST', '/api/players/import-excel-commit', {
+      rows: [
+        {
+          full_name: 'Bulk Imported Player One',
+          category: 'Category A',
+          base_price: 100,
+          player_type: 'NEW'
+        },
+        {
+          full_name: 'Bulk Imported Player Two',
+          category: 'Category B',
+          base_price: 60,
+          player_type: 'RETURNING'
+        }
+      ]
+    }, freshAdminHeaders);
+
+    assert(
+      bulkImportRes.status === 200 && bulkImportRes.body.insertedCount === 2,
+      'ML TEST 7a: Bulk player import successfully inserts new players'
+    );
+
+    const restartBulkProbe = require('child_process').spawnSync(process.execPath, [
+      '-e',
+      `const { db, auctionEngine } = require(${JSON.stringify(path.join(__dirname, 'server.js'))});
+       const p1 = db.players.find(p => (p.full_name || p.name) === 'Bulk Imported Player One');
+       const p2 = db.players.find(p => (p.full_name || p.name) === 'Bulk Imported Player Two');
+       process.stdout.write(JSON.stringify({ p1Found: !!p1, p1Cat: p1?.category, p2Found: !!p2, p2Cat: p2?.category }));
+       if (auctionEngine.timerInterval) clearInterval(auctionEngine.timerInterval);`
+    ], {
+      encoding: 'utf8',
+      env: { ...process.env, AUCTION_DB_PATH: testDbPath }
+    });
+
+    let restartBulkData;
+    try {
+      restartBulkData = JSON.parse(restartBulkProbe.stdout.trim().split(/\r?\n/).at(-1));
+    } catch {
+      restartBulkData = null;
+    }
+
+    assert(
+      restartBulkData?.p1Found === true &&
+      restartBulkData?.p1Cat === 'Category A' &&
+      restartBulkData?.p2Found === true &&
+      restartBulkData?.p2Cat === 'Category B',
+      'ML TEST 7b: Bulk imported players survive complete backend restart with intact categories'
+    );
+
     console.log('\n====================================================');
     console.log(`TEST SUMMARY: ${passed} PASSED, ${failed} FAILED`);
     console.log('====================================================\n');

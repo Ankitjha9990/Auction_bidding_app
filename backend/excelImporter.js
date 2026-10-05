@@ -235,11 +235,14 @@ function parseExcelWorkbook(fileSource, existingPlayers = []) {
 
       if (existingMatch) {
         playerObj.is_duplicate = true;
+        playerObj.isDuplicate = true;
+        playerObj.matchedPlayerId = existingMatch.id;
         playerObj.existing_match = {
           id: existingMatch.id,
           registration_id: existingMatch.registration_id || existingMatch.registrationId,
           full_name: existingMatch.full_name || existingMatch.name
         };
+        playerObj.existingMatch = playerObj.existing_match;
         duplicateList.push(playerObj);
       } else {
         existingMap.set(nameKey, playerObj);
@@ -253,12 +256,15 @@ function parseExcelWorkbook(fileSource, existingPlayers = []) {
   return {
     summary: {
       totalRows,
+      newPlayers: newCount,
       newPlayersCount: newCount,
+      returningPlayers: returningCount,
       returningPlayersCount: returningCount,
       duplicatesCount: duplicateList.length,
       invalidCount: invalidList.length,
       validCount: parsedPlayers.length
     },
+    rows: parsedPlayers,
     players: parsedPlayers,
     duplicates: duplicateList,
     invalidRows: invalidList

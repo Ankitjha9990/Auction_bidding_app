@@ -309,7 +309,7 @@ export default function AdminPlayers() {
       // Initialize resolution map default to 'use_existing' for duplicates
       const initResolutions = {};
       (res.data.duplicates || []).forEach(d => {
-        initResolutions[d.full_name] = 'use_existing';
+        initResolutions[d.full_name || d.name] = 'use_existing';
       });
       setImportResolutions(initResolutions);
     } catch (err) {
@@ -320,11 +320,12 @@ export default function AdminPlayers() {
   };
 
   const commitExcelImport = async () => {
-    if (!importPreview?.rows?.length) return;
+    const importRows = importPreview?.rows || importPreview?.players;
+    if (!importRows?.length) return;
     setImporting(true);
     try {
       const res = await api.post('/players/import-excel-commit', {
-        rows: importPreview.rows,
+        rows: importRows,
         resolutions: importResolutions
       });
       setImportResult(res.data);
@@ -925,7 +926,7 @@ export default function AdminPlayers() {
                   disabled={importing}
                   style={{ fontWeight: 800 }}
                 >
-                  {importing ? 'Importing...' : `Confirm & Commit (${importPreview.rows?.length || 0} Players)`}
+                  {importing ? 'Importing...' : `Confirm & Commit (${(importPreview.rows || importPreview.players)?.length || 0} Players)`}
                 </button>
               )}
             </div>

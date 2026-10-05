@@ -295,7 +295,8 @@ function loadDb() {
       if (data && data.trim()) {
         const parsed = JSON.parse(data);
         if (parsed && typeof parsed === 'object') {
-          db = parsed;
+          Object.keys(db).forEach(k => delete db[k]);
+          Object.assign(db, parsed);
           if (!Array.isArray(db.auctions)) db.auctions = [];
           if (!Array.isArray(db.teams)) db.teams = [];
           if (!Array.isArray(db.players)) db.players = [];
@@ -410,6 +411,10 @@ function logAuctionMutation(operation, auctionId, prevStatus, newStatus, caller,
   console.log(`[AUCTION MUTATION] ${new Date().toISOString()} | Operation: ${operation} | ID: ${auctionId} | PrevStatus: ${prevStatus} | NewStatus: ${newStatus} | Caller: ${caller} | Saved: ${saved}`);
 }
 
+function logMasterListMutation(operation, playerId, details = {}, saved = true) {
+  console.log(`[MASTER_LIST_MUTATION] ${new Date().toISOString()} | operation: ${operation} | playerId: ${playerId} | details: ${JSON.stringify(details)} | saved: ${saved}`);
+}
+
 function ensureEngineActive(targetAuctionId) {
   const auc = db.auctions.find(a => a.id === targetAuctionId);
   if (!auc) return false;
@@ -426,6 +431,7 @@ function ensureEngineActive(targetAuctionId) {
 
 loadDb();
 logAuctionMutation('INIT_LOAD', 'ALL', 'N/A', `${db.auctions?.length || 0} auctions`, 'startup', false);
+logMasterListMutation('INIT_LOAD', 'ALL', { count: db.players?.length || 0 }, false);
 
 // Auto-attach engine to active, upcoming scheduled, or primary auction
 const initialActiveAuction =
@@ -1494,15 +1500,15 @@ router.get('/players', (req, res) => {
     includeArchived 
   } = req.query;
 
-  let list = db.players.slice();
+  let list = (db.players || []).slice();
 
   // Filter archived by default unless includeArchived=true or status filter explicitly requests
   if (status === 'ARCHIVED') {
-    list = list.filter(p => p.is_active === false);
+    list = list.filter(p => p.is_active === false || p.isActive === false);
   } else if (status === 'ACTIVE') {
-    list = list.filter(p => p.is_active !== false);
+    list = list.filter(p => p.is_active !== false && p.isActive !== false);
   } else if (includeArchived !== 'true') {
-    list = list.filter(p => p.is_active !== false);
+    list = list.filter(p => p.is_active !== false && p.isActive !== false);
   }
 
   if (playerType && playerType !== 'ALL') {
@@ -1514,7 +1520,7 @@ router.get('/players', (req, res) => {
   }
 
   if (isHighlighted === 'true') {
-    list = list.filter(p => p.is_highlighted === true);
+    list = list.filter(p => p.is_highlighted === true || p.isHighlighted === true);
   }
 
   if (hasPhoto === 'true') {
@@ -1526,20 +1532,17 @@ router.get('/players', (req, res) => {
   if (search && search.trim()) {
     const q = search.trim().toLowerCase();
     list = list.filter(p => {
-      const name = (p.full_name || p.name || '').toLowerCase();
+      const name = (p.full_name || p.name || p.fullName || '').toLowerCase();
       const reg = (p.registration_id || p.registrationId || '').toLowerCase();
       const spec = (p.speciality || '').toLowerCase();
-      const xf = (p.x_factor || p.xfactor || '').toLowerCase();
+      const xf = (p.x_factor || p.xfactor || p.xFactor || '').toLowerCase();
       const cat = (p.category || '').toLowerCase();
       return name.includes(q) || reg.includes(q) || spec.includes(q) || xf.includes(q) || cat.includes(q);
     });
   }
 
-  // Consistent sorting & category guarantee
-  list = list.map(p => ({
-    ...p,
-    category: getCategoryLabel(p.category)
-  }));
+  // Consistent sorting & full attribute normalization
+  list = list.map(p => enrichPlayer(p));
 
   list.sort((a, b) => {
     const nameA = (a.full_name || a.name || '').toLowerCase();
@@ -1552,8 +1555,10 @@ router.get('/players', (req, res) => {
 
 // Single Player Detail with Complete Auction History
 router.get('/players/:id', (req, res) => {
-  const player = db.players.find(p => p.id === req.params.id);
-  if (!player) return res.status(404).json({ error: 'Player not found in master database' });
+  const rawPlayer = (db.players || []).find(p => p.id === req.params.id);
+  if (!rawPlayer) return res.status(404).json({ error: 'Player not found in master database' });
+
+  const player = enrichPlayer(rawPlayer);
 
   // Gather complete auction history
   const history = (db.auction_players || [])
@@ -1566,8 +1571,8 @@ router.get('/players/:id', (req, res) => {
         auctionName: auc.name || auc.tournamentName || 'Auction',
         seriesName: auc.seriesName || 'Valor Cup',
         status: ap.auction_status || 'WAITING',
-        basePrice: ap.auction_base_price || player.base_price || 100,
-        soldPrice: ap.sold_price || null,
+        basePrice: ap.auction_base_price || player.basePrice || player.base_price || 100,
+        soldPrice: ap.sold_price !== null && ap.sold_price !== undefined ? Number(ap.sold_price) : null,
         soldTeam: team ? { id: team.id, name: team.name, tag: team.tag } : null,
         updatedAt: ap.updated_at || ap.created_at
       };
@@ -1582,52 +1587,79 @@ router.get('/players/:id', (req, res) => {
 
 // Create Master Player
 router.post('/players', authenticateToken, requireRole(['admin']), upload.single('image'), (req, res) => {
-  const { full_name, name, category, player_type, playerType, base_price, basePrice, last_year_price, lastYearPrice, x_factor, xfactor, experience, speciality, bio, is_highlighted, highlight_reason } = req.body;
+  const { full_name, name, fullName, category, player_type, playerType, base_price, basePrice, last_year_price, lastYearPrice, x_factor, xfactor, experience, speciality, bio, is_highlighted, highlight_reason } = req.body;
 
-  const resolvedName = full_name || name;
-  if (!resolvedName || !resolvedName.trim()) {
+  const resolvedName = (full_name || name || fullName || '').trim();
+  if (!resolvedName) {
     return res.status(400).json({ error: 'Player full name is required' });
   }
 
   const pid = uuidv4();
-  const count = db.players.length + 1;
+  const count = (db.players || []).length + 1;
   const regId = req.body.registration_id || req.body.registrationId || `#P-${String(count).padStart(3, '0')}`;
   const cat = getCategoryLabel(category);
+  const catNorm = normalizeCategory(cat);
   const pType = (player_type || playerType || 'NEW').toUpperCase() === 'RETURNING' ? 'RETURNING' : 'NEW';
 
-  const defaultBasePrice = cat === 'Category A' ? 100 : (cat === 'Category B' ? 60 : (cat === 'Category C' ? 40 : 200));
+  const defaultBasePrice = catNorm.defaultBase;
   const resolvedBasePrice = Number(base_price ?? basePrice ?? defaultBasePrice);
+  const resolvedLastYear = last_year_price !== undefined && last_year_price !== '' && last_year_price !== null
+    ? Number(last_year_price)
+    : (lastYearPrice !== undefined && lastYearPrice !== '' && lastYearPrice !== null ? Number(lastYearPrice) : null);
+
+  const cleanDisp = (req.body.display_name || req.body.displayName || resolvedName).trim();
+  const imgUrl = req.file ? `/uploads/${req.file.filename}` : (req.body.image_url || req.body.imageUrl || null);
+  const xf = x_factor || xfactor || req.body.xFactor || '';
+  const isHigh = is_highlighted === 'true' || is_highlighted === true || req.body.isHighlighted === 'true' || req.body.isHighlighted === true;
+  const highReason = highlight_reason || req.body.highlightReason || '';
 
   const newPlayer = {
     id: pid,
     registration_id: regId,
-    full_name: resolvedName.trim(),
-    display_name: req.body.display_name || resolvedName.trim(),
+    registrationId: regId,
+    full_name: resolvedName,
+    fullName: resolvedName,
+    name: resolvedName,
+    display_name: cleanDisp,
+    displayName: cleanDisp,
     player_type: pType,
+    playerType: pType,
+    player_type_name: catNorm.playerType,
+    playerTypeName: catNorm.playerType,
     category: cat,
     base_price: resolvedBasePrice,
-    last_year_price: last_year_price ? Number(last_year_price) : (lastYearPrice ? Number(lastYearPrice) : null),
-    score_out_of_5: Number(req.body.score_out_of_5) || 3.5,
-    overall_rating: Number(req.body.overall_rating) || 75,
-    x_factor: x_factor || xfactor || '',
+    basePrice: resolvedBasePrice,
+    last_year_price: resolvedLastYear,
+    lastYearPrice: resolvedLastYear,
+    score_out_of_5: Number(req.body.score_out_of_5 ?? req.body.scoreOutOf5) || 3.5,
+    scoreOutOf5: Number(req.body.score_out_of_5 ?? req.body.scoreOutOf5) || 3.5,
+    overall_rating: Number(req.body.overall_rating ?? req.body.overallRating) || 75,
+    overallRating: Number(req.body.overall_rating ?? req.body.overallRating) || 75,
+    x_factor: xf,
+    xfactor: xf,
+    xFactor: xf,
     experience: experience || '',
     speciality: speciality || '',
     bio: bio || '',
-    image_url: req.file ? `/uploads/${req.file.filename}` : (req.body.image_url || req.body.imageUrl || null),
-    imageUrl: req.file ? `/uploads/${req.file.filename}` : (req.body.image_url || req.body.imageUrl || null),
-    image_status: req.file || req.body.image_url || req.body.imageUrl ? 'UPLOADED' : 'PENDING',
+    image_url: imgUrl,
+    imageUrl: imgUrl,
+    image_status: imgUrl ? 'UPLOADED' : 'PENDING',
     is_active: true,
-    is_highlighted: is_highlighted === 'true' || is_highlighted === true,
-    highlight_reason: highlight_reason || '',
+    isActive: true,
+    is_highlighted: isHigh,
+    isHighlighted: isHigh,
+    highlight_reason: highReason,
+    highlightReason: highReason,
     stats: req.body.stats ? (typeof req.body.stats === 'string' ? JSON.parse(req.body.stats) : req.body.stats) : {},
     created_at: Date.now(),
     updated_at: Date.now()
   };
 
+  if (!Array.isArray(db.players)) db.players = [];
   db.players.push(newPlayer);
 
   // If there are active auctions, auto-attach to auction_players
-  db.auctions.forEach(auc => {
+  (db.auctions || []).forEach(auc => {
     if (auc.status !== 'COMPLETED') {
       if (!db.auction_players) db.auction_players = [];
       const exists = db.auction_players.some(ap => ap.auction_id === auc.id && ap.player_id === pid);
@@ -1652,39 +1684,127 @@ router.post('/players', authenticateToken, requireRole(['admin']), upload.single
   });
 
   saveDb();
-  broadcast('MASTER_PLAYER_CREATED', { player: newPlayer });
-  res.status(201).json(newPlayer);
+  logMasterListMutation('CREATE', newPlayer.id, {
+    full_name: newPlayer.full_name,
+    category: newPlayer.category,
+    base_price: newPlayer.base_price
+  }, true);
+  const enriched = enrichPlayer(newPlayer);
+  broadcast('MASTER_PLAYER_CREATED', { player: enriched });
+  broadcast('PLAYER_UPDATED', { player: enriched });
+  res.status(201).json(enriched);
 });
 
 // Update Master Player
 router.patch('/players/:id', authenticateToken, requireRole(['admin']), upload.single('image'), (req, res) => {
-  const idx = db.players.findIndex(p => p.id === req.params.id);
+  const idx = (db.players || []).findIndex(p => p.id === req.params.id);
   if (idx === -1) return res.status(404).json({ error: 'Player not found in master database' });
 
   const existing = db.players[idx];
   const updates = { ...req.body };
 
+  // File / Image upload
   if (req.file) {
     const uploadedUrl = `/uploads/${req.file.filename}`;
     updates.image_url = uploadedUrl;
     updates.imageUrl = uploadedUrl;
     updates.image_status = 'UPLOADED';
-  } else {
-    if (updates.image_url !== undefined && !updates.imageUrl) {
-      updates.imageUrl = updates.image_url;
-    } else if (updates.imageUrl !== undefined && !updates.image_url) {
-      updates.image_url = updates.imageUrl;
-    }
+  } else if (updates.image_url !== undefined || updates.imageUrl !== undefined) {
+    const img = updates.image_url !== undefined ? updates.image_url : updates.imageUrl;
+    updates.image_url = img || null;
+    updates.imageUrl = img || null;
+    if (img) updates.image_status = 'UPLOADED';
   }
-  if (updates.category) {
-    updates.category = getCategoryLabel(updates.category);
+
+  // Synchronize Name fields
+  const updatedFullName = updates.full_name !== undefined ? updates.full_name : (updates.name !== undefined ? updates.name : (updates.fullName !== undefined ? updates.fullName : undefined));
+  if (updatedFullName !== undefined) {
+    const cleanName = String(updatedFullName).trim();
+    updates.full_name = cleanName;
+    updates.fullName = cleanName;
+    updates.name = cleanName;
   }
-  if (updates.base_price !== undefined) updates.base_price = Number(updates.base_price);
-  if (updates.last_year_price !== undefined) updates.last_year_price = updates.last_year_price ? Number(updates.last_year_price) : null;
-  if (updates.score_out_of_5 !== undefined) updates.score_out_of_5 = Number(updates.score_out_of_5);
-  if (updates.overall_rating !== undefined) updates.overall_rating = Number(updates.overall_rating);
-  if (updates.is_highlighted !== undefined) updates.is_highlighted = updates.is_highlighted === 'true' || updates.is_highlighted === true;
-  if (updates.is_active !== undefined) updates.is_active = updates.is_active === 'true' || updates.is_active === true;
+
+  const updatedDisplayName = updates.display_name !== undefined ? updates.display_name : (updates.displayName !== undefined ? updates.displayName : undefined);
+  if (updatedDisplayName !== undefined) {
+    const cleanDisp = String(updatedDisplayName).trim();
+    updates.display_name = cleanDisp;
+    updates.displayName = cleanDisp;
+  }
+
+  // Synchronize Category & Player Type Name
+  if (updates.category !== undefined) {
+    const catLabel = getCategoryLabel(updates.category);
+    updates.category = catLabel;
+    const catNorm = normalizeCategory(catLabel);
+    updates.player_type_name = catNorm.playerType;
+    updates.playerTypeName = catNorm.playerType;
+  }
+
+  // Synchronize Player Type (NEW / RETURNING)
+  if (updates.player_type !== undefined || updates.playerType !== undefined) {
+    const rawType = updates.player_type || updates.playerType;
+    const pType = String(rawType).toUpperCase() === 'RETURNING' ? 'RETURNING' : 'NEW';
+    updates.player_type = pType;
+    updates.playerType = pType;
+  }
+
+  // Synchronize Numeric Fields
+  if (updates.base_price !== undefined || updates.basePrice !== undefined) {
+    const val = Number(updates.base_price !== undefined ? updates.base_price : updates.basePrice);
+    updates.base_price = isNaN(val) ? 100 : val;
+    updates.basePrice = updates.base_price;
+  }
+
+  if (updates.last_year_price !== undefined || updates.lastYearPrice !== undefined) {
+    const raw = updates.last_year_price !== undefined ? updates.last_year_price : updates.lastYearPrice;
+    const val = raw !== '' && raw !== null && raw !== undefined ? Number(raw) : null;
+    updates.last_year_price = (val !== null && isNaN(val)) ? null : val;
+    updates.lastYearPrice = updates.last_year_price;
+  }
+
+  if (updates.score_out_of_5 !== undefined || updates.scoreOutOf5 !== undefined) {
+    const val = Number(updates.score_out_of_5 !== undefined ? updates.score_out_of_5 : updates.scoreOutOf5);
+    updates.score_out_of_5 = isNaN(val) ? 3.5 : val;
+    updates.scoreOutOf5 = updates.score_out_of_5;
+  }
+
+  if (updates.overall_rating !== undefined || updates.overallRating !== undefined) {
+    const val = Number(updates.overall_rating !== undefined ? updates.overall_rating : updates.overallRating);
+    updates.overall_rating = isNaN(val) ? 75 : val;
+    updates.overallRating = updates.overall_rating;
+  }
+
+  // Synchronize Registration ID
+  if (updates.registration_id !== undefined || updates.registrationId !== undefined) {
+    const reg = String(updates.registration_id !== undefined ? updates.registration_id : updates.registrationId).trim();
+    updates.registration_id = reg;
+    updates.registrationId = reg;
+  }
+
+  // Synchronize X-Factor
+  if (updates.x_factor !== undefined || updates.xfactor !== undefined || updates.xFactor !== undefined) {
+    const xf = updates.x_factor !== undefined ? updates.x_factor : (updates.xfactor !== undefined ? updates.xfactor : updates.xFactor);
+    updates.x_factor = xf || '';
+    updates.xfactor = xf || '';
+    updates.xFactor = xf || '';
+  }
+
+  // Synchronize Boolean Flags
+  if (updates.is_highlighted !== undefined || updates.isHighlighted !== undefined) {
+    const rawH = updates.is_highlighted !== undefined ? updates.is_highlighted : updates.isHighlighted;
+    const isH = rawH === 'true' || rawH === true;
+    updates.is_highlighted = isH;
+    updates.isHighlighted = isH;
+  }
+
+  if (updates.is_active !== undefined || updates.isActive !== undefined) {
+    const rawA = updates.is_active !== undefined ? updates.is_active : updates.isActive;
+    const isA = rawA === 'true' || rawA === true || rawA === 1;
+    updates.is_active = isA;
+    updates.isActive = isA;
+  }
+
   if (updates.stats && typeof updates.stats === 'string') {
     try { updates.stats = JSON.parse(updates.stats); } catch {}
   }
@@ -1693,24 +1813,59 @@ router.patch('/players/:id', authenticateToken, requireRole(['admin']), upload.s
   const updatedPlayer = { ...existing, ...updates };
   db.players[idx] = updatedPlayer;
 
+  // Sync waiting / unsold auction_players records
+  if (db.auction_players) {
+    db.auction_players.forEach(ap => {
+      if (ap.player_id === req.params.id && (ap.auction_status === 'WAITING' || ap.auction_status === 'UNSOLD')) {
+        if (updates.category) ap.auction_category = updatedPlayer.category;
+        if (updates.base_price !== undefined) ap.auction_base_price = updatedPlayer.base_price;
+        ap.updated_at = Date.now();
+      }
+    });
+  }
+
+  // Sync team player squads
+  if (db.teams) {
+    db.teams.forEach(t => {
+      if (t.players) {
+        t.players.forEach(tp => {
+          if ((tp.playerId || tp.id) === req.params.id) {
+            if (updates.full_name) {
+              tp.name = updatedPlayer.full_name;
+              tp.fullName = updatedPlayer.full_name;
+            }
+            if (updates.category) tp.category = updatedPlayer.category;
+            if (updates.registration_id) tp.registrationId = updatedPlayer.registration_id;
+            if (updates.image_url !== undefined) tp.imageUrl = updatedPlayer.image_url;
+          }
+        });
+      }
+    });
+  }
+
   // Propagate changes to live auction if player is active round
-  if (auctionEngine.currentPlayer && auctionEngine.currentPlayer.id === req.params.id) {
-    auctionEngine.currentPlayer = {
+  if (auctionEngine.currentPlayer && (auctionEngine.currentPlayer.id === req.params.id || auctionEngine.currentPlayer.masterPlayerId === req.params.id)) {
+    auctionEngine.currentPlayer = enrichPlayer({
       ...auctionEngine.currentPlayer,
-      ...updatedPlayer,
-      name: updatedPlayer.full_name || updatedPlayer.name,
-      imageUrl: updatedPlayer.image_url || updatedPlayer.imageUrl
-    };
+      ...updatedPlayer
+    });
   }
 
   saveDb();
-  broadcast('PLAYER_UPDATED', { player: updatedPlayer });
-  res.json(updatedPlayer);
+  logMasterListMutation('UPDATE', req.params.id, {
+    full_name: updatedPlayer.full_name,
+    category: updatedPlayer.category,
+    base_price: updatedPlayer.base_price,
+    is_active: updatedPlayer.is_active
+  }, true);
+  const enriched = enrichPlayer(updatedPlayer);
+  broadcast('PLAYER_UPDATED', { player: enriched });
+  res.json(enriched);
 });
 
 // Upload Photo for Player
 router.post('/players/:id/image', authenticateToken, requireRole(['admin']), upload.single('image'), (req, res) => {
-  const idx = db.players.findIndex(p => p.id === req.params.id);
+  const idx = (db.players || []).findIndex(p => p.id === req.params.id);
   if (idx === -1) return res.status(404).json({ error: 'Player not found' });
   if (!req.file) return res.status(400).json({ error: 'No image file uploaded' });
 
@@ -1721,19 +1876,21 @@ router.post('/players/:id/image', authenticateToken, requireRole(['admin']), upl
   db.players[idx].updated_at = Date.now();
 
   // Propagate to current active player if matched
-  if (auctionEngine.currentPlayer && auctionEngine.currentPlayer.id === req.params.id) {
+  if (auctionEngine.currentPlayer && (auctionEngine.currentPlayer.id === req.params.id || auctionEngine.currentPlayer.masterPlayerId === req.params.id)) {
     auctionEngine.currentPlayer.imageUrl = imageUrl;
     auctionEngine.currentPlayer.image_url = imageUrl;
   }
 
   saveDb();
-  broadcast('PLAYER_UPDATED', { player: db.players[idx] });
-  res.json({ success: true, imageUrl, player: db.players[idx] });
+  logMasterListMutation('UPDATE_IMAGE', req.params.id, { imageUrl }, true);
+  const enriched = enrichPlayer(db.players[idx]);
+  broadcast('PLAYER_UPDATED', { player: enriched });
+  res.json({ success: true, imageUrl, player: enriched });
 });
 
 // Remove Photo for Player
 router.delete('/players/:id/image', authenticateToken, requireRole(['admin']), (req, res) => {
-  const idx = db.players.findIndex(p => p.id === req.params.id);
+  const idx = (db.players || []).findIndex(p => p.id === req.params.id);
   if (idx === -1) return res.status(404).json({ error: 'Player not found' });
 
   db.players[idx].image_url = null;
@@ -1741,19 +1898,21 @@ router.delete('/players/:id/image', authenticateToken, requireRole(['admin']), (
   db.players[idx].image_status = 'REMOVED';
   db.players[idx].updated_at = Date.now();
 
-  if (auctionEngine.currentPlayer && auctionEngine.currentPlayer.id === req.params.id) {
+  if (auctionEngine.currentPlayer && (auctionEngine.currentPlayer.id === req.params.id || auctionEngine.currentPlayer.masterPlayerId === req.params.id)) {
     auctionEngine.currentPlayer.imageUrl = null;
     auctionEngine.currentPlayer.image_url = null;
   }
 
   saveDb();
-  broadcast('PLAYER_UPDATED', { player: db.players[idx] });
-  res.json({ success: true, player: db.players[idx] });
+  logMasterListMutation('DELETE_IMAGE', req.params.id, {}, true);
+  const enriched = enrichPlayer(db.players[idx]);
+  broadcast('PLAYER_UPDATED', { player: enriched });
+  res.json({ success: true, player: enriched });
 });
 
 // Delete or Archive Master Player
 router.delete('/players/:id', authenticateToken, requireRole(['admin']), (req, res) => {
-  const idx = db.players.findIndex(p => p.id === req.params.id);
+  const idx = (db.players || []).findIndex(p => p.id === req.params.id);
   if (idx === -1) return res.status(404).json({ error: 'Player not found' });
 
   const player = db.players[idx];
@@ -1767,9 +1926,13 @@ router.delete('/players/:id', authenticateToken, requireRole(['admin']), (req, r
   if (hasHistory && !forcePermanent) {
     // Safe soft delete / archive
     db.players[idx].is_active = false;
+    db.players[idx].isActive = false;
     db.players[idx].updated_at = Date.now();
     saveDb();
-    broadcast('PLAYER_ARCHIVED', { playerId: req.params.id, player: db.players[idx] });
+    logMasterListMutation('ARCHIVE', req.params.id, { full_name: player.full_name || player.name }, true);
+    const enriched = enrichPlayer(db.players[idx]);
+    broadcast('PLAYER_ARCHIVED', { playerId: req.params.id, player: enriched });
+    broadcast('PLAYER_UPDATED', { player: enriched });
     return res.json({ 
       success: true, 
       action: 'ARCHIVED',
@@ -1783,10 +1946,10 @@ router.delete('/players/:id', authenticateToken, requireRole(['admin']), (req, r
     db.auction_players = db.auction_players.filter(ap => ap.player_id !== req.params.id);
   }
   db.teams.forEach(t => {
-    if (t.players) t.players = t.players.filter(item => item.playerId !== req.params.id);
+    if (t.players) t.players = t.players.filter(item => item.playerId !== req.params.id && item.id !== req.params.id);
   });
 
-  if (auctionEngine.currentPlayer && auctionEngine.currentPlayer.id === req.params.id) {
+  if (auctionEngine.currentPlayer && (auctionEngine.currentPlayer.id === req.params.id || auctionEngine.currentPlayer.masterPlayerId === req.params.id)) {
     clearTimer();
     auctionEngine.currentPlayer = null;
     auctionEngine.currentBid = 0;
@@ -1797,20 +1960,24 @@ router.delete('/players/:id', authenticateToken, requireRole(['admin']), (req, r
   }
 
   saveDb();
+  logMasterListMutation('DELETE', req.params.id, { full_name: player.full_name || player.name }, true);
   broadcast('PLAYER_DELETED', { playerId: req.params.id, player });
   res.json({ success: true, action: 'DELETED', message: `Player "${player.full_name || player.name}" permanently deleted.` });
 });
 
 // Restore Archived Player
 router.post('/players/:id/restore', authenticateToken, requireRole(['admin']), (req, res) => {
-  const idx = db.players.findIndex(p => p.id === req.params.id);
+  const idx = (db.players || []).findIndex(p => p.id === req.params.id);
   if (idx === -1) return res.status(404).json({ error: 'Player not found' });
 
   db.players[idx].is_active = true;
+  db.players[idx].isActive = true;
   db.players[idx].updated_at = Date.now();
   saveDb();
-  broadcast('PLAYER_UPDATED', { player: db.players[idx] });
-  res.json({ success: true, player: db.players[idx] });
+  logMasterListMutation('RESTORE', req.params.id, { full_name: db.players[idx].full_name || db.players[idx].name }, true);
+  const enriched = enrichPlayer(db.players[idx]);
+  broadcast('PLAYER_UPDATED', { player: enriched });
+  res.json({ success: true, player: enriched });
 });
 
 // Bulk Delete Players
@@ -1820,16 +1987,17 @@ router.post('/players/bulk-delete', authenticateToken, requireRole(['admin']), (
     return res.status(400).json({ error: 'Array of playerIds is required' });
   }
 
-  const idSet = new Set(playerIds);
   let archivedCount = 0;
   let deletedCount = 0;
 
   playerIds.forEach(id => {
-    const idx = db.players.findIndex(p => p.id === id);
+    const idx = (db.players || []).findIndex(p => p.id === id);
     if (idx !== -1) {
-      const hasHistory = (db.purchases || []).some(p => p.playerId === id);
+      const hasHistory = (db.purchases || []).some(p => p.playerId === id) || (db.bids || []).some(b => b.playerId === id);
       if (hasHistory) {
         db.players[idx].is_active = false;
+        db.players[idx].isActive = false;
+        db.players[idx].updated_at = Date.now();
         archivedCount++;
       } else {
         db.players.splice(idx, 1);
@@ -1842,6 +2010,7 @@ router.post('/players/bulk-delete', authenticateToken, requireRole(['admin']), (
   });
 
   saveDb();
+  logMasterListMutation('BULK_DELETE', 'MULTIPLE', { playerIds, archivedCount, deletedCount }, true);
   broadcast('PLAYERS_BULK_UPDATED', { playerIds });
   res.json({ success: true, archivedCount, deletedCount });
 });
@@ -1866,11 +2035,12 @@ router.post('/players/import-excel-preview', authenticateToken, requireRole(['ad
       return res.status(400).json({ error: 'Please upload an Excel (.xlsx / .xls) file.' });
     }
 
-    const preview = parseExcelWorkbook(buffer, db.players);
+    const preview = parseExcelWorkbook(buffer, db.players || []);
     res.json({
       success: true,
       summary: preview.summary,
-      rows: preview.rows,
+      rows: preview.rows || preview.players,
+      players: preview.players || preview.rows,
       duplicates: preview.duplicates,
       invalidRows: preview.invalidRows
     });
@@ -1887,38 +2057,79 @@ router.post('/players/import-excel-commit', authenticateToken, requireRole(['adm
       return res.status(400).json({ error: 'No player rows provided for import' });
     }
 
+    if (!Array.isArray(db.players)) db.players = [];
+
     const resolutionMap = resolutions || {};
     let insertedCount = 0;
     let updatedCount = 0;
     let skippedCount = 0;
 
     rows.forEach((row, idx) => {
-      const resolution = resolutionMap[row.full_name] || resolutionMap[idx] || (row.isDuplicate ? 'use_existing' : 'create_new');
+      const isDup = Boolean(row.is_duplicate || row.isDuplicate);
+      const matchId = row.matchedPlayerId || row.existing_match?.id || row.existingMatch?.id;
+      const resolution = resolutionMap[row.full_name] || resolutionMap[row.name] || resolutionMap[idx] || (isDup ? 'use_existing' : 'create_new');
 
-      if (resolution === 'use_existing' && row.isDuplicate) {
+      if (resolution === 'use_existing' && isDup) {
         skippedCount++;
         return;
       }
 
-      if (resolution === 'overwrite' && row.isDuplicate && row.matchedPlayerId) {
-        const pIdx = db.players.findIndex(p => p.id === row.matchedPlayerId);
+      if (resolution === 'overwrite' && isDup && matchId) {
+        const pIdx = db.players.findIndex(p => p.id === matchId);
         if (pIdx !== -1) {
+          const cat = getCategoryLabel(row.category || db.players[pIdx].category);
+          const catNorm = normalizeCategory(cat);
+          const cleanName = (row.full_name || row.name || db.players[pIdx].full_name || db.players[pIdx].name).trim();
+          const cleanDisp = (row.display_name || row.displayName || cleanName).trim();
+          const pType = (row.player_type || row.playerType || db.players[pIdx].player_type || 'NEW').toUpperCase() === 'RETURNING' ? 'RETURNING' : 'NEW';
+          const bPrice = Number(row.base_price ?? row.basePrice ?? db.players[pIdx].base_price ?? catNorm.defaultBase);
+          const xf = row.x_factor || row.xfactor || row.xFactor || db.players[pIdx].x_factor || '';
+          const lastYear = row.last_year_price !== undefined && row.last_year_price !== '' && row.last_year_price !== null
+            ? Number(row.last_year_price)
+            : (row.lastYearPrice !== undefined && row.lastYearPrice !== '' && row.lastYearPrice !== null ? Number(row.lastYearPrice) : db.players[pIdx].last_year_price);
+
           db.players[pIdx] = {
             ...db.players[pIdx],
-            full_name: row.full_name || db.players[pIdx].full_name,
-            category: row.category || db.players[pIdx].category,
-            base_price: row.base_price ?? db.players[pIdx].base_price,
-            last_year_price: row.last_year_price ?? db.players[pIdx].last_year_price,
-            player_type: row.player_type || db.players[pIdx].player_type,
-            score_out_of_5: row.score_out_of_5 ?? db.players[pIdx].score_out_of_5,
-            overall_rating: row.overall_rating ?? db.players[pIdx].overall_rating,
-            x_factor: row.x_factor || db.players[pIdx].x_factor,
-            experience: row.experience || db.players[pIdx].experience,
-            speciality: row.speciality || db.players[pIdx].speciality,
-            bio: row.bio || db.players[pIdx].bio,
-            stats: row.stats || db.players[pIdx].stats,
+            full_name: cleanName,
+            fullName: cleanName,
+            name: cleanName,
+            display_name: cleanDisp,
+            displayName: cleanDisp,
+            category: cat,
+            player_type_name: catNorm.playerType,
+            playerTypeName: catNorm.playerType,
+            base_price: bPrice,
+            basePrice: bPrice,
+            last_year_price: lastYear,
+            lastYearPrice: lastYear,
+            player_type: pType,
+            playerType: pType,
+            score_out_of_5: Number(row.score_out_of_5 ?? row.scoreOutOf5 ?? db.players[pIdx].score_out_of_5) || 3.5,
+            scoreOutOf5: Number(row.score_out_of_5 ?? row.scoreOutOf5 ?? db.players[pIdx].score_out_of_5) || 3.5,
+            overall_rating: Number(row.overall_rating ?? row.overallRating ?? db.players[pIdx].overall_rating) || 75,
+            overallRating: Number(row.overall_rating ?? row.overallRating ?? db.players[pIdx].overall_rating) || 75,
+            x_factor: xf,
+            xfactor: xf,
+            xFactor: xf,
+            experience: row.experience || db.players[pIdx].experience || '',
+            speciality: row.speciality || db.players[pIdx].speciality || '',
+            bio: row.bio || db.players[pIdx].bio || '',
+            stats: row.stats || db.players[pIdx].stats || {},
+            is_active: true,
+            isActive: true,
             updated_at: Date.now()
           };
+
+          if (db.auction_players) {
+            db.auction_players.forEach(ap => {
+              if (ap.player_id === matchId && (ap.auction_status === 'WAITING' || ap.auction_status === 'UNSOLD')) {
+                ap.auction_category = cat;
+                ap.auction_base_price = bPrice;
+                ap.updated_at = Date.now();
+              }
+            });
+          }
+
           updatedCount++;
         }
         return;
@@ -1926,26 +2137,55 @@ router.post('/players/import-excel-commit', authenticateToken, requireRole(['adm
 
       // Create new player record
       const pid = uuidv4();
+      const cat = getCategoryLabel(row.category);
+      const catNorm = normalizeCategory(cat);
+      const cleanName = (row.full_name || row.name || 'Player').trim();
+      const cleanDisp = (row.display_name || row.displayName || cleanName).trim();
+      const pType = (row.player_type || row.playerType || 'NEW').toUpperCase() === 'RETURNING' ? 'RETURNING' : 'NEW';
+      const bPrice = Number(row.base_price ?? row.basePrice ?? catNorm.defaultBase) || 100;
+      const lastYear = row.last_year_price !== undefined && row.last_year_price !== '' && row.last_year_price !== null
+        ? Number(row.last_year_price)
+        : (row.lastYearPrice !== undefined && row.lastYearPrice !== '' && row.lastYearPrice !== null ? Number(row.lastYearPrice) : null);
+      const xf = row.x_factor || row.xfactor || row.xFactor || '';
+      const regId = row.registration_id || row.registrationId || `#P-${String(db.players.length + 1).padStart(3, '0')}`;
+
       const newPlayer = {
         id: pid,
-        registration_id: row.registration_id || `#P-${String(db.players.length + 1).padStart(3, '0')}`,
-        full_name: row.full_name,
-        display_name: row.display_name || row.full_name,
-        player_type: row.player_type || 'NEW',
-        category: row.category || 'Category A',
-        base_price: Number(row.base_price) || 100,
-        last_year_price: row.last_year_price ? Number(row.last_year_price) : null,
-        score_out_of_5: Number(row.score_out_of_5) || 3.5,
-        overall_rating: Number(row.overall_rating) || 75,
-        x_factor: row.x_factor || '',
+        registration_id: regId,
+        registrationId: regId,
+        full_name: cleanName,
+        fullName: cleanName,
+        name: cleanName,
+        display_name: cleanDisp,
+        displayName: cleanDisp,
+        player_type: pType,
+        playerType: pType,
+        category: cat,
+        player_type_name: catNorm.playerType,
+        playerTypeName: catNorm.playerType,
+        base_price: bPrice,
+        basePrice: bPrice,
+        last_year_price: lastYear,
+        lastYearPrice: lastYear,
+        score_out_of_5: Number(row.score_out_of_5 ?? row.scoreOutOf5) || 3.5,
+        scoreOutOf5: Number(row.score_out_of_5 ?? row.scoreOutOf5) || 3.5,
+        overall_rating: Number(row.overall_rating ?? row.overallRating) || 75,
+        overallRating: Number(row.overall_rating ?? row.overallRating) || 75,
+        x_factor: xf,
+        xfactor: xf,
+        xFactor: xf,
         experience: row.experience || '',
         speciality: row.speciality || '',
         bio: row.bio || '',
-        image_url: null,
+        image_url: row.image_url || row.imageUrl || null,
+        imageUrl: row.image_url || row.imageUrl || null,
         image_status: 'PENDING',
         is_active: true,
-        is_highlighted: row.is_highlighted || false,
-        highlight_reason: row.highlight_reason || '',
+        isActive: true,
+        is_highlighted: Boolean(row.is_highlighted || row.isHighlighted),
+        isHighlighted: Boolean(row.is_highlighted || row.isHighlighted),
+        highlight_reason: row.highlight_reason || row.highlightReason || '',
+        highlightReason: row.highlight_reason || row.highlightReason || '',
         stats: row.stats || {},
         created_at: Date.now(),
         updated_at: Date.now()
@@ -1955,7 +2195,7 @@ router.post('/players/import-excel-commit', authenticateToken, requireRole(['adm
       insertedCount++;
 
       // Auto link to active/test auctions
-      db.auctions.forEach(auc => {
+      (db.auctions || []).forEach(auc => {
         if (auc.status !== 'COMPLETED') {
           if (!db.auction_players) db.auction_players = [];
           db.auction_players.push({
@@ -1978,6 +2218,12 @@ router.post('/players/import-excel-commit', authenticateToken, requireRole(['adm
     });
 
     saveDb();
+    logMasterListMutation('BULK_IMPORT', 'ALL', {
+      insertedCount,
+      updatedCount,
+      skippedCount,
+      totalMasterPlayers: db.players.length
+    }, true);
     broadcast('MASTER_PLAYERS_IMPORTED', { insertedCount, updatedCount, skippedCount });
     res.json({
       success: true,
