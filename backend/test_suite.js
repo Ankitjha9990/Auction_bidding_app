@@ -437,6 +437,136 @@ async function runTests() {
       `exit=${restartProbe.status} stdout=${restartProbe.stdout} stderr=${restartProbe.stderr}`
     );
 
+    // =========================================================================
+    // REGRESSION TESTS: Scheduled Auction Lifecycle & Admin Disconnect Isolation
+    // =========================================================================
+    console.log('\n--- REGRESSION TESTS: Scheduled Auction Persistence & Lifecycle ---');
+
+    const ioClient = require(path.join(__dirname, '../frontend/node_modules/socket.io-client'));
+    const tomorrowDate = new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString();
+
+    // 1. Admin creates scheduled auction
+    const createSchedRes = await request('POST', '/api/auctions', {
+      name: 'Spectra 2026 Auction',
+      tournamentName: 'SPECTRA 2026',
+      seriesName: 'Valor Cup Season 2',
+      scheduledAt: tomorrowDate,
+      startingBudget: 100000,
+      playerTimer: 120,
+      numTeams: 8
+    }, adminHeaders);
+
+    const schedAuctionId = createSchedRes.body?.id;
+    assert(
+      createSchedRes.status === 200 && createSchedRes.body?.status === 'SCHEDULED' && schedAuctionId,
+      'Admin successfully creates a SCHEDULED auction',
+      JSON.stringify(createSchedRes.body)
+    );
+
+    // Verify in-memory and disk persistence
+    const inMemoryAuction = db.auctions.find(a => a.id === schedAuctionId);
+    const diskJsonBefore = JSON.parse(fs.readFileSync(testDbPath, 'utf8'));
+    const diskAuctionBefore = diskJsonBefore.auctions.find(a => a.id === schedAuctionId);
+    assert(
+      inMemoryAuction?.status === 'SCHEDULED' && diskAuctionBefore?.status === 'SCHEDULED',
+      'Scheduled auction is immediately persisted to both in-memory db and disk db.json'
+    );
+
+    // 2. Admin opens panel (Admin Socket connects) and Viewer opens window (Viewer Socket connects)
+    const adminSocket = ioClient(baseUrl, { transports: ['websocket'], forceNew: true });
+    const viewerSocket = ioClient(baseUrl, { transports: ['websocket'], forceNew: true });
+
+    await Promise.all([
+      new Promise(res => adminSocket.on('connect', res)),
+      new Promise(res => viewerSocket.on('connect', res))
+    ]);
+
+    viewerSocket.emit('JOIN_AUCTION', { auctionId: schedAuctionId });
+    const viewerInitialSnap = await request('GET', `/api/auctions/${schedAuctionId}/snapshot`);
+    assert(
+      viewerInitialSnap.status === 200 && viewerInitialSnap.body?.status === 'SCHEDULED',
+      'Viewer successfully connects and receives SCHEDULED snapshot state'
+    );
+
+    // 3. ADMIN CLOSES BROWSER TAB (Admin Socket disconnects)
+    adminSocket.disconnect();
+    await new Promise(r => setTimeout(r, 200));
+
+    // Check persistence after Admin tab close / disconnect
+    const inMemoryAfterDisc = db.auctions.find(a => a.id === schedAuctionId);
+    const diskJsonAfterDisc = JSON.parse(fs.readFileSync(testDbPath, 'utf8'));
+    const diskAuctionAfterDisc = diskJsonAfterDisc.auctions.find(a => a.id === schedAuctionId);
+
+    assert(
+      inMemoryAfterDisc?.status === 'SCHEDULED' && diskAuctionAfterDisc?.status === 'SCHEDULED',
+      'scheduledAuctionPersistsAfterAdminDisconnect: Auction persists in DB and disk after admin tab closes'
+    );
+
+    // Viewer verifies auction is still present and valid
+    const allAuctionsViewerRes = await request('GET', '/api/auctions');
+    const viewerScheduledAuction = allAuctionsViewerRes.body.find(a => a.id === schedAuctionId);
+    const viewerSnapAfterDisc = await request('GET', `/api/auctions/${schedAuctionId}/snapshot`);
+
+    assert(
+      viewerScheduledAuction?.status === 'SCHEDULED' && viewerSnapAfterDisc.body?.status === 'SCHEDULED',
+      'Viewer maintains SCHEDULED auction without loss or reset when admin tab disconnects'
+    );
+
+    // 4. Admin logs out and new admin logs in
+    const loginRes = await request('POST', '/api/auth/login', {
+      email: 'admin@spectra.com',
+      password: 'test'
+    });
+    const newAdminToken = loginRes.body?.token;
+    const newAdminHeaders = { Authorization: `Bearer ${newAdminToken}` };
+
+    const adminAuctionsAfterLogin = await request('GET', '/api/auctions', null, newAdminHeaders);
+    const adminFoundSched = adminAuctionsAfterLogin.body.find(a => a.id === schedAuctionId);
+    assert(
+      adminFoundSched?.status === 'SCHEDULED',
+      'scheduledAuctionPersistsAfterAdminLogout: Fresh Admin login retrieves the intact scheduled auction'
+    );
+
+    // 5. Server Restart Simulation
+    const restartScheduledProbe = require('child_process').spawnSync(process.execPath, [
+      '-e',
+      `const { db, auctionEngine, enrichPlayer } = require(${JSON.stringify(path.join(__dirname, 'server.js'))});
+       const target = db.auctions.find(a => a.id === ${JSON.stringify(schedAuctionId)});
+       process.stdout.write(JSON.stringify({ found: !!target, status: target?.status, scheduledAt: target?.scheduledAt }));
+       if (auctionEngine.timerInterval) clearInterval(auctionEngine.timerInterval);`
+    ], {
+      encoding: 'utf8',
+      env: { ...process.env, AUCTION_DB_PATH: testDbPath }
+    });
+
+    let restartedScheduledData;
+    try {
+      restartedScheduledData = JSON.parse(restartScheduledProbe.stdout.trim().split(/\r?\n/).at(-1));
+    } catch {
+      restartedScheduledData = null;
+    }
+
+    assert(
+      restartedScheduledData?.found === true &&
+      restartedScheduledData?.status === 'SCHEDULED' &&
+      restartedScheduledData?.scheduledAt === tomorrowDate,
+      'scheduledAuctionPersistsAfterServerRestart: Scheduled auction survives complete backend process restart with intact SCHEDULED state',
+      `stdout=${restartScheduledProbe.stdout} stderr=${restartScheduledProbe.stderr}`
+    );
+
+    // 6. Explicit Admin Delete
+    const deleteRes = await request('DELETE', `/api/auctions/${schedAuctionId}`, null, newAdminHeaders);
+    const diskJsonAfterDel = JSON.parse(fs.readFileSync(testDbPath, 'utf8'));
+    const diskAuctionAfterDel = diskJsonAfterDel.auctions.find(a => a.id === schedAuctionId);
+    const inMemoryAfterDel = db.auctions.find(a => a.id === schedAuctionId);
+
+    assert(
+      deleteRes.status === 200 && !diskAuctionAfterDel && !inMemoryAfterDel,
+      'scheduledAuctionDeletedOnlyByExplicitDelete: Auction is ONLY removed when Admin explicitly invokes DELETE /api/auctions/:id'
+    );
+
+    viewerSocket.disconnect();
+
     console.log('\n====================================================');
     console.log(`TEST SUMMARY: ${passed} PASSED, ${failed} FAILED`);
     console.log('====================================================\n');
@@ -448,8 +578,7 @@ async function runTests() {
   } finally {
     if (auctionEngine.timerInterval) clearInterval(auctionEngine.timerInterval);
     await new Promise(resolve => server.close(resolve));
-    fs.unlinkSync(testDbPath);
-    fs.rmdirSync(testDbDirectory);
+    try { fs.rmSync(testDbDirectory, { recursive: true, force: true }); } catch {}
   }
 }
 

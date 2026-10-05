@@ -406,18 +406,26 @@ let auctionEngine = {
   pausedRemaining: null  // ms remaining when paused
 };
 
+function logAuctionMutation(operation, auctionId, prevStatus, newStatus, caller, saved = true) {
+  console.log(`[AUCTION MUTATION] ${new Date().toISOString()} | Operation: ${operation} | ID: ${auctionId} | PrevStatus: ${prevStatus} | NewStatus: ${newStatus} | Caller: ${caller} | Saved: ${saved}`);
+}
+
 function ensureEngineActive(targetAuctionId) {
-  if (auctionEngine.auctionId === targetAuctionId && auctionEngine.status) return true;
   const auc = db.auctions.find(a => a.id === targetAuctionId);
   if (!auc) return false;
-  auctionEngine.auctionId = targetAuctionId;
-  if (!auctionEngine.status || auctionEngine.status === 'DRAFT') {
-    auctionEngine.status = auc.status === 'LIVE' ? 'READY' : (auc.status || 'READY');
+  if (auctionEngine.auctionId === targetAuctionId && auctionEngine.status) {
+    if (auc.status === 'SCHEDULED' && auctionEngine.status !== 'SCHEDULED') {
+      auctionEngine.status = 'SCHEDULED';
+    }
+    return true;
   }
+  auctionEngine.auctionId = targetAuctionId;
+  auctionEngine.status = auc.status === 'LIVE' ? (auc.roundStatus || 'READY') : (auc.status || 'READY');
   return true;
 }
 
 loadDb();
+logAuctionMutation('INIT_LOAD', 'ALL', 'N/A', `${db.auctions?.length || 0} auctions`, 'startup', false);
 
 // Auto-attach engine to active, upcoming scheduled, or primary auction
 const initialActiveAuction =
@@ -935,6 +943,7 @@ router.post('/auctions', authenticateToken, requireRole(['admin']), (req, res) =
   getEnrichedAuctionPlayers(auction.id);
 
   saveDb();
+  logAuctionMutation('CREATE', auction.id, 'NONE', auction.status, 'POST /api/auctions', true);
   io.emit('AUCTION_CREATED', { auction, auctions: db.auctions });
   io.emit('AUCTIONS_UPDATED', { auctions: db.auctions });
   res.json(auction);
@@ -950,6 +959,7 @@ router.patch('/auctions/:id', authenticateToken, requireRole(['admin']), (req, r
   const idx = db.auctions.findIndex(a => a.id === req.params.id);
   if (idx === -1) return res.status(404).json({ error: 'Auction not found' });
   
+  const prevStatus = db.auctions[idx].status;
   const updates = { ...req.body };
   if (updates.scheduledAt || updates.scheduledDateTime) {
     try {
@@ -968,6 +978,7 @@ router.patch('/auctions/:id', authenticateToken, requireRole(['admin']), (req, r
 
   db.auctions[idx] = { ...db.auctions[idx], ...updates };
   saveDb();
+  logAuctionMutation('UPDATE', db.auctions[idx].id, prevStatus, db.auctions[idx].status, 'PATCH /api/auctions/:id', true);
   io.emit('AUCTION_UPDATED', { auction: db.auctions[idx], auctions: db.auctions });
   io.emit('AUCTIONS_UPDATED', { auctions: db.auctions });
   res.json(db.auctions[idx]);
@@ -978,6 +989,7 @@ router.delete('/auctions/:id', authenticateToken, requireRole(['admin']), (req, 
   if (idx === -1) return res.status(404).json({ error: 'Auction not found' });
   
   const deletedAuction = db.auctions[idx];
+  const prevStatus = deletedAuction.status;
   db.auctions.splice(idx, 1);
 
   // Remove associated teams
@@ -1006,6 +1018,7 @@ router.delete('/auctions/:id', authenticateToken, requireRole(['admin']), (req, 
   }
 
   saveDb();
+  logAuctionMutation('DELETE', req.params.id, prevStatus, 'DELETED', 'DELETE /api/auctions/:id', true);
   io.emit('AUCTION_DELETED', { auctionId: req.params.id, auctions: db.auctions });
   io.emit('AUCTIONS_UPDATED', { auctions: db.auctions });
   broadcast('AUCTION_DELETED', { auctionId: req.params.id });
@@ -1063,6 +1076,7 @@ router.post('/auctions/:id/start', authenticateToken, requireRole(['admin']), (r
       }
     }
 
+    const prevStatus = db.auctions[aIdx].status;
     const startedAtIso = new Date(now).toISOString();
     db.auctions[aIdx].status = 'LIVE';
     db.auctions[aIdx].startedAt = startedAtIso;
@@ -1079,6 +1093,7 @@ router.post('/auctions/:id/start', authenticateToken, requireRole(['admin']), (r
 
     persistCurrentRound();
     saveDb();
+    logAuctionMutation('START_LIVE', req.params.id, prevStatus, 'LIVE', 'POST /api/auctions/:id/start', true);
 
     broadcast('AUCTION_STARTED', {
       auction: db.auctions[aIdx],
@@ -1357,6 +1372,7 @@ router.post('/auctions/:id/extend-timer', authenticateToken, requireRole(['admin
 router.post('/auctions/:id/complete', authenticateToken, requireRole(['admin']), (req, res) => {
   const aIdx = db.auctions.findIndex(a => a.id === req.params.id);
   if (aIdx === -1) return res.status(404).json({ error: 'Auction not found' });
+  const prevStatus = db.auctions[aIdx].status;
   const now = Date.now();
   db.auctions[aIdx].status = 'COMPLETED';
   db.auctions[aIdx].endedAt = new Date(now).toISOString();
@@ -1365,6 +1381,7 @@ router.post('/auctions/:id/complete', authenticateToken, requireRole(['admin']),
     auctionEngine.status = 'COMPLETED';
   }
   saveDb();
+  logAuctionMutation('COMPLETE', req.params.id, prevStatus, 'COMPLETED', 'POST /api/auctions/:id/complete', true);
   broadcast('AUCTION_COMPLETED', { auction: db.auctions[aIdx] });
   res.json({ success: true, auction: db.auctions[aIdx] });
 });
